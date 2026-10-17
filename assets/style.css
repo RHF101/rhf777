@@ -702,3 +702,73 @@ img { max-width: 100%; display: block; object-fit: contain; }
   margin-top: 2px;
   font-size: 11px;
 }
+
+/* ============ PERBAIKAN TATA LETAK ============ */
+
+/* 1. Menu Ponsel Atas */
+.mobile-menu {
+  position: fixed;
+  top: 57px; /* Menempel pas di bawah bagian atas */
+  left: 0; right: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  z-index: 99;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+/* 2. Menu Bawah Ponsel */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(20, 20, 31, 0.98);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid #2a2a3a;
+  z-index: 100;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 5px;
+}
+
+.bn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: #8b8b9e;
+  text-decoration: none;
+  position: relative;
+}
+
+/* Ikon Tengah */
+.bn-tengah {
+  top: -15px; /* Mengangkat ikon tengah */
+}
+.lingkaran-tengah {
+  width: 55px;
+  height: 55px;
+  background: linear-gradient(135deg, #ffd700, #ffb800);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  border: 4px solid #14141f;
+}
+.teks-tengah {
+  margin-top: 2px;
+  color: #ffd700;
+  font-weight: 700;
+}
+
+/* Jarak aman agar konten tidak tertutup menu bawah */
+body {
+  padding-bottom: 90px;
+}
