@@ -98,19 +98,18 @@
     let taruhanAktif = 0;
     let sudahPasangTaruhan = false;
     
-    // Variabel Jalur Skenario (Pre-determined Path)
     let skenario = []; 
     let indexSkenario = 0;
     
     let canvas, ctx;
-    let dataGrafik = [];
+    let dataGrafik = []; // Menyimpan data: {open, high, low, close}
     let animasiFrame;
 
     function setTaruhan(angka) {
       document.getElementById("inputTaruhan").value = angka;
     }
 
-    // ============ MESIN GRAFIK CANVAS ============
+    // ============ MESIN GRAFIK CANDLESTICK CANVAS ============
     function inisialisasiKanvas() {
       canvas = document.getElementById('kanvasGrafik');
       ctx = canvas.getContext('2d');
@@ -136,32 +135,54 @@
         ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
       }
 
-      let maxY = Math.max(...dataGrafik.map(d => d.y));
-      if(maxY < 2) maxY = 2; 
-
-      ctx.beginPath();
-      ctx.lineWidth = 4;
+      // Skala Y
+      let maxY = Math.max(...dataGrafik.map(d => d.high));
+      let minY = Math.min(...dataGrafik.map(d => d.low));
+      if(maxY < 1.5) maxY = 1.5; 
+      if(minY > 0.5) minY = 0.5;
       
-      if(statusGame === "meledak") {
-        ctx.strokeStyle = "#ff3838";
-        ctx.fillStyle = "rgba(255, 56, 56, 0.1)";
-      } else {
-        ctx.strokeStyle = "#00e701";
-        ctx.fillStyle = "rgba(0, 231, 1, 0.1)";
-      }
+      let rangeY = maxY - minY;
+      if(rangeY < 0.5) rangeY = 0.5;
+
+      let lebarCandle = (canvas.width / dataGrafik.length) * 0.7;
+      if(lebarCandle < 2) lebarCandle = 2;
+      if(lebarCandle > 15) lebarCandle = 15;
 
       for(let i=0; i<dataGrafik.length; i++) {
-        let x = (i / (dataGrafik.length - 1)) * canvas.width;
-        let y = canvas.height - ((dataGrafik[i].y / maxY) * (canvas.height - 50));
-        if(i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        let d = dataGrafik[i];
+        let x = (i / dataGrafik.length) * canvas.width + (canvas.width / dataGrafik.length)/2;
+        
+        // Posisi Y (terbalik, 0 di atas)
+        let yOpen = canvas.height - ((d.open - minY) / rangeY) * (canvas.height - 20) - 10;
+        let yClose = canvas.height - ((d.close - minY) / rangeY) * (canvas.height - 20) - 10;
+        let yHigh = canvas.height - ((d.high - minY) / rangeY) * (canvas.height - 20) - 10;
+        let yLow = canvas.height - ((d.low - minY) / rangeY) * (canvas.height - 20) - 10;
+
+        let isNaik = d.close >= d.open;
+        let warna = isNaik ? "#00e701" : "#ff3838";
+
+        // Jika status meledak, candle terakhir dipaksa merah panjang
+        if(statusGame === "meledak" && i === dataGrafik.length - 1) {
+          warna = "#ff3838";
+          yLow = canvas.height; 
+        }
+
+        // Gambar Sumbu (Wick)
+        ctx.strokeStyle = warna;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, yHigh);
+        ctx.lineTo(x, yLow);
+        ctx.stroke();
+
+        // Gambar Badan Candle
+        ctx.fillStyle = warna;
+        let yBadan = Math.min(yOpen, yClose);
+        let tinggiBadan = Math.abs(yOpen - yClose);
+        if(tinggiBadan < 1) tinggiBadan = 1; // Minimal 1px
+
+        ctx.fillRect(x - lebarCandle/2, yBadan, lebarCandle, tinggiBadan);
       }
-      
-      ctx.stroke();
-      ctx.lineTo(canvas.width, canvas.height);
-      ctx.lineTo(0, canvas.height);
-      ctx.closePath();
-      ctx.fill();
 
       if(statusGame === "terbang") {
         animasiFrame = requestAnimationFrame(gambarUlangGrafik);
@@ -188,37 +209,28 @@
       }
     }, 1000);
 
-    // FUNGSI MEMBUAT JALUR DRAMA (Dibuat saat hitung mundur)
     function buatSkenarioDrama() {
       skenario = [];
       let nilaiSekarang = 1.00;
-      
-      // Tentukan titik akhir (1.5x sampai 20x)
-      let batasMeledak = (Math.random() * 18.5) + 1.5;
-      
-      // Tentukan berapa banyak drama (1 sampai 3 drama)
-      let jumlahDrama = Math.floor(Math.random() * 3) + 1;
+      let batasMeledak = (Math.random() * 15) + 1.5;
+      let jumlahDrama = Math.floor(Math.random() * 5) + 3;
       
       for(let d=0; d<jumlahDrama; d++) {
-        // 1. Naik normal dulu
-        let naik = nilaiSekarang + (Math.random() * 2);
-        skenario.push({ tipe: 'naik', target: naik, durasi: 20 });
-        nilaiSekarang = naik;
+        let naikKecil = nilaiSekarang + (Math.random() * 1.5) + 0.5;
+        skenario.push({ tipe: 'naik', target: naikKecil, durasi: 20 });
+        nilaiSekarang = naikKecil;
         
-        // 2. Drama Turun Ekstrem (tipuan)
-        let turun = nilaiSekarang * (0.2 + (Math.random() * 0.3)); // Turun 70-80%
-        if(turun < 1) turun = 1;
-        skenario.push({ tipe: 'turun_ekstrem', target: turun, durasi: 15 });
-        nilaiSekarang = turun;
-        
-        // 3. Drama Melesat Ke Atas (tipuan)
-        let melesat = nilaiSekarang + (Math.random() * 3);
-        skenario.push({ tipe: 'naik_ekstrem', target: melesat, durasi: 15 });
-        nilaiSekarang = melesat;
+        let turunEkstrem = nilaiSekarang - (Math.random() * (nilaiSekarang * 0.6));
+        if(turunEkstrem < 1.05) turunEkstrem = 1.05;
+        skenario.push({ tipe: 'turun_ekstrem', target: turunEkstrem, durasi: 15 });
+        nilaiSekarang = turunEkstrem;
+
+        let melesatNaik = nilaiSekarang + (Math.random() * 2) + 1;
+        skenario.push({ tipe: 'naik_ekstrem', target: melesatNaik, durasi: 15 });
+        nilaiSekarang = melesatNaik;
       }
       
-      // Akhirnya meledak di target akhir
-      skenario.push({ tipe: 'meledak', target: batasMeledak, durasi: 20 });
+      skenario.push({ tipe: 'meledak', target: batasMeledak, durasi: 30 });
     }
 
     function mulaiRondeBaru() {
@@ -238,8 +250,6 @@
       document.getElementById("teksHitung").style.display = "block";
 
       inisialisasiKanvas();
-      
-      // Tentukan jalur drama saat hitung mundur
       buatSkenarioDrama();
       indexSkenario = 0;
       
@@ -290,10 +300,10 @@
         document.getElementById("panelInput").style.display = "none";
       }
 
-      dataGrafik.push({ x: 0, y: multiplierSekarang });
+      // Mulai dengan 1 candle awal
+      dataGrafik.push({ open: 1, high: 1.01, low: 0.99, close: 1.00 });
       gambarUlangGrafik();
 
-      // Jalankan skenario drama
       jalankanSkenario();
     }
 
@@ -303,24 +313,35 @@
       let tahap = skenario[indexSkenario];
       let target = tahap.target;
       let tick = 0;
-      
-      // Update kecepatan berdasarkan tahap
       let kecepatan = 0.05;
-      if(tahap.tipe === 'naik_ekstrem') kecepatan = 0.3; // Melesat
-      if(tahap.tipe === 'turun_ekstrem') kecepatan = 0.4; // Jatuh drastis
+      
+      if(tahap.tipe === 'naik_ekstrem') kecepatan = 0.2; 
+      if(tahap.tipe === 'turun_ekstrem') kecepatan = 0.3; 
       
       intervalNaik = setInterval(() => {
         tick++;
         
-        if(multiplierSekarang < target) {
-          multiplierSekarang += kecepatan;
-          if(multiplierSekarang > target) multiplierSekarang = target;
-        } else if(multiplierSekarang > target) {
-          multiplierSekarang -= kecepatan;
-          if(multiplierSekarang < target) multiplierSekarang = target;
+        // Logika Fluktuasi Candle (Naik Turun Dikit)
+        let arah = (target > multiplierSekarang) ? 1 : -1;
+        let fluktuasi = (Math.random() - 0.5) * 0.05; // Naik turun kecil
+        let perubahan = (kecepatan * arah) + fluktuasi;
+        
+        let openCandle = multiplierSekarang;
+        multiplierSekarang += perubahan;
+        let closeCandle = multiplierSekarang;
+        
+        // Jika melewati target, tarik kembali
+        if((arah === 1 && closeCandle > target) || (arah === -1 && closeCandle < target)) {
+          closeCandle = target;
+          multiplierSekarang = target;
         }
 
-        // Efek Visual saat turun ekstrem
+        // Hitung High dan Low untuk candle
+        let highCandle = Math.max(openCandle, closeCandle) + (Math.random() * 0.02);
+        let lowCandle = Math.min(openCandle, closeCandle) - (Math.random() * 0.02);
+        if(lowCandle < 0.5) lowCandle = 0.5; // Jaga agar tidak minus
+
+        // Efek Visual
         if(tahap.tipe === 'turun_ekstrem') {
           document.getElementById("teksPengali").className = "angka-pengali peringatan";
         } else {
@@ -328,7 +349,9 @@
         }
 
         document.getElementById("teksPengali").textContent = multiplierSekarang.toFixed(2) + "x";
-        dataGrafik.push({ x: dataGrafik.length, y: multiplierSekarang });
+        
+        // Tambahkan candle baru ke grafik
+        dataGrafik.push({ open: openCandle, high: highCandle, low: lowCandle, close: closeCandle });
 
         if(tick >= tahap.durasi || multiplierSekarang === target) {
           clearInterval(intervalNaik);
@@ -337,7 +360,7 @@
             meledak();
           } else {
             indexSkenario++;
-            setTimeout(jalankanSkenario, 500); // Jeda sedikit antar drama
+            setTimeout(jalankanSkenario, 300); // Jeda sedikit antar tahap
           }
         }
       }, 100); 
@@ -396,8 +419,8 @@
         document.getElementById("pesan").textContent = "Anda Kalah.";
       }
 
-      // Jatuh ekstrem mentok bawah
-      dataGrafik.push({ x: dataGrafik.length, y: 0 });
+      // Candle Terakhir: Jatuh ekstrem mentok ke 0
+      dataGrafik.push({ open: multiplierSekarang, high: multiplierSekarang, low: 0, close: 0 });
       gambarUlangGrafik();
 
       if(!sudahTarikSemua && sudahPasangTaruhan && window.simpanRiwayat) {

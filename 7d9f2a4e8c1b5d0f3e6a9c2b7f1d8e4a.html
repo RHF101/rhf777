@@ -67,7 +67,7 @@
     <div class="kotak-tabel">
       <table>
         <thead>
-          <tr><th>Nama Game</th><th>Perusahaan</th><th>File</th><th>RTP (%)</th><th style="text-align: right;">Aksi</th></tr>
+          <tr><th>Gambar</th><th>Nama Game</th><th>Perusahaan</th><th>File</th><th>RTP (%)</th><th style="text-align: right;">Aksi</th></tr>
         </thead>
         <tbody id="tabel-games"><tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr></tbody>
       </table>
@@ -186,7 +186,7 @@
 
   // ============ 2. KELOLA GAMES & RTP ============
   async function muatGames() {
-    const tabel = document.getElementById('tabel-games');
+    const tabel = document.getElementById("tabel-games");
     try {
       const snapshot = await window.fbGet(window.fbRef(window.fbDb, "games"));
       let html = "";
@@ -195,19 +195,22 @@
           const game = child.val();
           html += `
             <tr>
+              <td style="width: 50px;">
+                <img src="${game.iconUrl || 'https://via.placeholder.com/50/14141f/ffd700?text=IMG'}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+              </td>
               <td style="font-weight:bold;">${game.name}</td>
               <td style="color:#8b8b9e;">${game.provider}</td>
               <td style="color:#4a9eff;">${game.fileUrl || '-'}</td>
               <td style="color:#ffd700; font-weight:bold;">${game.rtp || 95}%</td>
               <td style="text-align: right;">
-                <button class="btn-aksi btn-edit" onclick="editGame('${child.key}', '${game.name}', '${game.provider}', '${game.fileUrl}', '${game.rtp || 95}')">Edit</button>
+                <button class="btn-aksi btn-edit" onclick="editGame('${child.key}', '${game.name}', '${game.provider}', '${game.fileUrl}', '${game.rtp || 95}', '${game.iconUrl || ""}')">Edit</button>
                 <button class="btn-aksi btn-hapus" onclick="hapusGame('${child.key}')">Hapus</button>
               </td>
             </tr>`;
         });
       }
-      tabel.innerHTML = html || `<tr><td colspan="5" style="text-align: center;">Belum ada game.</td></tr>`;
-    } catch (e) { tabel.innerHTML = `<tr><td colspan="5" style="color:red;">Gagal: ${e.message}</td></tr>`; }
+      tabel.innerHTML = html || `<tr><td colspan="6" style="text-align: center;">Belum ada game.</td></tr>`;
+    } catch (e) { tabel.innerHTML = `<tr><td colspan="6" style="color:red;">Gagal: ${e.message}</td></tr>`; }
   }
 
   async function tambahGame() {
@@ -215,21 +218,39 @@
     const provider = prompt("Perusahaan (PG Soft, Pragmatic, dll):"); if (!provider) return;
     const fileUrl = prompt("Nama File Game (contoh: dice.html):"); if (!fileUrl) return;
     const rtp = prompt("Atur Persentase RTP Kemenangan (contoh: 95):", "95"); if (!rtp) return;
-    const iconUrl = prompt("Link Gambar Game (kosongkan jika tidak ada):", "");
+    const iconUrl = prompt("Masukkan Link Gambar Icon (biarkan kosong jika tidak ada):", "");
 
-    await window.fbSet(window.fbRef(window.fbDb, "games/" + Date.now()), { name: nama, provider: provider, fileUrl: fileUrl, rtp: Number(rtp), iconUrl: iconUrl });
-    muatGames();
+    try {
+      await window.fbSet(window.fbRef(window.fbDb, "games/" + Date.now()), { 
+        name: nama, 
+        provider: provider, 
+        fileUrl: fileUrl, 
+        rtp: Number(rtp),
+        iconUrl: iconUrl || "" 
+      });
+      alert("Game berhasil ditambahkan!");
+      muatGames();
+    } catch(e) { alert("Gagal: " + e.message); }
   }
 
-  async function editGame(id, namaLama, providerLama, fileLama, rtpLama) {
+  async function editGame(id, namaLama, providerLama, fileLama, rtpLama, iconLama) {
     const namaBaru = prompt("Ubah Nama Game:", namaLama); if (!namaBaru) return;
     const providerBaru = prompt("Ubah Perusahaan:", providerLama); if (!providerBaru) return;
     const fileBaru = prompt("Ubah Nama File:", fileLama); if (!fileBaru) return;
     const rtpBaru = prompt("Ubah RTP (%):", rtpLama); if (!rtpBaru) return;
-    const iconBaru = prompt("Ubah Link Gambar (kosongkan jika tidak ada):", "");
+    const iconBaru = prompt("Ubah Link Gambar Icon:", iconLama || ""); if (iconBaru === null) return;
 
-    await window.fbUpdate(window.fbRef(window.fbDb, "games/" + id), { name: namaBaru, provider: providerBaru, fileUrl: fileBaru, rtp: Number(rtpBaru), iconUrl: iconBaru });
-    muatGames();
+    try {
+      await window.fbUpdate(window.fbRef(window.fbDb, "games/" + id), { 
+        name: namaBaru, 
+        provider: providerBaru, 
+        fileUrl: fileBaru, 
+        rtp: Number(rtpBaru),
+        iconUrl: iconBaru
+      });
+      alert("Game berhasil diperbarui!");
+      muatGames();
+    } catch(e) { alert("Gagal: " + e.message); }
   }
 
   async function hapusGame(id) {
