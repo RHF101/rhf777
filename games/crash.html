@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crash — RHF 777</title>
   
-  <!-- Library Grafik dari TradingView -->
-  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-  
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; user-select: none; }
     body { background: #0a0a0f; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -24,6 +21,8 @@
     .angka-pengali { font-size: 80px; font-weight: 900; color: #00e701; text-shadow: 0 4px 20px rgba(0,231,1,0.3); transition: color 0.2s; }
     .angka-pengali.crashed { color: #ff3838; text-shadow: 0 4px 20px rgba(255,56,56,0.3); }
     .hitung-mundur { font-size: 40px; font-weight: bold; color: #ffd700; }
+    
+    canvas { width: 100% !important; height: 100% !important; position: absolute; top: 0; left: 0; }
 
     /* Panel Kontrol Bawah */
     .panel-kontrol { background: #14141f; border-top: 1px solid #2a2a3a; padding: 15px 20px 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); z-index: 20; }
@@ -61,7 +60,7 @@
       <div class="hitung-mundur" id="teksHitung">Menunggu...</div>
       <div class="angka-pengali" id="teksPengali" style="display:none;">1.00x</div>
     </div>
-    <!-- Grafik TradingView akan disuntikkan ke sini -->
+    <canvas id="kanvasGrafik"></canvas>
   </div>
   
   <div class="panel-kontrol">
@@ -100,40 +99,86 @@
     let sudahPasangTaruhan = false;
     let batasPengali = 1.00;
     
-    // Variabel Grafik TradingView
-    let chart = null;
-    let candlestickSeries = null;
-    let lastPrice = 1.00;
+    // Variabel Mesin Grafik Kita Sendiri
+    let canvas, ctx;
+    let dataGrafik = [];
+    let animasiFrame;
 
     function setTaruhan(angka) {
       document.getElementById("inputTaruhan").value = angka;
     }
 
-    // ============ SETUP GRAFIK TRADINGVIEW ============
-    function siapkanGrafik() {
-      const container = document.getElementById('wadahGrafik');
+    // ============ MESIN GRAFIK CANVAS ============
+    function inisialisasiKanvas() {
+      canvas = document.getElementById('kanvasGrafik');
+      ctx = canvas.getContext('2d');
       
-      // Bersihkan container jika ada grafik lama
-      const canvasLama = container.querySelector('canvas');
-      if(canvasLama) canvasLama.remove();
+      // Sesuaikan ukuran kanvas dengan ukuran layar
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
       
-      // Buat grafik baru
-      chart = LightweightCharts.createChart(container, {
-        layout: { background: { type: 'solid', color: '#0a0a0f' }, textColor: '#8b8b9e' },
-        grid: { vertLines: { color: '#14141f' }, horzLines: { color: '#14141f' } },
-        timeScale: { timeVisible: true, secondsVisible: true, borderColor: '#2a2a3a' },
-        rightPriceScale: { borderColor: '#2a2a3a' },
-        crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-        handleScroll: false,
-        handleScale: false
-      });
-
-      candlestickSeries = chart.addCandlestickSeries({
-        upColor: '#00e701', downColor: '#ff3838', borderVisible: false,
-        wickUpColor: '#00e701', wickDownColor: '#ff3838'
-      });
+      dataGrafik = [];
+      gambarUlangGrafik();
     }
 
+    function gambarUlangGrafik() {
+      if(!ctx || !canvas) return;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      if(dataGrafik.length === 0) {
+        animasiFrame = requestAnimationFrame(gambarUlangGrafik);
+        return;
+      }
+
+      // Gambar Garis Grid
+      ctx.strokeStyle = "#1e1e2e";
+      ctx.lineWidth = 1;
+      for(let i=0; i<canvas.height; i+=50) {
+        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+      }
+
+      // Cari nilai tertinggi untuk skala Y
+      let maxY = Math.max(...dataGrafik.map(d => d.y));
+      if(maxY < 2) maxY = 2; 
+
+      // Gambar Area & Garis Grafik
+      ctx.beginPath();
+      ctx.lineWidth = 4;
+      
+      // Warna berubah jika meledak
+      if(statusGame === "meledak") {
+        ctx.strokeStyle = "#ff3838";
+        ctx.fillStyle = "rgba(255, 56, 56, 0.1)";
+      } else {
+        ctx.strokeStyle = "#00e701";
+        ctx.fillStyle = "rgba(0, 231, 1, 0.1)";
+      }
+
+      for(let i=0; i<dataGrafik.length; i++) {
+        let x = (i / (dataGrafik.length - 1)) * canvas.width;
+        // Skala Y: Makin tinggi nilai, makin ke atas
+        let y = canvas.height - ((dataGrafik[i].y / maxY) * (canvas.height - 50));
+        
+        if(i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      
+      ctx.stroke();
+
+      // Isi area di bawah garis (gradien)
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.closePath();
+      ctx.fill();
+
+      // Animasi terus berjalan agar mulus
+      if(statusGame === "terbang") {
+        animasiFrame = requestAnimationFrame(gambarUlangGrafik);
+      }
+    }
+
+    // ============ FIREBASE & GAME LOGIC ============
     setTimeout(() => {
       if(window.fbAuth) {
         window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
@@ -153,7 +198,6 @@
       }
     }, 1000);
 
-    // ============ SISTEM RONDE OTOMATIS ============
     function mulaiRondeBaru() {
       if(statusGame === "terbang") return;
       statusGame = "menunggu";
@@ -170,7 +214,7 @@
       document.getElementById("teksPengali").style.display = "none";
       document.getElementById("teksHitung").style.display = "block";
 
-      siapkanGrafik();
+      inisialisasiKanvas();
       
       // Hitung Mundur 10 Detik
       let hitung = 10;
@@ -188,7 +232,7 @@
     }
 
     function pasangTaruhan() {
-      if(statusGame === "terbang" || statusGame === "hitung_mundur") return;
+      if(statusGame === "terbang") return;
       const taruhan = Number(document.getElementById("inputTaruhan").value);
       
       if(taruhan < 100) return alert("Minimal taruhan Rp 100");
@@ -209,7 +253,6 @@
     function mulaiTerbang() {
       statusGame = "terbang";
       multiplierSekarang = 1.00;
-      lastPrice = 1.00;
       document.getElementById("teksHitung").style.display = "none";
       document.getElementById("teksPengali").style.display = "block";
       document.getElementById("teksPengali").className = "angka-pengali";
@@ -222,13 +265,17 @@
         document.getElementById("panelInput").style.display = "none";
       }
 
-      // Tentukan batas pengali rahasia (1.2x - 16x)
-      batasPengali = (Math.random() * 15) + 1.2;
-      let waktuGrafik = Math.floor(Date.now() / 1000);
+      // Tentukan batas pengali rahasia (1.2x - 15x)
+      batasPengali = (Math.random() * 13.8) + 1.2;
+      
+      // Titik awal grafik (tengah layar)
+      dataGrafik.push({ x: 0, y: multiplierSekarang });
+      gambarUlangGrafik();
 
       intervalNaik = setInterval(() => {
-        // Tipuan naik turun
         let kenaikan = 0.05 + (Math.random() * 0.1);
+        
+        // TRIK TIPUAN: Kadang turun sedikit agar grafik naik turun
         if(Math.random() > 0.8) kenaikan = -0.02; 
         
         multiplierSekarang += kenaikan;
@@ -236,22 +283,13 @@
 
         document.getElementById("teksPengali").textContent = multiplierSekarang.toFixed(2) + "x";
         
-        // Update Candlestick
-        if(candlestickSeries) {
-          const o = lastPrice;
-          const c = multiplierSekarang;
-          const h = Math.max(o, c) + (Math.random() * 0.05);
-          const l = Math.min(o, c) - (Math.random() * 0.05);
-          waktuGrafik += 1;
-          
-          candlestickSeries.update({ time: waktuGrafik, open: o, high: h, low: l, close: c });
-          lastPrice = c;
-        }
-
+        // Masukkan data ke grafik
+        dataGrafik.push({ x: dataGrafik.length, y: multiplierSekarang });
+        
         if(multiplierSekarang >= batasPengali) {
           meledak();
         }
-      }, 500); 
+      }, 200); // Update cepat
     }
 
     async function tarikSetengah() {
@@ -267,7 +305,7 @@
       document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
       
       document.getElementById("pesan").style.color = "#4a9eff";
-      document.getElementById("pesan").textContent = `Tarik 50% sukses: +Rp ${dapatSetengah.toLocaleString('id-ID')}`;
+      document.getElementById("pesan").textContent = `Tarik 50%: +Rp ${dapatSetengah.toLocaleString('id-ID')}`;
       
       taruhanAktif = taruhanAktif / 2;
     }
@@ -275,6 +313,7 @@
     async function tarikDana() {
       if(statusGame !== "terbang" || !sudahPasangTaruhan) return;
       clearInterval(intervalNaik);
+      cancelAnimationFrame(animasiFrame);
       statusGame = "selesai";
       
       const nilaiSekarang = taruhanAktif * multiplierSekarang;
@@ -303,22 +342,17 @@
       document.getElementById("pesan").style.color = "#ff3838";
       document.getElementById("pesan").textContent = sudahPasangTaruhan ? "Anda Kalah." : "Roket meledak!";
 
-      if(candlestickSeries) {
-        // Terjun bebas ekstrem ke 0
-        const waktuSekarang = Math.floor(Date.now() / 1000);
-        candlestickSeries.update({ 
-          time: waktuSekarang, 
-          open: lastPrice, 
-          high: lastPrice, 
-          low: 0, // Jatuh mentok ke dasar
-          close: 0 
-        });
-      }
+      // TRIK JATUH EKSTREM: Paksa nilai Y jadi 0 (mentok bawah)
+      dataGrafik.push({ x: dataGrafik.length, y: 0 });
+      gambarUlangGrafik();
 
       if(sudahPasangTaruhan && window.simpanRiwayat) window.simpanRiwayat(idUser, usernamePemain, "Crash", false, taruhanAktif);
       
       setTimeout(mulaiRondeBaru, 3000); 
     }
+
+    // Tangani jika layar diputar atau di-resize
+    window.addEventListener('resize', inisialisasiKanvas);
   </script>
 </body>
 </html>
