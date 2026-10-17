@@ -445,402 +445,35 @@ img { max-width: 100%; display: block; object-fit: contain; }
 .bn-icon { width: 20px; height: 20px; margin-bottom: 2px; }
 .bn-item.active { color: var(--gold); }
 
-/* ============ MENU PONSEL ============ */
-.mobile-menu {
-  display: none;
-  position: fixed;
-  top: 57px; left: 0; right: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 16px;
-  z-index: 99;
-  flex-direction: column;
-  gap: 4px;
-}
-.mobile-menu.open { display: flex; }
-.mobile-menu a { padding: 12px; border-radius: 8px; font-size: 15px; color: var(--text-dim); }
-.mobile-menu a:hover { background: var(--surface-2); color: var(--text); }
-.mobile-menu-actions {
-  display: flex;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  margin-top: 8px;
-}
-.mobile-menu-actions .btn { flex: 1; justify-content: center; text-align: center; }
 
-/* ============ JENDELA MELAYANG ============ */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.modal.open { display: flex; }
-.modal-content {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
-  max-width: 400px;
-  width: 100%;
-  position: relative;
-  text-align: center;
-}
-.modal-close {
-  position: absolute;
-  top: 12px; right: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-dim);
-  padding: 8px;
-}
-.modal-content h3 { font-size: 22px; margin-bottom: 12px; }
-.modal-content p { color: var(--text-dim); font-size: 14px; line-height: 1.6; }
-
-/* ============ UKURAN LAYAR ============ */
-@media (max-width: 900px) {
-  .nav { display: none; }
-  .hide-mobile { display: none; }
-  .hamburger { display: block; }
-  .header-inner { justify-content: space-between; }
-  .balance-pill .balance-info { display: none; }
-  .balance-pill { padding: 8px 10px; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  .bottom-nav { display: flex; }
-  .chat-fab { bottom: 80px; }
-  .footer { padding-bottom: 100px; }
-}
-@media (max-width: 500px) {
-  .logo { font-size: 18px; }
-  .logo-img { width: 22px; height: 22px; }
-  .btn { padding: 6px 12px; font-size: 13px; }
-  .game-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .game-name { font-size: 11px; }
-  .game-info { padding: 8px; }
-  .promo-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .hero { padding: 60px 16px 40px; min-height: 400px; }
-  .hero-stats { gap: 16px; }
-  .stat-value { font-size: 20px; }
+/* ============ MENU PONSEL BARU ============ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 9999; /* Memastikan header selalu di lapisan paling atas */
 }
 
-/* ============ ANGKA ACAK PENYAMARAN ============ */
-.footer-random {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 24px 0;
-  border-top: 1px solid var(--border);
-  margin-top: 24px;
-  justify-content: center;
-  opacity: 0.35;
-}
-.angka-acak {
-  color: var(--text-mute);
-  font-size: 11px;
-  font-weight: 400;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-.angka-acak:hover {
-  opacity: 0.6;
-  color: var(--text);
-  font-size: 11px;
-}
-/* Angka rahasia tidak dibedakan sama sekali dari yang lain */
-.angka-acak.rahasia {
-  color: var(--text-mute);
-  font-size: 11px;
-}
-
-/* ============ MENU BAWAH BARU (TENGAH MELAYANG) ============ */
-.bottom-nav {
-  display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: rgba(20, 20, 31, 0.98);
-  backdrop-filter: blur(15px);
-  border-top: 1px solid #2a2a3a;
-  z-index: 100;
-  height: 65px;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 10px;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-}
-
-.bn-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 10px;
-  color: #8b8b9e;
-  text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
-}
-
-.bn-item:active {
-  transform: scale(0.85);
-}
-
-.bn-icon {
-  width: 22px; height: 22px;
-  opacity: 0.7;
-  transition: all 0.3s;
-}
-
-.bn-item.active {
-  color: #ffd700;
-}
-
-.bn-item.active .bn-icon {
-  opacity: 1;
-  transform: translateY(-2px);
-}
-
-/* Gaya untuk menu tengah (Akun) */
-.bn-tengah {
-  position: relative;
-  top: -20px; /* Mengangkat menu ke atas */
-  background: transparent;
-}
-
-.lingkaran-tengah {
-  width: 55px;
-  height: 55px;
-  background: linear-gradient(135deg, #ffd700, #ffb800);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 -3px 5px rgba(0,0,0,0.3);
-  border: 4px solid #14141f;
-  transition: all 0.3s ease;
-}
-
-.bn-tengah:active .lingkaran-tengah {
-  transform: scale(0.9);
-  box-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
-}
-
-.bn-icon-tengah {
-  width: 28px; height: 28px;
-}
-
-.teks-tengah {
-  margin-top: 4px;
-  font-weight: 700;
-  color: #ffd700;
-}
-
-@media (max-width: 900px) {
-  .bottom-nav { display: flex; }
-}
-
-/* ============ IKON VEKTOR (SVG) ============ */
-.logo-vektor {
-  width: 26px;
-  height: 26px;
-  color: var(--gold);
-}
-
-.icon-vektor {
-  width: 20px;
-  height: 20px;
-  color: var(--gold);
-}
-
-.bn-icon-vektor {
-  width: 22px;
-  height: 22px;
-  color: var(--text-mute);
-  transition: all 0.3s;
-}
-
-.bn-item.active .bn-icon-vektor {
-  color: var(--gold);
-  transform: translateY(-2px);
-}
-
-.bn-icon-tengah-vektor {
-  width: 28px;
-  height: 28px;
-  color: #000; /* Warna hitam karena latar lingkaran tengah emas */
-}
-
-/* ============ PERBAIKAN MENU BAWAH ============ */
-.bottom-nav {
-  height: 70px; /* Sedikit ditinggikan agar teks tidak tenggelam */
-  padding-bottom: 5px;
-}
-
-.bn-item {
-  font-size: 11px; /* Ukuran teks disesuaikan */
-  font-weight: 500;
-  padding-top: 8px;
-}
-
-/* Memastikan ikon tengah tidak menutupi teks menu lain */
-.bn-tengah {
-  top: -15px; 
-}
-.lingkaran-tengah {
-  width: 50px; 
-  height: 50px;
-}
-.teks-tengah {
-  margin-top: 2px;
-  font-size: 11px;
-}
-
-/* ============ PERBAIKAN TATA LETAK ============ */
-
-/* 1. Menu Ponsel Atas */
-.mobile-menu {
-  position: fixed;
-  top: 57px; /* Menempel pas di bawah bagian atas */
-  left: 0; right: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 16px;
-  z-index: 99;
-  flex-direction: column;
-  gap: 4px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-}
-
-/* 2. Menu Bawah Ponsel */
-.bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: rgba(20, 20, 31, 0.98);
-  backdrop-filter: blur(15px);
-  border-top: 1px solid #2a2a3a;
-  z-index: 100;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 5px;
-}
-
-.bn-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 500;
-  color: #8b8b9e;
-  text-decoration: none;
-  position: relative;
-}
-
-/* Ikon Tengah */
-.bn-tengah {
-  top: -15px; /* Mengangkat ikon tengah */
-}
-.lingkaran-tengah {
-  width: 55px;
-  height: 55px;
-  background: linear-gradient(135deg, #ffd700, #ffb800);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-  border: 4px solid #14141f;
-}
-.teks-tengah {
-  margin-top: 2px;
-  color: #ffd700;
-  font-weight: 700;
-}
-
-/* Jarak aman agar konten tidak tertutup menu bawah */
-body {
-  padding-bottom: 90px;
-}
-
-/* ============ PERBAIKAN MENU PONSEL ============ */
-.mobile-menu {
-  display: none; /* Awalnya tersembunyi */
-  position: absolute; /* Mengikuti bagian atas, bukan melayang di tengah */
-  top: 100%;
-  left: 0; right: 0;
-  background: #14141f;
-  border-bottom: 1px solid #2a2a3a;
-  padding: 16px;
-  z-index: 999;
-  flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-}
-
-.mobile-menu.open {
-  display: flex;
-}
-
-.mobile-menu a {
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #8b8b9e;
-  text-decoration: none;
-  transition: 0.2s;
-}
-
-.mobile-menu a:hover {
-  background: #1e1e2e;
-  color: #fff;
-}
-
-.mobile-menu-actions {
-  display: flex;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid #2a2a3a;
-  margin-top: 8px;
-}
-.mobile-menu-actions .btn {
-  flex: 1;
-}
-
-/* ============ PERBAIKAN MUTLAK MENU PONSEL ============ */
 .mobile-menu {
   display: none !important; /* Tersembunyi secara mutlak */
   position: absolute;
-  top: 100%;
+  top: 100%; /* Tepat di bawah header */
   left: 0; right: 0;
   background: #14141f;
   border-bottom: 1px solid #2a2a3a;
   padding: 16px;
-  z-index: 9999;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.8);
 }
 
 .mobile-menu.open {
-  display: flex !important; /* Muncul saat tombol diklik */
+  display: flex !important; /* Munculkan saat tombol diklik */
 }
 
 .mobile-menu a {
   padding: 14px;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #8b8b9e;
+  font-size: 16px;
+  color: #fff;
   text-decoration: none;
   border-bottom: 1px solid #2a2a3a;
 }
@@ -848,4 +481,32 @@ body {
 .mobile-menu a:hover {
   background: #1e1e2e;
   color: #ffd700;
+}
+
+.mobile-menu-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.mobile-menu-actions .btn {
+  flex: 1;
+}
+
+/* Tombol Menu */
+.hamburger {
+  display: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .nav { display: none; }
+  .hamburger { display: block; } /* Tampilkan tombol menu di ponsel */
+  .hide-mobile { display: none; }
 }
