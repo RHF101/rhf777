@@ -13,7 +13,6 @@ a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 img { max-width: 100%; display: block; object-fit: contain; }
 
-/* ============ WARNA ============ */
 :root {
   --bg: #0a0a0f;
   --surface: #14141f;
@@ -50,7 +49,7 @@ img { max-width: 100%; display: block; object-fit: contain; }
   100% { transform: translateX(-50%); }
 }
 
-/* ============ BAGIAN ATAS (HEADER) ============ */
+/* ============ BAGIAN ATAS ============ */
 .header {
   position: sticky;
   top: 0;
@@ -73,21 +72,15 @@ img { max-width: 100%; display: block; object-fit: contain; }
   gap: 6px;
   font-weight: 900;
   font-size: 22px;
-  flex-shrink: 0;
 }
 .logo-text {
   background: linear-gradient(135deg, var(--gold), var(--gold-2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 .logo-num { color: var(--gold); margin-left: 2px; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
 .balance-pill {
   display: flex;
   align-items: center;
@@ -97,8 +90,7 @@ img { max-width: 100%; display: block; object-fit: contain; }
   border: 1px solid var(--border);
   border-radius: 8px;
 }
-.balance-info { display: flex; flex-direction: column; line-height: 1.1; }
-.balance-label { font-size: 9px; color: var(--text-mute); text-transform: uppercase; }
+.balance-info { display: flex; flex-direction: column; }
 .balance-amount { font-size: 13px; font-weight: 700; color: var(--gold); }
 
 /* ============ TOMBOL ============ */
@@ -110,94 +102,78 @@ img { max-width: 100%; display: block; object-fit: contain; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  white-space: nowrap;
 }
 .btn-primary { background: var(--green); color: #000; }
 .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-2)); color: #000; }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
 .btn-lg { padding: 14px 28px; font-size: 16px; }
 
 /* ============ BAGIAN UTAMA (HERO) ============ */
 .hero {
   position: relative;
   padding: 60px 20px;
-  overflow: hidden;
   background: radial-gradient(ellipse at top, #2a1a3e 0%, #0a0a0f 60%);
-  min-height: 400px;
+  min-height: 380px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
 }
-.hero-content { position: relative; z-index: 2; max-width: 700px; }
+.hero-content { position: relative; z-index: 2; }
 .hero-badge {
-  display: inline-block; padding: 8px 16px;
+  display: inline-block; padding: 6px 14px;
   background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 100px; font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 24px;
+  border-radius: 100px; font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 20px;
 }
-.hero-title { font-size: clamp(36px, 8vw, 64px); font-weight: 900; line-height: 1.05; margin-bottom: 16px; }
+.hero-title { font-size: clamp(32px, 7vw, 56px); font-weight: 900; line-height: 1.1; margin-bottom: 12px; }
 .gold-text { background: linear-gradient(135deg, var(--gold), var(--gold-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.hero-sub { color: var(--text-dim); font-size: 16px; margin-bottom: 32px; }
-.hero-actions { display: flex; gap: 12px; justify-content: center; }
+.hero-sub { color: var(--text-dim); font-size: 14px; margin-bottom: 24px; }
+.hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-/* ============ BAGIAN UMUM & KARTU ============ */
-.section { padding: 40px 0; }
+/* ============ BAGIAN UMUM ============ */
+.section { padding: 30px 0; }
 .container { max-width: 1400px; margin: 0 auto; padding: 0 15px; }
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.section-header h2 { font-size: 22px; font-weight: 800; }
-.link-more { color: var(--gold); font-size: 14px; font-weight: 600; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.section-header h2 { font-size: 20px; font-weight: 800; }
+.link-more { color: var(--gold); font-size: 13px; font-weight: 600; }
 
-.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+/* ============ KARTU GAME ============ */
+.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
 .game-card {
-  position: relative; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden;
+  position: relative; aspect-ratio: 3/4; border-radius: 10px; overflow: hidden;
   background: var(--surface); border: 1px solid var(--border);
 }
 .game-img-wrap { position: absolute; inset: 0; background: linear-gradient(135deg, #1e1e2e, #14141f); }
 .game-img { width: 100%; height: 100%; object-fit: cover; }
 .game-info {
-  position: absolute; bottom: 0; left: 0; right: 0; padding: 12px;
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 10px;
   background: linear-gradient(transparent, rgba(0,0,0,0.95)); z-index: 2;
 }
-.game-name { font-size: 13px; font-weight: 700; }
-.game-provider { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+.game-name { font-size: 12px; font-weight: 700; }
+.game-provider { font-size: 9px; color: var(--text-dim); text-transform: uppercase; }
 
-/* ============ IKON VEKTOR (BAGIAN BAWAH) ============ */
-.logo-vektor { width: 24px; height: 24px; color: var(--gold); }
-.icon-vektor { width: 18px; height: 18px; color: var(--gold); }
+/* ============ IKON VEKTOR ============ */
+.logo-vektor { width: 24px; height: 24px; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon-vektor { width: 18px; height: 18px; fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .bn-icon-vektor { 
-  width: 24px; 
-  height: 24px; 
-  color: var(--text-mute); 
-  fill: none; 
-  stroke: currentColor; 
-  stroke-width: 2; 
-  stroke-linecap: round; 
-  stroke-linejoin: round;
+  width: 24px; height: 24px; 
+  fill: none; stroke: var(--text-mute); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  transition: all 0.2s;
 }
-.bn-item.active .bn-icon-vektor { color: var(--gold); }
-
-.bn-icon-tengah-vektor { 
-  width: 26px; 
-  height: 26px; 
-  color: #000; 
-  fill: none; 
-  stroke: currentColor; 
-  stroke-width: 2; 
-  stroke-linecap: round; 
-  stroke-linejoin: round;
-}
+.bn-item.active .bn-icon-vektor { stroke: var(--gold); }
+.bn-icon-tengah-vektor { width: 26px; height: 26px; fill: none; stroke: #000; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ============ MENU BAWAH ============ */
 .bottom-nav {
   display: none; position: fixed; bottom: 0; left: 0; right: 0;
   background: rgba(20, 20, 31, 0.98); border-top: 1px solid var(--border);
-  z-index: 100; height: 70px; align-items: center; justify-content: space-around;
-  border-radius: 20px 20px 0 0;
+  z-index: 100; height: 65px; align-items: center; justify-content: space-around;
+  border-radius: 16px 16px 0 0;
 }
 .bn-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  font-size: 11px; color: var(--text-mute); text-decoration: none;
+  font-size: 10px; color: var(--text-mute); text-decoration: none;
 }
 .bn-tengah { position: relative; top: -15px; }
 .lingkaran-tengah {
@@ -210,24 +186,15 @@ img { max-width: 100%; display: block; object-fit: contain; }
 /* ============ JENDELA MELAYANG ============ */
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 999; align-items: center; justify-content: center; padding: 20px; }
 .modal.open { display: flex; }
-.modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; width: 100%; position: relative; text-align: center; }
+.modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 400px; width: 100%; position: relative; text-align: center; }
 .modal-close { position: absolute; top: 12px; right: 12px; color: var(--text-dim); }
 
 /* ============ HALAMAN TUNGGAL ============ */
 .halaman-konten { display: none; padding-bottom: 90px; }
 .halaman-konten.aktif { display: block; }
 
-/* ============ UKURAN LAYAR PONSEL ============ */
+/* ============ UKURAN LAYAR ============ */
 @media (max-width: 900px) {
-  /* Menyembunyikan tombol Masuk di ponsel agar tombol Deposit & Daftar muat */
   .hide-mobile { display: none !important; }
   .bottom-nav { display: flex; }
-  .balance-label { display: none; }
-}
-
-@media (max-width: 500px) {
-  .game-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .logo { font-size: 18px; }
-  .logo-vektor { width: 20px; height: 20px; }
-  .btn { padding: 6px 10px; font-size: 12px; }
 }
