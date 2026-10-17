@@ -211,3 +211,26 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+// ============ FUNGSI TARIK SALDO KE HEADER (SINKRON) ============
+window.muatSaldoHeader = function() {
+  if (!window.fbAuth) return;
+  
+  window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
+    const elSaldo = document.getElementById('balanceAmount');
+    if (!elSaldo) return;
+
+    if (user && window.fbDb) {
+      try {
+        const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + user.uid));
+        if (snap.exists()) {
+          elSaldo.textContent = Number(snap.val().balance).toLocaleString('id-ID');
+        }
+      } catch (e) {
+        console.log("Gagal muat saldo: ", e);
+      }
+    } else {
+      elSaldo.textContent = '0';
+    }
+  });
+};

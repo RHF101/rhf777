@@ -298,3 +298,12 @@
     }
   }, 1500);
 </script>
+
+<script>
+  // Menunggu 1 detik agar Firebase siap, lalu tarik saldo
+  setTimeout(() => {
+    if (typeof window.muatSaldoHeader === 'function') {
+      window.muatSaldoHeader();
+    }
+  }, 1000);
+</script>

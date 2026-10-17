@@ -74,20 +74,13 @@
 </body>
 </html>
 
-<script type="module">
+
+
+<script>
+  // Menunggu 1 detik agar Firebase siap, lalu tarik saldo
   setTimeout(() => {
-    if(window.fbAuth) {
-      window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
-        const elSaldo = document.getElementById('balanceAmount');
-        if (user && window.fbDb) {
-          const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + user.uid));
-          if (snap.exists() && elSaldo) {
-            elSaldo.textContent = Number(snap.val().balance).toLocaleString('id-ID');
-          }
-        } else if (elSaldo) {
-          elSaldo.textContent = '0';
-        }
-      });
+    if (typeof window.muatSaldoHeader === 'function') {
+      window.muatSaldoHeader();
     }
-  }, 1500);
+  }, 1000);
 </script>
