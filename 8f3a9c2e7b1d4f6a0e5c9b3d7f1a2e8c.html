@@ -5,103 +5,143 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>404: NOT_FOUND</title>
   <style>
+    /* Pengaturan dasar */
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    /* Latar belakang putih bersih seperti di gambar */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #000000;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      user-select: none;
-    }
-    .kotak-eror {
-      background-color: #0a0a0a;
-      border: 1px solid #333333;
-      border-radius: 8px;
-      padding: 40px;
-      max-width: 600px;
-      width: 100%;
-      font-family: monospace;
-      font-size: 13px;
-      line-height: 1.6;
-      color: #ededed;
-    }
-    .judul {
-      font-size: 20px;
-      font-weight: bold;
-      color: #ff0000;
-      margin-bottom: 20px;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    .teks-biasa {
-      margin-bottom: 10px;
-      color: #888888;
-    }
-    .teks-putih { color: #ffffff; }
-    .tautan {
-      color: #0070f3;
-      text-decoration: none;
-    }
-    .tautan:hover { text-decoration: underline; }
-    .tombol-debug {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
       background-color: #ffffff;
       color: #000000;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+      padding: 40px;
+      user-select: none;
+      -webkit-user-select: none;
     }
-    .sembunyi { display: none; }
+
+    /* Kotak utama ditaruh di tengah layar */
+    .kotak-eror {
+      margin: auto 0;
+      max-width: 600px;
+    }
+
+    /* Judul tebal besar */
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Teks penjelasan */
+    p {
+      font-size: 16px;
+      color: #333333;
+      margin-bottom: 32px;
+      line-height: 1.5;
+      max-width: 450px;
+    }
+
+    /* Bagian kode eror */
+    .kode-eror {
+      font-family: monospace;
+      font-size: 14px;
+      color: #666666;
+      margin-bottom: 8px;
+    }
+
+    /* Bagian ID acak */
+    .id-eror {
+      font-family: monospace;
+      font-size: 14px;
+      color: #666666;
+      cursor: pointer; /* Dibuat bisa diklik */
+    }
+
+    /* Bagian bawah (tautan) */
+    .bagian-bawah {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #666666;
+      align-items: center;
+    }
+
+    .bagian-bawah a {
+      color: #666666;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+    }
     
-    /* Gaya untuk panel asli */
+    .bagian-bawah a:hover {
+      color: #000000;
+    }
+
+    .pemisah {
+      color: #cccccc;
+    }
+
+    /* ========================================= */
+    /* GAYA UNTUK PANEL RAHASIA (Tersembunyi)    */
+    /* ========================================= */
     .modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.9);
+      background: rgba(0,0,0,0.8);
       z-index: 200;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
     .modal.open { display: flex; }
+    
     .modal-content {
-      background: #14141f;
-      border: 1px solid #2a2a3a;
-      border-radius: 12px;
+      background: #ffffff;
+      border: 1px solid #cccccc;
+      border-radius: 8px;
       padding: 24px;
       max-width: 400px;
       width: 100%;
-      color: #fff;
+      color: #000000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    .modal-content h3 { margin-bottom: 16px; color: #ffd700; }
+    
+    .modal-content h3 { 
+      margin-bottom: 16px; 
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
     .tombol-menu {
       display: block;
       width: 100%;
       padding: 12px;
       margin-bottom: 8px;
-      background: #ffd700;
-      color: #000;
+      background: #000000;
+      color: #ffffff;
       border: none;
       border-radius: 6px;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
       text-align: left;
+      font-size: 14px;
     }
+    
     .tombol-tutup {
       background: none;
       border: none;
-      color: #8b8b9e;
+      color: #666666;
       cursor: pointer;
       float: right;
-      font-size: 16px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: -4px;
     }
   </style>
 </head>
@@ -109,25 +149,27 @@
 
   <!-- BAGIAN TAMPILAN ERROR VERCEL -->
   <div class="kotak-eror">
-    <div class="judul">404: NOT_FOUND</div>
+    <h1>This page doesn't exist</h1>
+    <p>It may have been moved, removed, or never existed.</p>
     
-    <div class="teks-biasa">Code: <span class="teks-putih">NOT_FOUND</span></div>
+    <div class="kode-eror">404 NOT_FOUND</div>
     <!-- Tulisan ID ini yang harus diklik 1000 kali -->
-    <div class="teks-biasa">ID: <span class="teks-putih" id="teksKlik" style="cursor: pointer;">sin1::8xwn7-1792205638663-5f7586ae03f7</span></div>
-    
-    <div class="teks-biasa" style="margin-top: 10px;">
-      <a href="https://vercel.com/docs/errors/not_found" class="tautan" target="_blank">Docs for this error code</a>
-    </div>
-
-    <a href="https://vercel.com/docs/errors/not_found" class="tombol-debug" target="_blank">Debug this error</a>
+    <div class="id-eror" id="teksKlik">sin1::kqzmk-1792205342950-329bc6be387f</div>
   </div>
 
-  <!-- PANEL ASLI YANG TERSEMBUNYI -->
+  <!-- Bagian bawah -->
+  <div class="bagian-bawah">
+    <a href="https://vercel.com/docs/errors/not_found" target="_blank">VIEW DOCUMENTATION</a>
+    <span class="pemisah">/</span>
+    <a href="https://vercel.com/docs/errors/not_found" target="_blank">COPY DEBUG PROMPT</a>
+  </div>
+
+  <!-- PANEL RAHASIA (Tersembunyi) -->
   <div class="modal" id="modalAsli">
     <div class="modal-content">
       <button class="tombol-tutup" onclick="document.getElementById('modalAsli').classList.remove('open')">Tutup</button>
       <h3>Panel Pengelola</h3>
-      <p style="margin-bottom: 16px; font-size: 14px; color: #8b8b9e;">Anda berhasil masuk.</p>
+      <p style="margin-bottom: 16px; font-size: 14px; color: #666;">Anda berhasil masuk.</p>
       
       <button class="tombol-menu" onclick="alert('Fitur pengguna akan segera hadir')">Kelola Pengguna</button>
       <button class="tombol-menu" onclick="alert('Fitur RTP akan segera hadir')">Pengaturan RTP</button>
@@ -140,6 +182,7 @@
   let jumlahKlik = 0;
   const targetKlik = 1000;
 
+  // Mendeteksi klik pada teks ID eror
   document.getElementById('teksKlik').addEventListener('click', function() {
     jumlahKlik++;
 
