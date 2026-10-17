@@ -139,3 +139,15 @@ window.mainkanGame = async function(idPemain, taruhan, saldoPemain, peluangMenan
     pesan: pesan
   };
 };
+
+// Fungsi untuk mencatat riwayat bermain
+window.simpanRiwayat = async function(idUser, username, game, menang, nominal) {
+  await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
+    userId: idUser,
+    username: username,
+    game: game,
+    menang: menang,
+    nominal: nominal,
+    waktu: new Date().toISOString()
+  });
+};

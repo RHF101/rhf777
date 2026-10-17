@@ -27,6 +27,7 @@
   <script type="module" src="../assets/firebase.js"></script>
   <script>
     let saldoPemain = 0;
+    let usernamePemain = "Pemain";
     let idUser = null;
     let rtpBandar = 95; // Default peluang menang 95%
     let maxProfit = 0;
@@ -40,6 +41,7 @@
             const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + user.uid));
             if(snap.exists()) {
               saldoPemain = Number(snap.val().balance);
+              usernamePemain = snap.val().username;
               document.getElementById("saldoSekarang").textContent = saldoPemain;
             }
           } else {
@@ -80,6 +82,11 @@
           // Tampilkan hasil akhir
           document.getElementById("hasilDadu").textContent = Math.floor(Math.random() * 6) + 1;
           saldoPemain = hasil.saldoBaru;
+          
+          // Catat riwayat ke database
+          if(window.simpanRiwayat) {
+            window.simpanRiwayat(idUser, usernamePemain, "Dadu", hasil.menang, taruhan);
+          }
           document.getElementById("saldoSekarang").textContent = saldoPemain;
           
           document.getElementById("pesan").style.color = hasil.menang ? "#00e701" : "#ff3838";

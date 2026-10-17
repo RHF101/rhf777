@@ -42,6 +42,7 @@
     <button class="tab-btn active" onclick="bukaTab('pengguna', this)">Data Pengguna</button>
     <button class="tab-btn" onclick="bukaTab('games', this)">Kelola Games</button>
     <button class="tab-btn" onclick="bukaTab('bandar', this)">Pengaturan Bandar</button>
+    <button class="tab-btn" onclick="bukaTab('riwayat', this)">Semua Riwayat</button>
   </div>
 
   <!-- ================= TAB PENGGUNA ================= -->
@@ -104,13 +105,26 @@
       <button onclick="simpanBandar()" class="btn-tambah">Simpan Pengaturan</button>
       <p id="statusBandar" style="color:#00e701; margin-top:15px; text-align:center; font-weight: bold;"></p>
     </div>
+  
+  <!-- ================= TAB RIWAYAT ADMIN ================= -->
+  <div id="tab-riwayat" class="konten-tab" style="display:none;">
+    <div class="kotak-tabel">
+      <table>
+        <thead>
+          <tr><th>Waktu</th><th>Pemain</th><th>Game</th><th>Hasil</th><th>Nominal</th></tr>
+        </thead>
+        <tbody id="tabel-riwayat-admin"><tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr></tbody>
+      </table>
+    </div>
   </div>
+
+</div>
 </div>
 
 <script type="module" src="assets/firebase.js"></script>
 <script>
   window.onload = () => {
-    setTimeout(() => { if(window.fbDb) { muatPengguna(); muatGames(); muatBandar(); } }, 1000);
+    setTimeout(() => { if(window.fbDb) { muatPengguna(); muatGames(); muatBandar(); muatRiwayatAdmin(); } }, 1000);
   };
 
   function bukaTab(nama, tombol) {
@@ -201,8 +215,9 @@
     const provider = prompt("Perusahaan (PG Soft, Pragmatic, dll):"); if (!provider) return;
     const fileUrl = prompt("Nama File Game (contoh: dice.html):"); if (!fileUrl) return;
     const rtp = prompt("Atur Persentase RTP Kemenangan (contoh: 95):", "95"); if (!rtp) return;
+    const iconUrl = prompt("Link Gambar Game (kosongkan jika tidak ada):", "");
 
-    await window.fbSet(window.fbRef(window.fbDb, "games/" + Date.now()), { name: nama, provider: provider, fileUrl: fileUrl, rtp: Number(rtp) });
+    await window.fbSet(window.fbRef(window.fbDb, "games/" + Date.now()), { name: nama, provider: provider, fileUrl: fileUrl, rtp: Number(rtp), iconUrl: iconUrl });
     muatGames();
   }
 
@@ -211,8 +226,9 @@
     const providerBaru = prompt("Ubah Perusahaan:", providerLama); if (!providerBaru) return;
     const fileBaru = prompt("Ubah Nama File:", fileLama); if (!fileBaru) return;
     const rtpBaru = prompt("Ubah RTP (%):", rtpLama); if (!rtpBaru) return;
+    const iconBaru = prompt("Ubah Link Gambar (kosongkan jika tidak ada):", "");
 
-    await window.fbUpdate(window.fbRef(window.fbDb, "games/" + id), { name: namaBaru, provider: providerBaru, fileUrl: fileBaru, rtp: Number(rtpBaru) });
+    await window.fbUpdate(window.fbRef(window.fbDb, "games/" + id), { name: namaBaru, provider: providerBaru, fileUrl: fileBaru, rtp: Number(rtpBaru), iconUrl: iconBaru });
     muatGames();
   }
 
@@ -220,6 +236,33 @@
     if(!confirm("Hapus game ini?")) return;
     await window.fbRemove(window.fbRef(window.fbDb, "games/" + id));
     muatGames();
+  }
+
+  
+  async function muatRiwayatAdmin() {
+    const tabel = document.getElementById("tabel-riwayat-admin");
+    try {
+      const snapshot = await window.fbGet(window.fbRef(window.fbDb, "riwayat"));
+      let html = "";
+      if (snapshot.exists()) {
+        let dataArray = [];
+        snapshot.forEach(child => { dataArray.push(child.val()); });
+        dataArray.reverse().slice(0, 50).forEach(data => { // Ambil 50 terakhir
+          const warna = data.menang ? "#00e701" : "#ff3838";
+          const teks = data.menang ? "MENANG" : "KALAH";
+          const tgl = new Date(data.waktu).toLocaleString("id-ID");
+          html += `
+            <tr>
+              <td style="font-size:12px; color:#8b8b9e;">${tgl}</td>
+              <td>${data.username}</td>
+              <td>${data.game}</td>
+              <td style="color:${warna}; font-weight:bold;">${teks}</td>
+              <td style="color:${warna}; font-weight:bold;">Rp ${Number(data.nominal).toLocaleString("id-ID")}</td>
+            </tr>`;
+        });
+      }
+      tabel.innerHTML = html || `<tr><td colspan="5" style="text-align: center;">Belum ada riwayat.</td></tr>`;
+    } catch(e) { console.log(e); }
   }
 
   // ============ 3. PENGATURAN BANDAR ============
