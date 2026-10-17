@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dasbor RHF 777</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    /* Gaya khusus untuk halaman dasbor */
+    body {
+      background-color: #0a0a0f;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .wadah-dasbor {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .kepala-dasbor {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2a3a;
+    }
+
+    .kepala-dasbor h1 {
+      font-size: 24px;
+      color: #ffd700;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .info-admin {
+      font-size: 13px;
+      color: #8b8b9e;
+    }
+
+    .tombol-keluar {
+      padding: 8px 16px;
+      background: #ff3838;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: 0.2s;
+    }
+
+    .tombol-keluar:hover { background: #cc0000; }
+
+    /* Gaya tabel */
+    .kotak-tabel {
+      background: #14141f;
+      border: 1px solid #2a2a3a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 16px;
+      border-bottom: 1px solid #2a2a3a;
+    }
+
+    th {
+      background: #1e1e2e;
+      color: #8b8b9e;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .nama-pengguna {
+      font-weight: 600;
+      color: #ffffff;
+    }
+    
+    .surel-pengguna {
+      font-size: 12px;
+      color: #5a5a6e;
+      margin-top: 4px;
+    }
+
+    .teks-saldo {
+      font-weight: 700;
+      color: #00e701;
+      font-family: monospace;
+      font-size: 16px;
+    }
+
+    /* Tombol aksi di dalam tabel */
+    .grup-aksi {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tombol-aksi {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: 0.2s;
+      color: #000;
+    }
+
+    .tombol-aksi.tambah { background: #00e701; }
+    .tombol-aksi.tambah:hover { background: #00c701; }
+    .tombol-aksi.kurang { background: #ffd700; }
+    .tombol-aksi.kurang:hover { background: #e6c200; }
+
+    .memuat {
+      text-align: center;
+      padding: 40px;
+      color: #8b8b9e;
+      font-size: 14px;
+    }
+
+    /* Jendela untuk mengubah saldo */
+    .modal-input {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-input.open { display: flex; }
+    
+    .kotak-modal-input {
+      background: #14141f;
+      border: 1px solid #2a2a3a;
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 350px;
+    }
+
+    .kotak-modal-input h3 { margin-bottom: 8px; color: #fff; }
+    .kotak-modal-input p { font-size: 13px; color: #8b8b9e; margin-bottom: 16px; }
+    
+    .modal-input-field {
+      width: 100%;
+      padding: 12px;
+      background: #0a0a0f;
+      border: 1px solid #2a2a3a;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tombol-modal-grup {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .tombol-modal-grup button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-batal { background: #2a2a3a; color: #fff; }
+    .btn-simpan { background: #00e701; color: #000; }
+  </style>
+</head>
+<body>
+
+<div class="wadah-dasbor">
+  <div class="kepala-dasbor">
+    <div>
+      <h1>Dasbor Pengelola</h1>
+      <div class="info-admin">Masuk sebagai: <b>Administrator Utama</b></div>
+    </div>
+    <button class="tombol-keluar" onclick="keluar()">Keluar</button>
+  </div>
+
+  <div class="kotak-tabel">
+    <table>
+      <thead>
+        <tr>
+          <th>Pengguna</th>
+          <th>Saldo</th>
+          <th style="text-align: right;">Tindakan</th>
+        </tr>
+      </thead>
+      <tbody id="isi-tabel">
+        <tr>
+          <td colspan="3" class="memuat">Memuat data pengguna...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- JENDELA UBAH SALDO -->
+<div class="modal-input" id="modalSaldo">
+  <div class="kotak-modal-input">
+    <h3>Ubah Saldo</h3>
+    <p id="infoUbah">Mengubah saldo pengguna...</p>
+    <input type="number" id="inputJumlah" class="modal-input-field" placeholder="Masukkan nominal..." min="1">
+    <div class="tombol-modal-grup">
+      <button class="btn-batal" onclick="tutupModalSaldo()">Batal</button>
+      <button class="btn-simpan" onclick="simpanSaldo()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ==========================================
+  // KONFIGURASI HUBUNGAN DATABASE
+  // ==========================================
+  const SUPABASE_URL = 'https://zteyvjflniyehvnjakvd.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_m2VxTR2Q4WTN4LvmkEMHFQ_ySEwcAzf';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ==========================================
+  // PENYIMPANAN SEMENTARA
+  // ==========================================
+  let idPenggunaTerpilih = null;
+  let jenisUbah = 'tambah'; // 'tambah' atau 'kurang'
+
+  // ==========================================
+  // 1. MEMUAT SEMUA DATA PENGGUNA
+  // ==========================================
+  async function muatDataPengguna() {
+    const tabel = document.getElementById('isi-tabel');
+    
+    // Mengambil semua profil dari database
+    const { data, error } = await db.from('profiles').select('*').order('created_at', { ascending: false });
+
+    if (error) {
+      tabel.innerHTML = `<tr><td colspan="3" class="memuat" style="color:#ff3838;">Gagal memuat data: ${error.message}</td></tr>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      tabel.innerHTML = `<tr><td colspan="3" class="memuat">Belum ada pengguna yang mendaftar.</td></tr>`;
+      return;
+    }
+
+    // Menyusun baris tabel
+    tabel.innerHTML = data.map(user => `
+      <tr>
+        <td>
+          <div class="nama-pengguna">${user.username || 'Tanpa Nama'}</div>
+          <div class="surel-pengguna">ID: ${user.id.substring(0, 8)}...</div>
+        </td>
+        <td>
+          <span class="teks-saldo">Rp ${Number(user.balance).toLocaleString('id-ID')}</span>
+        </td>
+        <td>
+          <div class="grup-aksi" style="justify-content: flex-end;">
+            <button class="tombol-aksi tambah" onclick="bukaUbah('${user.id}', 'tambah')">+</button>
+            <button class="tombol-aksi kurang" onclick="bukaUbah('${user.id}', 'kurang')">-</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // ==========================================
+  // 2. BUKA JENDELA UBAH SALDO
+  // ==========================================
+  function bukaUbah(id, jenis) {
+    idPenggunaTerpilih = id;
+    jenisUbah = jenis;
+    
+    const judul = jenis === 'tambah' ? 'Tambah Saldo' : 'Kurangi Saldo';
+    document.querySelector('.kotak-modal-input h3').textContent = judul;
+    document.getElementById('infoUbah').textContent = `Masukkan nominal yang ingin di${jenis === 'tambah' ? 'tambahkan' : 'kurangkan'}.`;
+    
+    document.getElementById('inputJumlah').value = '';
+    document.getElementById('modalSaldo').classList.add('open');
+  }
+
+  function tutupModalSaldo() {
+    document.getElementById('modalSaldo').classList.remove('open');
+    idPenggunaTerpilih = null;
+  }
+
+  // ==========================================
+  // 3. SIMPAN PERUBAHAN SALDO
+  // ==========================================
+  async function simpanSaldo() {
+    const jumlah = Number(document.getElementById('inputJumlah').value);
+
+    if (!jumlah || jumlah <= 0) {
+      alert('Nominal tidak valid. Masukkan angka lebih dari 0.');
+      return;
+    }
+
+    // Cari saldo saat ini
+    const { data: profil, error: errCari } = await db.from('profiles').select('balance').eq('id', idPenggunaTerpilih).single();
+    
+    if (errCari || !profil) {
+      alert('Gagal menemukan pengguna.');
+      return;
+    }
+
+    let saldoBaru = Number(profil.balance);
+    
+    if (jenisUbah === 'tambah') {
+      saldoBaru += jumlah;
+    } else {
+      saldoBaru -= jumlah;
+      if (saldoBaru < 0) saldoBaru = 0; // Saldo tidak boleh minus
+    }
+
+    // Perbarui saldo di database
+    const { error: errUbah } = await db.from('profiles').update({ balance: saldoBaru }).eq('id', idPenggunaTerpilih);
+
+    if (errUbah) {
+      alert('Gagal mengubah saldo: ' + errUbah.message);
+      return;
+    }
+
+    // Tutup jendela dan muat ulang tabel
+    tutupModalSaldo();
+    muatDataPengguna();
+  }
+
+  // ==========================================
+  // 4. KELUAR DARI DASBOR
+  // ==========================================
+  function keluar() {
+    // Kembali ke halaman masuk
+    window.location.href = 'masuk-rahasia.html';
+  }
+
+  // ==========================================
+  // JALANKAN SAAT HALAMAN DIBUKA
+  // ==========================================
+  muatDataPengguna();
+
+</script>
+</body>
+</html>
