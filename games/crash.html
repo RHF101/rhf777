@@ -6,110 +6,294 @@
   <title>Crash — RHF 777</title>
   
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; user-select: none; }
-    body { background: #0a0a0f; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-    .header-game { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #14141f; border-bottom: 1px solid #2a2a3a; z-index: 10;}
-    .tombol-kembali { color: #8b8b9e; text-decoration: none; font-size: 24px; }
-    .saldo-game { font-size: 18px; font-weight: bold; color: #00e701; }
-
-    .area-grafik { flex: 1; position: relative; background: #0a0a0f; width: 100%; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; }
     
+    body { 
+      background: #0f1115; color: #e2e8f0; 
+      height: 100vh; height: 100dvh; 
+      display: flex; flex-direction: column; overflow: hidden; position: fixed; width: 100vw; top: 0; left: 0;
+    }
+
+    /* HEADER */
+    .header-game { 
+      display: flex; justify-content: space-between; align-items: center; 
+      padding: 12px 20px; background: #1a1d24; border-bottom: 1px solid #2d333b; z-index: 10;
+    }
+    .tombol-kembali { 
+      color: #94a3b8; text-decoration: none; display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 8px; background: #0f1115; border: 1px solid #2d333b; transition: 0.2s;
+    }
+    .tombol-kembali:hover { background: #2d333b; color: #fff; }
+    
+    .saldo-box { 
+      display: flex; align-items: center; gap: 8px; 
+      background: #0f1115; padding: 8px 16px; border-radius: 12px; border: 1px solid #2d333b;
+    }
+    .saldo-icon { width: 18px; height: 18px; fill: none; stroke: #94a3b8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .saldo-text { display: flex; flex-direction: column; }
+    .saldo-label { font-size: 10px; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .saldo-game { font-size: 16px; font-weight: 700; color: #fff; }
+    .saldo-game span { font-size: 16px; font-weight: 700; color: #fff; }
+
+    /* GRAFIK */
+    .area-grafik { flex: 1; position: relative; width: 100%; min-height: 0; background: #0f1115; }
     .status-tengah { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10; pointer-events: none; width: 100%; }
-    .angka-pengali { font-size: 80px; font-weight: 900; color: #00e701; text-shadow: 0 4px 20px rgba(0,231,1,0.3); transition: color 0.2s; }
-    .angka-pengali.crashed { color: #ff3838; text-shadow: 0 4px 20px rgba(255,56,56,0.3); }
-    .angka-pengali.peringatan { color: #ffd700; text-shadow: 0 4px 20px rgba(255,215,0,0.3); animation: kedip 0.5s infinite; }
-    @keyframes kedip { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-    .hitung-mundur { font-size: 40px; font-weight: bold; color: #ffd700; }
-    
+    .angka-pengali { font-size: 80px; font-weight: 700; color: #10b981; transition: color 0.2s; letter-spacing: -2px; }
+    .angka-pengali.crashed { color: #ef4444; }
+    .hitung-mundur { font-size: 20px; font-weight: 600; color: #94a3b8; }
     canvas { width: 100% !important; height: 100% !important; position: absolute; top: 0; left: 0; }
 
-    .panel-kontrol { background: #14141f; border-top: 1px solid #2a2a3a; padding: 15px 20px 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); z-index: 20; }
+    /* RIWAYAT ATAS */
+    .riwayat-atas { 
+      background: #1a1d24; padding: 10px 0; border-bottom: 1px solid #2d333b; 
+      display: flex; overflow: hidden; white-space: nowrap; 
+    }
+    .riwayat-track { display: flex; gap: 8px; animation: scrollKiri 30s linear infinite; padding-left: 20px; }
+    .riwayat-item { background: #0f1115; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #10b981; border: 1px solid #2d333b; }
+    .riwayat-item.merah { color: #ef4444; }
+    @keyframes scrollKiri { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    /* PANEL BOT */
+    .panel-bot-wrapper { position: absolute; bottom: 0; left: 0; right: 0; z-index: 25; display: flex; flex-direction: column; align-items: center; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .panel-bot-wrapper.terbuka { transform: translateY(0); }
+    .btn-toggle-bot { 
+      background: #1a1d24; border: 1px solid #2d333b; border-bottom: none; 
+      border-radius: 8px 8px 0 0; padding: 8px 20px; color: #94a3b8; font-weight: 600; font-size: 12px; cursor: pointer; 
+      display: flex; align-items: center; gap: 6px; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); 
+    }
+    .btn-toggle-bot svg { width: 14px; height: 14px; transition: transform 0.3s; }
+    .panel-bot-wrapper.terbuka .btn-toggle-bot svg { transform: rotate(180deg); }
+
+    .papan-skor-bot { 
+      width: 100%; max-width: 800px; height: 200px; background: #1a1d24; 
+      border-top: 1px solid #2d333b; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; overflow-y: auto;
+    }
+    .papan-skor-bot::-webkit-scrollbar { width: 4px; }
+    .papan-skor-bot::-webkit-scrollbar-thumb { background: #2d333b; border-radius: 2px; }
+    .skor-item { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 10px; border-radius: 6px; background: #0f1115; }
+    .skor-item.bot { color: #94a3b8; }
+    .skor-item.kamu { color: #fff; font-weight: 600; border: 1px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
+    .skor-win { color: #10b981; font-weight: 600; }
+    .skor-lose { color: #ef4444; font-weight: 600; }
+
+    /* PANEL KONTROL BAWAH */
+    .panel-kontrol { 
+      background: #1a1d24; border-top: 1px solid #2d333b; padding: 12px 20px; 
+      z-index: 30; display: flex; flex-direction: column; gap: 10px; width: 100%; flex-shrink: 0;
+    }
+
+    /* KOLOM KEMENANGAN REAL-TIME */
+    .panel-kemenangan {
+      display: none; /* Disembunyikan awalnya */
+      background: #0f1115; border: 1px solid #f59e0b; border-radius: 8px;
+      padding: 12px; text-align: center; margin-bottom: 5px;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+    }
+    .teks-kemenangan-label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+    .teks-kemenangan-nominal { font-size: 26px; font-weight: 700; color: #f59e0b; }
     
-    .grup-nominal { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-    .btn-nominal { padding: 8px 0; background: #1e1e2e; border: 1px solid #2a2a3a; color: #fff; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; }
-    .btn-nominal:hover { background: #2a2a3a; border-color: #ffd700; }
+    .baris-auto { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-auto { 
+      background: #0f1115; border: 1px solid #2d333b; border-radius: 8px; padding: 10px 12px; 
+      color: #94a3b8; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;
+    }
+    .btn-auto span { color: #fff; font-size: 13px; }
+    .btn-auto.aktif { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .btn-auto.aktif span { color: #3b82f6; }
 
-    .wadah-input { position: relative; margin-bottom: 10px; }
-    .input-taruhan { width: 100%; padding: 15px; background: #0a0a0f; border: 2px solid #2a2a3a; color: #fff; border-radius: 10px; font-size: 20px; font-weight: bold; outline: none; text-align: center; }
-    .input-taruhan:focus { border-color: #00e701; }
-    .label-taruhan { position: absolute; top: -8px; left: 15px; background: #14141f; padding: 0 5px; font-size: 11px; color: #8b8b9e; }
+    .baris-taruhan { display: flex; align-items: center; gap: 8px; }
+    .btn-chip { background: #0f1115; border: 1px solid #2d333b; border-radius: 6px; color: #e2e8f0; font-weight: 600; padding: 10px 14px; cursor: pointer; font-size: 13px; flex-shrink: 0; transition: 0.2s; }
+    .btn-chip:hover { background: #2d333b; }
+    .input-container { flex: 1; background: #0f1115; border: 1px solid #2d333b; border-radius: 6px; display: flex; align-items: center; padding: 0 12px; }
+    .input-taruhan { width: 100%; background: transparent; border: none; color: #fff; font-size: 16px; font-weight: 600; padding: 10px 0; outline: none; text-align: center; }
 
-    .btn-aksi { width: 100%; padding: 18px; border: none; border-radius: 10px; font-size: 18px; font-weight: 900; cursor: pointer; transition: transform 0.1s; }
-    .btn-aksi:active { transform: scale(0.97); }
-    .btn-mulai { background: linear-gradient(135deg, #00e701, #00b301); color: #000; }
-    .btn-mulai:disabled { background: #1e1e2e; color: #8b8b9e; cursor: not-allowed; }
-    
-    .grup-tombol { display: flex; gap: 10px; display: none; }
-    .btn-setengah { flex: 1; background: #4a9eff; color: #fff; font-size: 14px; }
-    .btn-tarik { flex: 2; background: linear-gradient(135deg, #ffd700, #ffb800); color: #000; }
+    .tombol-utama { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s; }
+    .btn-konfirmasi { background: #10b981; color: #000; }
+    .btn-konfirmasi:disabled { background: #2d333b; color: #94a3b8; cursor: not-allowed; }
+    .btn-tarik { background: #f59e0b; color: #000; display: none; }
+    .btn-setengah { background: #3b82f6; color: #fff; display: none; font-size: 14px; margin-top: 8px; }
 
-    .pesan { margin-top: 10px; font-weight: bold; font-size: 13px; min-height: 18px; text-align: center; }
+    @media (min-width: 768px) {
+      .panel-kontrol { padding: 15px 20%; gap: 12px; }
+      .papan-skor-bot { grid-template-columns: 1fr 1fr 1fr 1fr; height: 250px; }
+      .angka-pengali { font-size: 120px; }
+      .btn-chip { padding: 12px 20px; font-size: 14px; }
+      .tombol-utama { padding: 20px; font-size: 18px; }
+      .teks-kemenangan-nominal { font-size: 32px; }
+    }
   </style>
 </head>
 <body>
 
   <div class="header-game">
-    <a href="../slot.html" class="tombol-kembali">←</a>
-    <div class="saldo-game">Saldo: <span id="saldoSekarang">0</span></div>
+    <a href="../slot.html" class="tombol-kembali">
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </a>
+    <div class="saldo-box">
+      <svg class="saldo-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>
+      <div class="saldo-text">
+        <span class="saldo-label">SALDO ANDA</span>
+        <div class="saldo-game">Rp <span id="saldoSekarang">0</span></div>
+      </div>
+    </div>
   </div>
   
+  <div class="riwayat-atas">
+    <div class="riwayat-track" id="trackRiwayat">
+      <div class="riwayat-item">Memuat...</div>
+    </div>
+  </div>
+
   <div class="area-grafik" id="wadahGrafik">
     <div class="status-tengah" id="statusTengah">
       <div class="hitung-mundur" id="teksHitung">Menunggu...</div>
       <div class="angka-pengali" id="teksPengali" style="display:none;">1.00x</div>
     </div>
     <canvas id="kanvasGrafik"></canvas>
+
+    <div class="panel-bot-wrapper" id="panelBot">
+      <div class="btn-toggle-bot" onclick="togglePanelBot()">
+        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg> Daftar Pemain
+      </div>
+      <div class="papan-skor-bot" id="papanSkor"></div>
+    </div>
   </div>
   
   <div class="panel-kontrol">
-    <div id="panelInput">
-      <div class="grup-nominal">
-        <button class="btn-nominal" onclick="setTaruhan(1000)">1.000</button>
-        <button class="btn-nominal" onclick="setTaruhan(5000)">5.000</button>
-        <button class="btn-nominal" onclick="setTaruhan(10000)">10.000</button>
-        <button class="btn-nominal" onclick="setTaruhan(50000)">50.000</button>
-      </div>
-      <div class="wadah-input">
-        <span class="label-taruhan">BET (Rp)</span>
-        <input type="number" id="inputTaruhan" class="input-taruhan" placeholder="0" value="1000">
-      </div>
-      <button class="btn-aksi btn-mulai" id="btnMulai" onclick="pasangTaruhan()">PASANG TARUHAN</button>
-    </div>
-    
-    <div class="grup-tombol" id="grupAksi">
-      <button class="btn-aksi btn-setengah" id="btnSetengah" onclick="tarikSetengah()">TARIK 50%</button>
-      <button class="btn-aksi btn-tarik" id="btnTarik" onclick="tarikDana()">TARIK SEMUA</button>
+    <!-- KOLOM KEMENANGAN REAL-TIME -->
+    <div class="panel-kemenangan" id="panelKemenangan">
+      <div class="teks-kemenangan-label">Potensi Kemenangan (Taruhan x Pengali)</div>
+      <div class="teks-kemenangan-nominal">Rp <span id="angkaKemenangan">0</span></div>
     </div>
 
-    <div class="pesan" id="pesan"></div>
+    <div class="baris-auto">
+      <button class="btn-auto" id="btnAuto" onclick="toggleAuto()">Auto Cashout <span>2.00x</span></button>
+      <button class="btn-auto" id="btnAuto50" onclick="toggleAuto50()">50% Auto <span>1.50x</span></button>
+    </div>
+
+    <div class="baris-taruhan">
+      <button class="btn-chip" onclick="setTaruhan(1000)">1K</button>
+      <button class="btn-chip" onclick="setTaruhan(5000)">5K</button>
+      <div class="input-container">
+        <input type="number" id="inputTaruhan" class="input-taruhan" value="1000">
+      </div>
+      <button class="btn-chip" onclick="setTaruhan(10000)">10K</button>
+      <button class="btn-chip" onclick="setTaruhan(50000)">50K</button>
+    </div>
+
+    <button class="tombol-utama btn-konfirmasi" id="btnMulai" onclick="pasangTaruhan()">KONFIRMASI TARUHAN</button>
+    
+    <div id="grupTarik" style="display: none; flex-direction: column;">
+      <button class="tombol-utama btn-tarik" id="btnTarik" onclick="tarikDana()" style="display: block;">TARIK SEMUA</button>
+      <button class="tombol-utama btn-setengah" id="btnSetengah" onclick="tarikSetengah()">TARIK 50%</button>
+    </div>
   </div>
 
   <script type="module" src="../assets/firebase.js"></script>
   <script>
     let saldoPemain = 0;
-    let usernamePemain = "Pemain";
     let idUser = null;
+    let usernamePemain = "Pemain";
     let multiplierSekarang = 1.00;
-    let intervalNaik = null;
-    let statusGame = "menunggu"; 
-    let sudahTarikSetengah = false;
-    let sudahTarikSemua = false;
-    let taruhanAktif = 0;
+    let statusGame = "menunggu";
     let sudahPasangTaruhan = false;
+    let sudahTarikSemua = false;
+    let sudahTarikSetengah = false;
+    let taruhanAktif = 0;
+    let intervalNaik = null;
     
-    let skenario = []; 
+    let skenario = [];
     let indexSkenario = 0;
-    
     let canvas, ctx;
-    let dataGrafik = []; // Menyimpan data: {open, high, low, close}
+    let dataGrafik = [];
     let animasiFrame;
 
-    function setTaruhan(angka) {
-      document.getElementById("inputTaruhan").value = angka;
+    let autoCashoutAktif = false;
+    let autoCashout50Aktif = false;
+
+    let daftarBot = [];
+    const namaBot = ["Budi", "Siti", "Andi", "Rina", "Joko", "Agus", "Dewi", "Rizky", "Putri", "Fajar", "Lina", "Hendra", "Maya", "Doni", "Ayu", "Eko", "Nia", "Taufik", "Indah", "Bayu", "Fitri", "Rudi", "Sari", "Wawan", "Yuni", "Adi", "Tika", "Bambang", "Dian", "Iwan", "Lestari", "Reza", "Nina", "Hasan", "Sinta", "Asep", "Mega", "Yanto", "Kiki", "Rosa"];
+
+    function setTaruhan(angka) { document.getElementById("inputTaruhan").value = angka; }
+    function toggleAuto() { autoCashoutAktif = !autoCashoutAktif; document.getElementById("btnAuto").classList.toggle("aktif", autoCashoutAktif); }
+    function toggleAuto50() { autoCashout50Aktif = !autoCashout50Aktif; document.getElementById("btnAuto50").classList.toggle("aktif", autoCashout50Aktif); }
+
+    function togglePanelBot() {
+      const panel = document.getElementById("panelBot");
+      panel.classList.toggle("terbuka");
     }
 
-    // ============ MESIN GRAFIK CANDLESTICK CANVAS ============
+    function tambahRiwayatAtas(nilai, isMerah) {
+      const track = document.getElementById("trackRiwayat");
+      let teksNilai = isMerah ? "0.00x" : nilai.toFixed(2) + "x";
+      let htmlBaru = `<div class="riwayat-item ${isMerah ? 'merah' : ''}">${teksNilai}</div>`;
+      track.insertAdjacentHTML('afterbegin', htmlBaru);
+      if(track.children.length > 20) { track.removeChild(track.lastElementChild); }
+    }
+
+    async function muatRiwayatNyata() {
+      if(!window.ambilRiwayatCrash) return;
+      const riwayat = await window.ambilRiwayatCrash();
+      const track = document.getElementById("trackRiwayat");
+      
+      if(riwayat.length === 0) {
+        track.innerHTML = `<div class="riwayat-item">Belum ada riwayat</div>`;
+        return;
+      }
+
+      let html = "";
+      riwayat.forEach(r => {
+        let isMerah = !r.menang;
+        let teksNilai = isMerah ? "0.00x" : (r.multiplier ? r.multiplier.toFixed(2) + "x" : "WIN"); 
+        html += `<div class="riwayat-item ${isMerah ? 'merah' : ''}">${teksNilai}</div>`;
+      });
+      
+      track.innerHTML = html;
+    }
+
+    function inisialisasiBot() {
+      daftarBot = [];
+      let botDipilih = [...namaBot, ...namaBot].sort(() => 0.5 - Math.random()).slice(0, 40); 
+      botDipilih.forEach((nama, index) => {
+        daftarBot.push({ id: index, nama: nama, status: "menunggu", cashoutX: 0 });
+      });
+      renderPapanSkor();
+    }
+
+    function renderPapanSkor() {
+      const wadah = document.getElementById("papanSkor");
+      let html = "";
+
+      let statusKamu = "Menunggu";
+      let classKamu = "";
+      if(sudahPasangTaruhan) {
+        if(sudahTarikSemua) { statusKamu = "Win"; classKamu = "skor-win"; }
+        else if(statusGame === "meledak") { statusKamu = "Lose"; classKamu = "skor-lose"; }
+        else if(statusGame === "terbang") { statusKamu = "Terbang"; }
+      }
+      html += `
+        <div class="skor-item kamu">
+          <span>${usernamePemain}</span>
+          <span class="${classKamu}">${statusKamu}</span>
+        </div>
+      `;
+
+      daftarBot.forEach(bot => {
+        let classStatus = "";
+        if(bot.status === "win") classStatus = "skor-win";
+        if(bot.status === "lose") classStatus = "skor-lose";
+        let teks = bot.status === "menunggu" ? "..." : (bot.status === "win" ? bot.cashoutX.toFixed(2) + "x" : (bot.status === "lose" ? "Lose" : "Terbang"));
+        html += `
+          <div class="skor-item bot">
+            <span>${bot.nama}</span>
+            <span class="${classStatus}">${teks}</span>
+          </div>
+        `;
+      });
+      wadah.innerHTML = html;
+    }
+
     function inisialisasiKanvas() {
       canvas = document.getElementById('kanvasGrafik');
       ctx = canvas.getContext('2d');
@@ -122,74 +306,49 @@
     function gambarUlangGrafik() {
       if(!ctx || !canvas) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      if(dataGrafik.length === 0) {
-        animasiFrame = requestAnimationFrame(gambarUlangGrafik);
-        return;
-      }
+      if(dataGrafik.length === 0) { animasiFrame = requestAnimationFrame(gambarUlangGrafik); return; }
 
-      // Garis Grid
-      ctx.strokeStyle = "#1e1e2e";
-      ctx.lineWidth = 1;
-      for(let i=0; i<canvas.height; i+=50) {
-        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
-      }
-
-      // Skala Y
       let maxY = Math.max(...dataGrafik.map(d => d.high));
       let minY = Math.min(...dataGrafik.map(d => d.low));
       if(maxY < 1.5) maxY = 1.5; 
       if(minY > 0.5) minY = 0.5;
-      
       let rangeY = maxY - minY;
       if(rangeY < 0.5) rangeY = 0.5;
 
       let lebarCandle = (canvas.width / dataGrafik.length) * 0.7;
       if(lebarCandle < 2) lebarCandle = 2;
-      if(lebarCandle > 15) lebarCandle = 15;
+      if(lebarCandle > 12) lebarCandle = 12;
 
       for(let i=0; i<dataGrafik.length; i++) {
         let d = dataGrafik[i];
         let x = (i / dataGrafik.length) * canvas.width + (canvas.width / dataGrafik.length)/2;
         
-        // Posisi Y (terbalik, 0 di atas)
         let yOpen = canvas.height - ((d.open - minY) / rangeY) * (canvas.height - 20) - 10;
         let yClose = canvas.height - ((d.close - minY) / rangeY) * (canvas.height - 20) - 10;
         let yHigh = canvas.height - ((d.high - minY) / rangeY) * (canvas.height - 20) - 10;
         let yLow = canvas.height - ((d.low - minY) / rangeY) * (canvas.height - 20) - 10;
 
         let isNaik = d.close >= d.open;
-        let warna = isNaik ? "#00e701" : "#ff3838";
+        let warna = isNaik ? "#10b981" : "#ef4444";
 
-        // Jika status meledak, candle terakhir dipaksa merah panjang
-        if(statusGame === "meledak" && i === dataGrafik.length - 1) {
-          warna = "#ff3838";
-          yLow = canvas.height; 
-        }
+        ctx.strokeStyle = warna; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, yHigh); ctx.lineTo(x, yLow); ctx.stroke();
 
-        // Gambar Sumbu (Wick)
-        ctx.strokeStyle = warna;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x, yHigh);
-        ctx.lineTo(x, yLow);
-        ctx.stroke();
-
-        // Gambar Badan Candle
         ctx.fillStyle = warna;
         let yBadan = Math.min(yOpen, yClose);
         let tinggiBadan = Math.abs(yOpen - yClose);
-        if(tinggiBadan < 1) tinggiBadan = 1; // Minimal 1px
-
+        if(tinggiBadan < 1) tinggiBadan = 1;
         ctx.fillRect(x - lebarCandle/2, yBadan, lebarCandle, tinggiBadan);
       }
 
-      if(statusGame === "terbang") {
-        animasiFrame = requestAnimationFrame(gambarUlangGrafik);
-      }
+      if(statusGame === "terbang") { animasiFrame = requestAnimationFrame(gambarUlangGrafik); }
     }
 
-    // ============ FIREBASE & GAME LOGIC ============
+    window.addEventListener('load', () => {
+      inisialisasiKanvas();
+      mulaiRondeBaru();
+    });
+
     setTimeout(() => {
       if(window.fbAuth) {
         window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
@@ -201,10 +360,8 @@
               usernamePemain = snap.val().username;
               document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
             }
-            mulaiRondeBaru();
-          } else {
-            window.location.href = "../index.html";
-          }
+            muatRiwayatNyata();
+          } else { window.location.href = "../index.html"; }
         });
       }
     }, 1000);
@@ -219,17 +376,14 @@
         let naikKecil = nilaiSekarang + (Math.random() * 1.5) + 0.5;
         skenario.push({ tipe: 'naik', target: naikKecil, durasi: 20 });
         nilaiSekarang = naikKecil;
-        
         let turunEkstrem = nilaiSekarang - (Math.random() * (nilaiSekarang * 0.6));
         if(turunEkstrem < 1.05) turunEkstrem = 1.05;
         skenario.push({ tipe: 'turun_ekstrem', target: turunEkstrem, durasi: 15 });
         nilaiSekarang = turunEkstrem;
-
         let melesatNaik = nilaiSekarang + (Math.random() * 2) + 1;
         skenario.push({ tipe: 'naik_ekstrem', target: melesatNaik, durasi: 15 });
         nilaiSekarang = melesatNaik;
       }
-      
       skenario.push({ tipe: 'meledak', target: batasMeledak, durasi: 30 });
     }
 
@@ -241,20 +395,24 @@
       multiplierSekarang = 1.00;
       sudahTarikSetengah = false;
       
+      document.getElementById("btnMulai").style.display = "block";
       document.getElementById("btnMulai").disabled = false;
-      document.getElementById("btnMulai").textContent = "PASANG TARUHAN";
-      document.getElementById("grupAksi").style.display = "none";
-      document.getElementById("panelInput").style.display = "block";
-      document.getElementById("pesan").textContent = "";
+      document.getElementById("btnMulai").style.background = "#10b981";
+      document.getElementById("btnMulai").style.color = "#000";
+      document.getElementById("grupTarik").style.display = "none";
+      document.getElementById("btnMulai").textContent = "KONFIRMASI TARUHAN";
       document.getElementById("teksPengali").style.display = "none";
       document.getElementById("teksHitung").style.display = "block";
+      document.getElementById("panelKemenangan").style.display = "none"; // Sembunyikan panel kemenangan
 
       inisialisasiKanvas();
       buatSkenarioDrama();
+      inisialisasiBot(); 
       indexSkenario = 0;
       
       let hitung = 10;
-      document.getElementById("teksHitung").textContent = hitung + "s";
+      document.getElementById("teksHitung").textContent = `NEXT GAME IN ${hitung}s`;
+      renderPapanSkor();
       
       let intervalHitung = setInterval(() => {
         hitung--;
@@ -262,12 +420,13 @@
           clearInterval(intervalHitung);
           mulaiTerbang();
         } else {
-          document.getElementById("teksHitung").textContent = hitung + "s";
+          document.getElementById("teksHitung").textContent = `NEXT GAME IN ${hitung}s`;
         }
       }, 1000);
     }
 
     function pasangTaruhan() {
+      if(!idUser) return alert("Sedang menghubungkan ke akun, tunggu 1 detik lagi...");
       if(statusGame === "terbang") return;
       const taruhan = Number(document.getElementById("inputTaruhan").value);
       if(taruhan < 100) return alert("Minimal taruhan Rp 100");
@@ -279,10 +438,12 @@
       
       taruhanAktif = taruhan;
       sudahPasangTaruhan = true;
-      document.getElementById("btnMulai").disabled = true;
       document.getElementById("btnMulai").textContent = "TARUHAN TERPASANG";
-      document.getElementById("pesan").style.color = "#ffd700";
-      document.getElementById("pesan").textContent = `Taruhan Rp ${taruhan.toLocaleString('id-ID')} terpasang.`;
+      document.getElementById("btnMulai").style.background = "#2d333b";
+      document.getElementById("btnMulai").style.color = "#94a3b8";
+      document.getElementById("btnMulai").disabled = true;
+      
+      renderPapanSkor();
     }
 
     function mulaiTerbang() {
@@ -294,15 +455,20 @@
       document.getElementById("teksPengali").textContent = "1.00x";
       
       if(sudahPasangTaruhan) {
-        document.getElementById("grupAksi").style.display = "flex";
-        document.getElementById("btnSetengah").style.display = "block";
-        document.getElementById("btnSetengah").disabled = false;
-        document.getElementById("panelInput").style.display = "none";
+        document.getElementById("btnMulai").style.display = "none";
+        document.getElementById("grupTarik").style.display = "flex";
+        document.getElementById("panelKemenangan").style.display = "block"; // Tampilkan panel
+        document.getElementById("angkaKemenangan").textContent = taruhanAktif.toLocaleString('id-ID');
       }
 
-      // Mulai dengan 1 candle awal
       dataGrafik.push({ open: 1, high: 1.01, low: 0.99, close: 1.00 });
       gambarUlangGrafik();
+
+      daftarBot.forEach(bot => {
+        bot.status = "terbang";
+        bot.cashoutX = (Math.random() * 8) + 1.1;
+      });
+      renderPapanSkor();
 
       jalankanSkenario();
     }
@@ -314,54 +480,54 @@
       let target = tahap.target;
       let tick = 0;
       let kecepatan = 0.05;
-      
       if(tahap.tipe === 'naik_ekstrem') kecepatan = 0.2; 
       if(tahap.tipe === 'turun_ekstrem') kecepatan = 0.3; 
       
       intervalNaik = setInterval(() => {
         tick++;
         
-        // Logika Fluktuasi Candle (Naik Turun Dikit)
         let arah = (target > multiplierSekarang) ? 1 : -1;
-        let fluktuasi = (Math.random() - 0.5) * 0.05; // Naik turun kecil
+        let fluktuasi = (Math.random() - 0.5) * 0.05; 
         let perubahan = (kecepatan * arah) + fluktuasi;
         
         let openCandle = multiplierSekarang;
         multiplierSekarang += perubahan;
         let closeCandle = multiplierSekarang;
         
-        // Jika melewati target, tarik kembali
         if((arah === 1 && closeCandle > target) || (arah === -1 && closeCandle < target)) {
-          closeCandle = target;
-          multiplierSekarang = target;
+          closeCandle = target; multiplierSekarang = target;
         }
 
-        // Hitung High dan Low untuk candle
         let highCandle = Math.max(openCandle, closeCandle) + (Math.random() * 0.02);
         let lowCandle = Math.min(openCandle, closeCandle) - (Math.random() * 0.02);
-        if(lowCandle < 0.5) lowCandle = 0.5; // Jaga agar tidak minus
-
-        // Efek Visual
-        if(tahap.tipe === 'turun_ekstrem') {
-          document.getElementById("teksPengali").className = "angka-pengali peringatan";
-        } else {
-          document.getElementById("teksPengali").className = "angka-pengali";
-        }
+        if(lowCandle < 0.5) lowCandle = 0.5;
 
         document.getElementById("teksPengali").textContent = multiplierSekarang.toFixed(2) + "x";
-        
-        // Tambahkan candle baru ke grafik
+
+        // PERHITUNGAN REAL-TIME DI PANEL BAWAH
+        if(sudahPasangTaruhan && !sudahTarikSemua) {
+          let kemenanganSementara = Math.floor(taruhanAktif * multiplierSekarang);
+          document.getElementById("angkaKemenangan").textContent = kemenanganSementara.toLocaleString("id-ID");
+        }
+
         dataGrafik.push({ open: openCandle, high: highCandle, low: lowCandle, close: closeCandle });
+
+        let adaBotWin = false;
+        daftarBot.forEach(bot => {
+          if(bot.status === "terbang" && multiplierSekarang >= bot.cashoutX) {
+            bot.status = "win";
+            adaBotWin = true;
+          }
+        });
+        if(adaBotWin) renderPapanSkor();
+
+        if(sudahPasangTaruhan && !sudahTarikSemua && autoCashoutAktif && multiplierSekarang >= 2.00) { tarikDana(); }
+        if(sudahPasangTaruhan && !sudahTarikSetengah && autoCashout50Aktif && multiplierSekarang >= 1.50) { tarikSetengah(); }
 
         if(tick >= tahap.durasi || multiplierSekarang === target) {
           clearInterval(intervalNaik);
-          
-          if(tahap.tipe === 'meledak') {
-            meledak();
-          } else {
-            indexSkenario++;
-            setTimeout(jalankanSkenario, 300); // Jeda sedikit antar tahap
-          }
+          if(tahap.tipe === 'meledak') { meledak(); } 
+          else { indexSkenario++; setTimeout(jalankanSkenario, 300); }
         }
       }, 100); 
     }
@@ -369,19 +535,19 @@
     async function tarikSetengah() {
       if(statusGame !== "terbang" || !sudahPasangTaruhan || sudahTarikSetengah) return;
       sudahTarikSetengah = true;
-      document.getElementById("btnSetengah").disabled = true;
+      document.getElementById("btnSetengah").style.display = "none";
       
       const nilaiSekarang = taruhanAktif * multiplierSekarang;
       const dapatSetengah = Math.floor(nilaiSekarang / 2);
       
       saldoPemain += dapatSetengah;
-      await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
-      document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
-      
-      document.getElementById("pesan").style.color = "#4a9eff";
-      document.getElementById("pesan").textContent = `Tarik 50%: +Rp ${dapatSetengah.toLocaleString('id-ID')}`;
+      if(idUser) {
+        await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
+        document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
+      }
       
       taruhanAktif = taruhanAktif / 2;
+      renderPapanSkor();
     }
 
     async function tarikDana() {
@@ -391,15 +557,29 @@
       const nilaiSekarang = taruhanAktif * multiplierSekarang;
       const kemenangan = Math.floor(nilaiSekarang);
       
-      document.getElementById("grupAksi").style.display = "none";
-      document.getElementById("pesan").style.color = "#00e701";
-      document.getElementById("pesan").textContent = `Tarik! + Rp ${kemenangan.toLocaleString('id-ID')}. Tonton dramanya!`;
-
-      saldoPemain += kemenangan;
-      await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
-      document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
+      document.getElementById("grupTarik").style.display = "none";
+      document.getElementById("panelKemenangan").style.display = "none"; // Sembunyikan panel
       
-      if(window.simpanRiwayat) window.simpanRiwayat(idUser, usernamePemain, "Crash", true, kemenangan);
+      saldoPemain += kemenangan;
+      if(idUser) {
+        await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
+        document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
+        
+        if(window.fbSet) {
+          await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
+            userId: idUser,
+            username: usernamePemain,
+            game: "Crash",
+            menang: true,
+            nominal: kemenangan,
+            multiplier: parseFloat(multiplierSekarang.toFixed(2)),
+            waktu: new Date().toISOString()
+          });
+        }
+      }
+
+      tambahRiwayatAtas(multiplierSekarang, false);
+      renderPapanSkor();
     }
 
     async function meledak() {
@@ -408,23 +588,29 @@
       
       document.getElementById("teksPengali").className = "angka-pengali crashed";
       document.getElementById("teksPengali").textContent = "CRASH!";
-      document.getElementById("grupAksi").style.display = "none";
-      document.getElementById("pesan").style.color = "#ff3838";
-      
-      if(!sudahPasangTaruhan) {
-        document.getElementById("pesan").textContent = "Roket meledak!";
-      } else if(sudahTarikSemua) {
-        document.getElementById("pesan").textContent = "Roket meledak! Anda sudah mengamankan uang.";
-      } else {
-        document.getElementById("pesan").textContent = "Anda Kalah.";
-      }
+      document.getElementById("grupTarik").style.display = "none";
+      document.getElementById("panelKemenangan").style.display = "none"; // Sembunyikan panel
 
-      // Candle Terakhir: Jatuh ekstrem mentok ke 0
       dataGrafik.push({ open: multiplierSekarang, high: multiplierSekarang, low: 0, close: 0 });
       gambarUlangGrafik();
 
-      if(!sudahTarikSemua && sudahPasangTaruhan && window.simpanRiwayat) {
-        window.simpanRiwayat(idUser, usernamePemain, "Crash", false, taruhanAktif);
+      daftarBot.forEach(bot => {
+        if(bot.status === "terbang") bot.status = "lose";
+      });
+      renderPapanSkor();
+
+      tambahRiwayatAtas(0, true);
+
+      if(!sudahTarikSemua && sudahPasangTaruhan && idUser && window.fbSet) {
+        await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
+          userId: idUser,
+          username: usernamePemain,
+          game: "Crash",
+          menang: false,
+          nominal: taruhanAktif,
+          multiplier: 0,
+          waktu: new Date().toISOString()
+        });
       }
       
       setTimeout(mulaiRondeBaru, 4000); 

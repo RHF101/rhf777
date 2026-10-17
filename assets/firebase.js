@@ -291,3 +291,27 @@ window.kirimNotifWidrow = async function(username, nominal, nomorTujuan) {
     console.log("Gagal kirim notif Telegram", e);
   }
 };
+
+// ============ FUNGSI AMBIL RIWAYAT CRASH ============
+window.ambilRiwayatCrash = async function() {
+  try {
+    const snapshot = await window.fbGet(window.fbRef(window.fbDb, "riwayat"));
+    let dataCrash = [];
+    
+    if (snapshot.exists()) {
+      snapshot.forEach(child => {
+        const data = child.val();
+        if (data.game === "Crash") {
+          dataCrash.push(data);
+        }
+      });
+    }
+    
+    // Urutkan dari yang terbaru dan ambil 20 terakhir
+    dataCrash.sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
+    return dataCrash.slice(0, 20);
+  } catch (e) {
+    console.log("Gagal ambil riwayat:", e);
+    return [];
+  }
+};
