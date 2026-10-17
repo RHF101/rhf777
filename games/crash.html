@@ -5,23 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Crash — RHF 777</title>
   <link rel="stylesheet" href="../assets/style.css">
-  <!-- Memanggil library grafik Chart.js -->
+  <!-- Memanggil Chart.js dan Plugin Candlestick -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1"></script>
+  
   <style>
     body { background: #0a0a0f; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
     .kotak-game { background: #14141f; border: 1px solid #2a2a3a; border-radius: 16px; padding: 20px; width: 95%; max-width: 500px; text-align: center; position: relative; }
     .saldo { font-size: 18px; color: #00e701; font-weight: bold; margin-bottom: 10px; }
     
-    /* Area Grafik */
-    .area-grafik { width: 100%; height: 250px; background: #0a0a0f; border-radius: 8px; margin-bottom: 20px; position: relative; border: 1px solid #2a2a3a; }
+    .area-grafik { width: 100%; height: 250px; background: #0a0a0f; border-radius: 8px; margin-bottom: 20px; position: relative; border: 1px solid #2a2a3a; overflow: hidden; }
     .angka-pengali { position: absolute; top: 10px; left: 15px; font-size: 40px; font-weight: 900; color: #00e701; z-index: 10; transition: color 0.3s; }
     .angka-pengali.crashed { color: #ff3838; }
 
     .input-taruhan { width: 100%; padding: 15px; background: #0a0a0f; border: 1px solid #2a2a3a; color: #fff; border-radius: 8px; font-size: 18px; margin-bottom: 15px; outline: none; text-align: center; box-sizing: border-box; }
-    .btn-aksi { width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
-    .btn-mulai { background: #00e701; color: #000; }
+    
+    .grup-tombol { display: flex; gap: 10px; }
+    .btn-aksi { flex: 1; padding: 18px; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
+    .btn-mulai { background: #00e701; color: #000; width: 100%; }
+    .btn-setengah { background: #4a9eff; color: #fff; display: none; }
     .btn-tarik { background: #ffd700; color: #000; display: none; }
-    .pesan { margin-top: 15px; font-weight: bold; font-size: 16px; min-height: 24px; }
+    .pesan { margin-top: 15px; font-weight: bold; font-size: 14px; min-height: 24px; }
   </style>
 </head>
 <body>
@@ -32,7 +38,6 @@
       <div class="saldo">Saldo: <span id="saldoSekarang">0</span></div>
     </div>
     
-    <!-- Area Grafik -->
     <div class="area-grafik">
       <div class="angka-pengali" id="teksPengali">1.00x</div>
       <canvas id="grafikCrash"></canvas>
@@ -41,7 +46,11 @@
     <input type="number" id="inputTaruhan" class="input-taruhan" placeholder="Masukkan Taruhan (Rp)" value="1000">
     
     <button class="btn-aksi btn-mulai" id="btnMulai" onclick="mulaiMain()">MULAI TERBANG</button>
-    <button class="btn-aksi btn-tarik" id="btnTarik" onclick="tarikDana()">TARIK (CASH OUT)</button>
+    
+    <div class="grup-tombol" id="grupAksi" style="display: none;">
+      <button class="btn-aksi btn-setengah" id="btnSetengah" onclick="tarikSetengah()">TARIK 50%</button>
+      <button class="btn-aksi btn-tarik" id="btnTarik" onclick="tarikDana()">TARIK SEMUA</button>
+    </div>
 
     <div class="pesan" id="pesan"></div>
   </div>
@@ -54,35 +63,39 @@
     let multiplierSekarang = 1.00;
     let intervalNaik = null;
     let sedangMain = false;
+    let sudahTarikSetengah = false;
+    let taruhanAktif = 0;
     let grafik = null;
+    let waktuSekarang = Date.now();
 
-    // Setup Chart.js (Grafik Forex)
     function siapkanGrafik() {
       const ctx = document.getElementById('grafikCrash').getContext('2d');
       grafik = new Chart(ctx, {
-        type: 'line',
+        type: 'candlestick',
         data: {
-          labels: [],
           datasets: [{
-            label: 'Multiplier',
+            label: 'Harga',
             data: [],
-            borderColor: '#00e701', // Garis Hijau
-            backgroundColor: 'rgba(0, 231, 1, 0.1)',
-            borderWidth: 3,
-            pointRadius: 0,
-            tension: 0.1,
-            fill: true
+            color: {
+              up: '#00e701',   // Warna Hijau untuk naik
+              down: '#ff3838', // Warna Merah untuk turun
+              unchanged: '#999'
+            }
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          animation: false, // Animasi manual agar lebih cepat
+          animation: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { display: false }, // Sembunyikan sumbu X
+            x: { 
+              type: 'time', 
+              time: { unit: 'second' },
+              display: false 
+            },
             y: { 
-              display: false, // Sembunyikan sumbu Y
+              display: false,
               beginAtZero: false
             }
           }
@@ -90,7 +103,6 @@
       });
     }
 
-    // Ambil data pemain
     setTimeout(() => {
       if(window.fbAuth) {
         window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
@@ -103,7 +115,6 @@
               document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
             }
           } else {
-            alert("Silakan login terlebih dahulu!");
             window.location.href = "../index.html";
           }
         });
@@ -114,53 +125,79 @@
       if(sedangMain) return;
       const taruhan = Number(document.getElementById("inputTaruhan").value);
       
-      if(taruhan <= 0 || taruhan > saldoPemain) {
-        return alert("Saldo tidak cukup atau taruhan tidak valid!");
-      }
+      if(taruhan < 100) return alert("Minimal taruhan Rp 100");
+      if(taruhan > saldoPemain) return alert("Saldo tidak cukup!");
 
       sedangMain = true;
+      sudahTarikSetengah = false;
+      taruhanAktif = taruhan;
       multiplierSekarang = 1.00;
+      waktuSekarang = Date.now();
+      
       document.getElementById("teksPengali").textContent = "1.00x";
       document.getElementById("teksPengali").className = "angka-pengali";
       document.getElementById("pesan").textContent = "";
+      
       document.getElementById("btnMulai").style.display = "none";
+      document.getElementById("grupAksi").style.display = "flex";
+      document.getElementById("btnSetengah").style.display = "block";
+      document.getElementById("btnSetengah").disabled = false;
       document.getElementById("btnTarik").style.display = "block";
 
-      // Reset Grafik
       if(grafik) grafik.destroy();
       siapkanGrafik();
-      grafik.data.labels.push("");
-      grafik.data.datasets[0].data.push(multiplierSekarang);
-      grafik.data.datasets[0].borderColor = '#00e701';
-      grafik.data.datasets[0].backgroundColor = 'rgba(0, 231, 1, 0.1)';
       grafik.update();
 
-      // Kurangi saldo sementara
-      saldoPemain -= taruhan;
+      // Potong saldo
+      saldoPemain -= taruhanAktif;
       document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
 
-      // Tentukan titik meledak (Rumus Bandar: 30% langsung crash, sisanya acak)
       let titikMeledak = 1.00;
-      if(Math.random() > 0.3) {
-        titikMeledak = (Math.random() * 10) + 1; 
-      }
+      if(Math.random() > 0.3) titikMeledak = (Math.random() * 10) + 1; 
 
       intervalNaik = setInterval(() => {
-        multiplierSekarang += 0.08;
+        let kenaikan = 0.08;
+        // Kadang-kadang turun sedikit agar terlihat seperti candlestick asli
+        if(Math.random() > 0.7) kenaikan = -0.02; 
+        
+        multiplierSekarang += kenaikan;
+        if(multiplierSekarang < 1) multiplierSekarang = 1; // Tidak boleh di bawah 1
+
         document.getElementById("teksPengali").textContent = multiplierSekarang.toFixed(2) + "x";
         
-        // Update Grafik
         if(grafik) {
-          grafik.data.labels.push("");
-          grafik.data.datasets[0].data.push(multiplierSekarang);
-          grafik.update('none'); // Update tanpa animasi agar responsif
+          const o = multiplierSekarang - kenaikan;
+          const c = multiplierSekarang;
+          const h = Math.max(o, c) + (Math.random() * 0.02); // High
+          const l = Math.min(o, c) - (Math.random() * 0.02); // Low
+          
+          waktuSekarang += 1000;
+          grafik.data.datasets[0].data.push({ x: waktuSekarang, o: o, h: h, l: l, c: c });
+          grafik.update('none');
         }
 
-        // Cek apakah meledak
         if(multiplierSekarang >= titikMeledak) {
-          meledak(taruhan);
+          meledak();
         }
-      }, 100);
+      }, 1000); // Update setiap 1 detik (seperti candlestick M1)
+    }
+
+    async function tarikSetengah() {
+      if(!sedangMain || sudahTarikSetengah) return;
+      sudahTarikSetengah = true;
+      document.getElementById("btnSetengah").disabled = true;
+      
+      const nilaiSekarang = taruhanAktif * multiplierSekarang;
+      const dapatSetengah = Math.floor(nilaiSekarang / 2);
+      
+      saldoPemain += dapatSetengah;
+      await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
+      document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
+      
+      document.getElementById("pesan").style.color = "#4a9eff";
+      document.getElementById("pesan").textContent = `Berhasil tarik 50% (Rp ${dapatSetengah.toLocaleString('id-ID')}). Sisa 50% masih terbang!`;
+      
+      taruhanAktif = taruhanAktif / 2;
     }
 
     async function tarikDana() {
@@ -168,46 +205,45 @@
       clearInterval(intervalNaik);
       sedangMain = false;
       
-      const taruhan = Number(document.getElementById("inputTaruhan").value);
-      const kemenangan = Math.floor(taruhan * multiplierSekarang);
+      const nilaiSekarang = taruhanAktif * multiplierSekarang;
+      const kemenangan = Math.floor(nilaiSekarang);
       
-      document.getElementById("btnTarik").style.display = "none";
+      document.getElementById("grupAksi").style.display = "none";
       document.getElementById("btnMulai").style.display = "block";
       document.getElementById("pesan").style.color = "#00e701";
-      document.getElementById("pesan").textContent = `Berhasil Tarik di ${multiplierSekarang.toFixed(2)}x! Menang Rp ${(kemenangan - taruhan).toLocaleString('id-ID')}`;
+      document.getElementById("pesan").textContent = `Berhasil Tarik di ${multiplierSekarang.toFixed(2)}x! + Rp ${kemenangan.toLocaleString('id-ID')}`;
 
-      // Simpan kemenangan ke Firebase
       saldoPemain += kemenangan;
       await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
       document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
       
-      if(window.simpanRiwayat) window.simpanRiwayat(idUser, usernamePemain, "Crash", true, kemenangan - taruhan);
+      if(window.simpanRiwayat) window.simpanRiwayat(idUser, usernamePemain, "Crash", true, kemenangan);
     }
 
-    async function meledak(taruhan) {
+    async function meledak() {
       clearInterval(intervalNaik);
       sedangMain = false;
       
-      // Ubah teks jadi merah
       document.getElementById("teksPengali").className = "angka-pengali crashed";
       document.getElementById("teksPengali").textContent = "CRASH!";
-      document.getElementById("btnTarik").style.display = "none";
+      document.getElementById("grupAksi").style.display = "none";
       document.getElementById("btnMulai").style.display = "block";
       document.getElementById("pesan").style.color = "#ff3838";
-      document.getElementById("pesan").textContent = "Garis memantul ke bawah! Anda Kalah.";
+      document.getElementById("pesan").textContent = sudahTarikSetengah ? "Sisa taruhan meledak!" : "Garis memantul ke bawah! Anda Kalah.";
 
-      // Ubah grafik jadi merah dan jatuh ke bawah
       if(grafik) {
-        grafik.data.datasets[0].borderColor = '#ff3838';
-        grafik.data.datasets[0].backgroundColor = 'rgba(255, 56, 56, 0.1)';
-        grafik.data.labels.push("");
-        grafik.data.datasets[0].data.push(0); // Garis jatuh ke bawah mentok
+        // Buat Candlestick Merah Jatuh Mentok ke Bawah
+        const o = multiplierSekarang;
+        const c = 0; // Jatuh ke dasar
+        const h = o;
+        const l = 0;
+        
+        waktuSekarang += 1000;
+        grafik.data.datasets[0].data.push({ x: waktuSekarang, o: o, h: h, l: l, c: c });
         grafik.update();
       }
 
-      // Catat kekalahan ke Firebase
-      await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
-      if(window.simpanRiwayat) window.simpanRiwayat(idUser, usernamePemain, "Crash", false, taruhan);
+      if(window.simpanRiwayat) window.simpanRiwayat(idUser, usernamePemain, "Crash", false, taruhanAktif);
     }
   </script>
 </body>
