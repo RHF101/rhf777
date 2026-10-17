@@ -84,6 +84,7 @@
         </div>
 
         <input type="number" id="inputNominal" class="input-nominal" placeholder="Atau ketik nominal lain...">
+        <input type="tel" id="inputNomorTujuan" class="input-nominal" placeholder="Masukkan Nomor DANA/OVO Tujuan" style="display:none; margin-top:-10px;">
         
         <button class="btn btn-gold" style="width:100%; padding: 14px; font-size: 15px;" onclick="prosesSekarang()" id="btnProses">Konfirmasi Deposit</button>
       </div>
@@ -134,10 +135,10 @@
 
       if(mode === 'deposit') {
         btnDep.className = 'btn-aktif'; btnWid.className = 'btn-mati';
-        judul.textContent = 'Simulasi Deposit'; btnProses.textContent = 'Konfirmasi Deposit';
+        judul.textContent = 'Simulasi Deposit'; btnProses.textContent = 'Konfirmasi Deposit'; document.getElementById('inputNomorTujuan').style.display = 'none';
       } else {
         btnDep.className = 'btn-mati'; btnWid.className = 'btn-aktif';
-        judul.textContent = 'Simulasi Widrow (Tarik)'; btnProses.textContent = 'Konfirmasi Penarikan';
+        judul.textContent = 'Simulasi Widrow (Tarik)'; btnProses.textContent = 'Konfirmasi Penarikan'; document.getElementById('inputNomorTujuan').style.display = 'block';
       }
       document.getElementById('pesan').textContent = "";
     }
@@ -160,9 +161,12 @@
           pesan.style.color = "#00e701";
           pesan.textContent = `Berhasil deposit Rp ${nominal.toLocaleString('id-ID')}!`;
         } else {
-          hasil = await window.prosesWidrow(userSekarang.uid, usernameSekarang, nominal);
+          const nomorTujuan = document.getElementById("inputNomorTujuan").value;
+          if(!nomorTujuan) return alert("Masukkan nomor tujuan DANA/OVO Anda!");
+          hasil = await window.ajukanWidrow(userSekarang.uid, usernameSekarang, nominal, nomorTujuan, "Manual");
           pesan.style.color = "#ffb800";
-          pesan.textContent = `Berhasil menarik dana Rp ${nominal.toLocaleString('id-ID')}!`;
+          pesan.textContent = `Penarikan Rp ${nominal.toLocaleString('id-ID')} sedang diproses Admin.`;
+        }!`;
         }
         
         document.getElementById('balanceAmount').textContent = hasil.saldoBaru.toLocaleString('id-ID');
