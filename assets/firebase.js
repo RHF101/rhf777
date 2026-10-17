@@ -96,8 +96,15 @@ window.mainkanGame = async function(idPemain, taruhan, saldoPemain, peluangMenan
 
     if (pemainMenang) {
       // Menang: Diambil dari dompetPembayar (uang pemain lain yang kalah)
-      let untung = taruhan;
-      if (updateDompetPembayar >= untung) {
+      
+    // PEMBATAS KEMENANGAN: Pemain maksimal hanya bisa menang 5x dari taruhannya
+    // agar kas sirkulasi tidak disedot habis oleh satu orang
+    let untung = taruhan; 
+    let batasMaksimal = taruhan * 5; // Kamu bisa ubah angka 5 ini nanti
+    
+    if (untung > batasMaksimal) untung = batasMaksimal;
+
+    if (updateDompetPembayar >= untung) {
         updateDompetPembayar -= untung;
         pesan = "MENANG! +" + untung;
       } else {
