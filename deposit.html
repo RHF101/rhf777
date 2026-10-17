@@ -61,3 +61,21 @@
   <script src="assets/auth.js"></script>
 </body>
 </html>
+
+<script type="module">
+  setTimeout(() => {
+    if(window.fbAuth) {
+      window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
+        const elSaldo = document.getElementById('balanceAmount');
+        if (user && window.fbDb) {
+          const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + user.uid));
+          if (snap.exists() && elSaldo) {
+            elSaldo.textContent = Number(snap.val().balance).toLocaleString('id-ID');
+          }
+        } else if (elSaldo) {
+          elSaldo.textContent = '0';
+        }
+      });
+    }
+  }, 1500);
+</script>

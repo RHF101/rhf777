@@ -279,3 +279,22 @@
     <svg class="bn-icon-vektor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>Deposit
   </a>
 </nav>
+
+<script type="module">
+  // Menunggu Firebase siap, lalu tarik saldo terbaru secara otomatis
+  setTimeout(() => {
+    if(window.fbAuth) {
+      window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
+        const elSaldo = document.getElementById('balanceAmount');
+        if (user && window.fbDb) {
+          const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + user.uid));
+          if (snap.exists() && elSaldo) {
+            elSaldo.textContent = Number(snap.val().balance).toLocaleString('id-ID');
+          }
+        } else if (elSaldo) {
+          elSaldo.textContent = '0';
+        }
+      });
+    }
+  }, 1500);
+</script>
