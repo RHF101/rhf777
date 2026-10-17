@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Semua Permainan — RHF 777</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    /* Gaya khusus halaman slot */
+    body { padding-bottom: 80px; }
+    .wadah-pencarian {
+      padding: 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 57px;
+      z-index: 90;
+    }
+    .input-cari {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .input-cari:focus { border-color: var(--gold); }
+    
+    .filter-provider {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .filter-provider::-webkit-scrollbar { display: none; }
+    
+    .btn-provider {
+      padding: 8px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-dim);
+      font-size: 13px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .btn-provider.active {
+      background: var(--gold);
+      color: #000;
+      border-color: var(--gold);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<!-- BAGIAN ATAS SEDERHANA -->
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-text">RHF<span class="logo-num">777</span></span>
+    </a>
+    <div class="header-actions" style="margin-left: auto;">
+      <div class="balance-pill">
+        <div class="balance-info">
+          <span class="balance-amount" id="balanceAmount">Rp 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- PENCARIAN & FILTER -->
+<div class="wadah-pencarian">
+  <input type="text" id="pencarian" class="input-cari" placeholder="Cari nama permainan..." onkeyup="cariPermainan()">
+  <div class="filter-provider" id="filterProvider">
+    <button class="btn-provider active" onclick="filterPerusahaan('semua', this)">Semua</button>
+    <button class="btn-provider" onclick="filterPerusahaan('Pragmatic Play', this)">Pragmatic Play</button>
+    <button class="btn-provider" onclick="filterPerusahaan('PG Soft', this)">PG Soft</button>
+    <button class="btn-provider" onclick="filterPerusahaan('Habanero', this)">Habanero</button>
+    <button class="btn-provider" onclick="filterPerusahaan('Joker Gaming', this)">Joker Gaming</button>
+  </div>
+</div>
+
+<!-- DAFTAR GAME -->
+<section class="section" style="padding-top: 20px;">
+  <div class="container">
+    <div class="game-grid" id="gameGrid"></div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase.js"></script>
+<script>
+  // Data Permainan Lengkap
+  const SEMUA_GAME = [
+    { name: 'Gates of Olympus', provider: 'Pragmatic Play' },
+    { name: 'Sweet Bonanza', provider: 'Pragmatic Play' },
+    { name: 'Starlight Princess', provider: 'Pragmatic Play' },
+    { name: 'Sugar Rush', provider: 'Pragmatic Play' },
+    { name: 'Aztec Gems', provider: 'Pragmatic Play' },
+    { name: 'Mahjong Ways', provider: 'PG Soft' },
+    { name: 'Fortune Tiger', provider: 'PG Soft' },
+    { name: 'Fortune Ox', provider: 'PG Soft' },
+    { name: 'Caishen Wins', provider: 'PG Soft' },
+    { name: 'Hot Fruit', provider: 'Habanero' },
+    { name: 'Koi Gate', provider: 'Habanero' },
+    { name: 'Fa Cai Shen', provider: 'Habanero' },
+    { name: 'Roma Legacy', provider: 'Joker Gaming' },
+    { name: 'Kingsman', provider: 'Joker Gaming' },
+    { name: 'Bikini Party', provider: 'Joker Gaming' }
+  ];
+
+  let filterTeks = '';
+  let filterPenyedia = 'semua';
+
+  function tampilkanGame() {
+    const grid = document.getElementById('gameGrid');
+    
+    // Saring data
+    const hasil = SEMUA_GAME.filter(g => {
+      const cocokTeks = g.name.toLowerCase().includes(filterTeks.toLowerCase());
+      const cocokPenyedia = filterPenyedia === 'semua' || g.provider === filterPenyedia;
+      return cocokTeks && cocokPenyedia;
+    });
+
+    if(hasil.length === 0) {
+      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #8b8b9e; padding: 40px;">Permainan tidak ditemukan.</div>`;
+      return;
+    }
+
+    grid.innerHTML = hasil.map(g => {
+      const imgName = g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
+      return `
+      <div class="game-card" onclick="alert('Membuka game ${g.name}')">
+        <div class="game-img-wrap">
+          <img src="assets/img/games/${imgName}" alt="${g.name}" class="game-img" onerror="this.style.display='none'">
+        </div>
+        <div class="game-play">MAIN</div>
+        <div class="game-info">
+          <div class="game-name">${g.name}</div>
+          <div class="game-provider">${g.provider}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function cariPermainan() {
+    filterTeks = document.getElementById('pencarian').value;
+    tampilkanGame();
+  }
+
+  function filterPerusahaan(nama, tombol) {
+    filterPenyedia = nama;
+    // Ganti gaya tombol
+    document.querySelectorAll('.btn-provider').forEach(b => b.classList.remove('active'));
+    tombol.classList.add('active');
+    tampilkanGame();
+  }
+
+  // Jalankan saat halaman dimuat
+  tampilkanGame();
+  
+  // Perbarui saldo
+  if (typeof window.perbaruiSaldo === 'function') window.perbaruiSaldo();
+</script>
+</body>
+</html>
+
+<!-- MENU BAWAH PONSEL -->
+<nav class="bottom-nav">
+  <a href="index.html" class="bn-item">
+    <img src="assets/img/beranda.png" alt="Beranda" class="bn-icon" onerror="this.style.display='none'">Beranda
+  </a>
+  <a href="slot.html" class="bn-item">
+    <img src="assets/img/slot.png" alt="Slot" class="bn-icon" onerror="this.style.display='none'">Slot
+  </a>
+  <a href="akun.html" class="bn-item bn-tengah">
+    <div class="lingkaran-tengah">
+      <img src="assets/img/akun.png" alt="Akun" class="bn-icon-tengah" onerror="this.style.display='none'">
+    </div>
+    <span class="teks-tengah">Akun</span>
+  </a>
+  <a href="promosi.html" class="bn-item">
+    <img src="assets/img/promo.png" alt="Promosi" class="bn-icon" onerror="this.style.display='none'">Promo
+  </a>
+  <a href="index.html" class="bn-item" onclick="openDeposit(); return false;">
+    <img src="assets/img/koin.png" alt="Deposit" class="bn-icon" onerror="this.style.display='none'">Deposit
+  </a>
+</nav>

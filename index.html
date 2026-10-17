@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>RHF 777 — Situs Game Daring</title>
-  <meta name="description" content="RHF 777 — Situs permainan daring.">
   <link rel="stylesheet" href="assets/style.css">
   <link rel="icon" href="assets/img/logo.png">
 </head>
@@ -33,12 +32,9 @@
     </a>
 
     <nav class="nav">
-      <a href="#beranda" class="nav-link active">Beranda</a>
-      <a href="#slot" class="nav-link">Slot</a>
-      <a href="#live" class="nav-link">Kasino Langsung</a>
-      <a href="#sports" class="nav-link">Olahraga</a>
-      <a href="#promosi" class="nav-link">Promosi</a>
-      <a href="#vip" class="nav-link">VIP</a>
+      <a href="index.html" class="nav-link active">Beranda</a>
+      <a href="slot.html" class="nav-link">Slot</a>
+      <a href="promosi.html" class="nav-link">Promosi</a>
     </nav>
 
     <div class="header-actions">
@@ -58,14 +54,11 @@
   </div>
 </header>
 
-<!-- MENU PONSEL -->
+<!-- MENU PONSEL ATAS -->
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#beranda">Beranda</a>
-  <a href="#slot">Slot</a>
-  <a href="#live">Kasino Langsung</a>
-  <a href="#sports">Olahraga</a>
-  <a href="#promosi">Promosi</a>
-  <a href="#vip">VIP</a>
+  <a href="index.html">Beranda</a>
+  <a href="slot.html">Slot</a>
+  <a href="promosi.html">Promosi</a>
   <div class="mobile-menu-actions">
     <button class="btn btn-outline" onclick="openLogin()">Masuk</button>
     <button class="btn btn-gold" onclick="openRegister()">Daftar</button>
@@ -81,7 +74,7 @@
     <p class="hero-sub">Minimal deposit Rp 10.000 · Proses instan 1 menit · Daring 24/7</p>
     <div class="hero-actions">
       <button class="btn btn-gold btn-lg" onclick="openRegister()">Klaim Bonus Sekarang</button>
-      <button class="btn btn-ghost btn-lg" onclick="openPromo()">Lihat Promo</button>
+      <button class="btn btn-ghost btn-lg" onclick="window.location.href='promosi.html'">Lihat Promo</button>
     </div>
     <div class="hero-stats">
       <div class="stat">
@@ -93,72 +86,18 @@
         <div class="stat-value">Rp 8.5T</div>
         <div class="stat-label">Total Pembayaran</div>
       </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-value">24/7</div>
-        <div class="stat-label">Dukungan Langsung</div>
-      </div>
     </div>
   </div>
 </section>
 
-<!-- KATEGORI -->
-<section class="section" id="slot">
+<!-- KATEGORI (Hanya Tampilan Depan) -->
+<section class="section">
   <div class="container">
     <div class="section-header">
-      <h2>Kategori Permainan</h2>
-      <a href="#" class="link-more">Lihat Semua</a>
+      <h2>Permainan Populer</h2>
+      <a href="slot.html" class="link-more">Lihat Semua</a>
     </div>
-
-    <div class="tabs" id="tabs">
-      <button class="tab active" data-cat="all">Semua</button>
-      <button class="tab" data-cat="slot">Slot</button>
-      <button class="tab" data-cat="live">Kasino Langsung</button>
-      <button class="tab" data-cat="sports">Olahraga</button>
-      <button class="tab" data-cat="togel">Togel</button>
-      <button class="tab" data-cat="arcade">Arkade</button>
-    </div>
-
-    <div class="game-grid" id="gameGrid"></div>
-  </div>
-</section>
-
-<!-- PROMOSI -->
-<section class="section" id="promosi">
-  <div class="container">
-    <div class="section-header">
-      <h2>Promosi Spesial</h2>
-    </div>
-
-    <div class="promo-grid">
-      <div class="promo-card">
-        <div class="promo-icon-wrap">
-          <img src="assets/img/promo-1.png" alt="Bonus" class="promo-img" onerror="this.style.display='none'">
-        </div>
-        <div class="promo-badge">MEMBER BARU</div>
-        <h3>Bonus 100%</h3>
-        <p>Klaim bonus deposit pertamamu hingga Rp 1.000.000</p>
-        <button class="btn btn-gold" onclick="openRegister()">Klaim</button>
-      </div>
-      <div class="promo-card">
-        <div class="promo-icon-wrap">
-          <img src="assets/img/promo-2.png" alt="Uang Kembali" class="promo-img" onerror="this.style.display='none'">
-        </div>
-        <div class="promo-badge">UANG KEMBALI</div>
-        <h3>Uang Kembali 10%</h3>
-        <p>Uang kembali mingguan untuk semua anggota aktif</p>
-        <button class="btn btn-gold" onclick="openRegister()">Klaim</button>
-      </div>
-      <div class="promo-card">
-        <div class="promo-icon-wrap">
-          <img src="assets/img/promo-3.png" alt="Putaran" class="promo-img" onerror="this.style.display='none'">
-        </div>
-        <div class="promo-badge">PUTARAN</div>
-        <h3>Putaran 0.8%</h3>
-        <p>Dibagikan setiap hari tanpa minimum perputaran</p>
-        <button class="btn btn-gold" onclick="openRegister()">Klaim</button>
-      </div>
-    </div>
+    <div class="game-grid" id="gameGridPopuler"></div>
   </div>
 </section>
 
@@ -171,28 +110,18 @@
           <img src="assets/img/logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
           <span class="logo-text">RHF<span class="logo-num">777</span></span>
         </div>
-        <p class="footer-desc">Situs permainan daring terpercaya sejak 2020. Ribuan permainan, proses simpan dan tarik cepat, dukungan 24/7.</p>
+        <p class="footer-desc">Situs permainan daring terpercaya sejak 2020.</p>
       </div>
       <div class="footer-col">
         <h4>Menu</h4>
-        <a href="#">Beranda</a>
-        <a href="#slot">Slot</a>
-        <a href="#live">Kasino Langsung</a>
-        <a href="#promosi">Promosi</a>
+        <a href="index.html">Beranda</a>
+        <a href="slot.html">Slot</a>
+        <a href="promosi.html">Promosi</a>
       </div>
       <div class="footer-col">
         <h4>Bantuan</h4>
         <a href="#">Tentang Kami</a>
         <a href="#">Kontak</a>
-        <a href="#">Syarat & Ketentuan</a>
-        <a href="#">Kebijakan Privasi</a>
-      </div>
-      <div class="footer-col">
-        <h4>Pembayaran</h4>
-        <div class="pay-methods">
-          <span>BCA</span><span>Mandiri</span><span>BNI</span><span>BRI</span>
-          <span>OVO</span><span>GoPay</span><span>Dana</span><span>LinkAja</span>
-        </div>
       </div>
     </div>
 
@@ -206,12 +135,6 @@
       <a href="#" class="angka-acak" onclick="jebakan(event)">19</a>
       <a href="#" class="angka-acak" onclick="jebakan(event)">65</a>
       <a href="#" class="angka-acak" onclick="jebakan(event)">2</a>
-      <a href="#" class="angka-acak" onclick="jebakan(event)">91</a>
-      <a href="#" class="angka-acak" onclick="jebakan(event)">33</a>
-      <a href="#" class="angka-acak" onclick="jebakan(event)">4</a>
-      <a href="#" class="angka-acak" onclick="jebakan(event)">77</a>
-      <a href="#" class="angka-acak" onclick="jebakan(event)">12</a>
-      <a href="#" class="angka-acak" onclick="jebakan(event)">55</a>
     </div>
 
     <div class="footer-bottom">
@@ -220,31 +143,32 @@
   </div>
 </footer>
 
-<!-- TOMBOL OBROLAN -->
-<button class="chat-fab" onclick="openChat()" title="Obrolan Langsung">
-  <img src="assets/img/chat.png" alt="Obrolan" class="fab-img" onerror="this.style.display='none'">
-</button>
-
-<!-- MENU BAWAH PONSEL -->
+<!-- MENU BAWAH PONSEL (Desain Baru) -->
 <nav class="bottom-nav">
-  <a href="#beranda" class="bn-item active">
+  <a href="index.html" class="bn-item active">
     <img src="assets/img/beranda.png" alt="Beranda" class="bn-icon" onerror="this.style.display='none'">Beranda
   </a>
-  <a href="#slot" class="bn-item">
+  <a href="slot.html" class="bn-item">
     <img src="assets/img/slot.png" alt="Slot" class="bn-icon" onerror="this.style.display='none'">Slot
   </a>
-  <a href="#live" class="bn-item">
-    <img src="assets/img/kasino.png" alt="Kasino" class="bn-icon" onerror="this.style.display='none'">Kasino
+  
+  <!-- TOMBOL TENGAH (AKUN) -->
+  <a href="akun.html" class="bn-item bn-tengah">
+    <div class="lingkaran-tengah">
+      <img src="assets/img/akun.png" alt="Akun" class="bn-icon-tengah" onerror="this.style.display='none'">
+    </div>
+    <span class="teks-tengah">Akun</span>
   </a>
-  <a href="#promosi" class="bn-item">
+
+  <a href="promosi.html" class="bn-item">
     <img src="assets/img/promo.png" alt="Promosi" class="bn-icon" onerror="this.style.display='none'">Promo
   </a>
-  <a href="#" class="bn-item" onclick="openLogin(); return false;">
-    <img src="assets/img/akun.png" alt="Akun" class="bn-icon" onerror="this.style.display='none'">Akun
+  <a href="#" class="bn-item" onclick="openDeposit(); return false;">
+    <img src="assets/img/koin.png" alt="Deposit" class="bn-icon" onerror="this.style.display='none'">Deposit
   </a>
 </nav>
 
-<!-- JENDELA MELAYANG -->
+<!-- JENDELA MELAYANG UMUM -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <button class="modal-close" onclick="closeModal()">Tutup</button>
