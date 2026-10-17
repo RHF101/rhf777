@@ -677,3 +677,28 @@ img { max-width: 100%; display: block; object-fit: contain; }
   height: 28px;
   color: #000; /* Warna hitam karena latar lingkaran tengah emas */
 }
+
+/* ============ PERBAIKAN MENU BAWAH ============ */
+.bottom-nav {
+  height: 70px; /* Sedikit ditinggikan agar teks tidak tenggelam */
+  padding-bottom: 5px;
+}
+
+.bn-item {
+  font-size: 11px; /* Ukuran teks disesuaikan */
+  font-weight: 500;
+  padding-top: 8px;
+}
+
+/* Memastikan ikon tengah tidak menutupi teks menu lain */
+.bn-tengah {
+  top: -15px; 
+}
+.lingkaran-tengah {
+  width: 50px; 
+  height: 50px;
+}
+.teks-tengah {
+  margin-top: 2px;
+  font-size: 11px;
+}
