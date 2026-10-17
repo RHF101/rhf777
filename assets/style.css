@@ -50,7 +50,7 @@ img { max-width: 100%; display: block; object-fit: contain; }
   100% { transform: translateX(-50%); }
 }
 
-/* ============ BAGIAN ATAS ============ */
+/* ============ BAGIAN ATAS (HEADER) ============ */
 .header {
   position: sticky;
   top: 0;
@@ -62,15 +62,15 @@ img { max-width: 100%; display: block; object-fit: contain; }
 .header-inner {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
+  gap: 12px;
+  padding: 10px 15px;
   max-width: 1400px;
   margin: 0 auto;
 }
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 900;
   font-size: 22px;
   flex-shrink: 0;
@@ -82,38 +82,39 @@ img { max-width: 100%; display: block; object-fit: contain; }
   background-clip: text;
 }
 .logo-num { color: var(--gold); margin-left: 2px; }
+
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 .balance-pill {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
+  gap: 6px;
+  padding: 6px 10px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
 }
 .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
-.balance-label { font-size: 10px; color: var(--text-mute); }
-.balance-amount { font-size: 14px; font-weight: 700; color: var(--gold); }
+.balance-label { font-size: 9px; color: var(--text-mute); text-transform: uppercase; }
+.balance-amount { font-size: 13px; font-weight: 700; color: var(--gold); }
 
 /* ============ TOMBOL ============ */
 .btn {
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 }
 .btn-primary { background: var(--green); color: #000; }
 .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-2)); color: #000; }
 .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
 .btn-lg { padding: 14px 28px; font-size: 16px; }
 
 /* ============ BAGIAN UTAMA (HERO) ============ */
@@ -122,16 +123,11 @@ img { max-width: 100%; display: block; object-fit: contain; }
   padding: 60px 20px;
   overflow: hidden;
   background: radial-gradient(ellipse at top, #2a1a3e 0%, #0a0a0f 60%);
-  min-height: 450px;
+  min-height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-}
-.hero-glow {
-  position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
 }
 .hero-content { position: relative; z-index: 2; max-width: 700px; }
 .hero-badge {
@@ -146,12 +142,12 @@ img { max-width: 100%; display: block; object-fit: contain; }
 
 /* ============ BAGIAN UMUM & KARTU ============ */
 .section { padding: 40px 0; }
-.container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+.container { max-width: 1400px; margin: 0 auto; padding: 0 15px; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.section-header h2 { font-size: 24px; font-weight: 800; }
+.section-header h2 { font-size: 22px; font-weight: 800; }
 .link-more { color: var(--gold); font-size: 14px; font-weight: 600; }
 
-.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
 .game-card {
   position: relative; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden;
   background: var(--surface); border: 1px solid var(--border);
@@ -165,12 +161,32 @@ img { max-width: 100%; display: block; object-fit: contain; }
 .game-name { font-size: 13px; font-weight: 700; }
 .game-provider { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
 
-/* ============ IKON VEKTOR ============ */
-.logo-vektor { width: 26px; height: 26px; color: var(--gold); }
-.icon-vektor { width: 20px; height: 20px; color: var(--gold); }
-.bn-icon-vektor { width: 22px; height: 22px; color: var(--text-mute); }
-.bn-icon-tengah-vektor { width: 28px; height: 28px; color: #000; }
+/* ============ IKON VEKTOR (BAGIAN BAWAH) ============ */
+.logo-vektor { width: 24px; height: 24px; color: var(--gold); }
+.icon-vektor { width: 18px; height: 18px; color: var(--gold); }
+
+.bn-icon-vektor { 
+  width: 24px; 
+  height: 24px; 
+  color: var(--text-mute); 
+  fill: none; 
+  stroke: currentColor; 
+  stroke-width: 2; 
+  stroke-linecap: round; 
+  stroke-linejoin: round;
+}
 .bn-item.active .bn-icon-vektor { color: var(--gold); }
+
+.bn-icon-tengah-vektor { 
+  width: 26px; 
+  height: 26px; 
+  color: #000; 
+  fill: none; 
+  stroke: currentColor; 
+  stroke-width: 2; 
+  stroke-linecap: round; 
+  stroke-linejoin: round;
+}
 
 /* ============ MENU BAWAH ============ */
 .bottom-nav {
@@ -203,45 +219,15 @@ img { max-width: 100%; display: block; object-fit: contain; }
 
 /* ============ UKURAN LAYAR PONSEL ============ */
 @media (max-width: 900px) {
+  /* Menyembunyikan tombol Masuk di ponsel agar tombol Deposit & Daftar muat */
   .hide-mobile { display: none !important; }
   .bottom-nav { display: flex; }
   .balance-label { display: none; }
 }
+
 @media (max-width: 500px) {
   .game-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-}
-
-/* ============ PERBAIKAN TOMBOL ATAS PONSEL ============ */
-@media (max-width: 900px) {
-  .header-inner {
-    padding: 10px 15px;
-    gap: 8px;
-  }
-  
-  .balance-pill {
-    padding: 4px 8px;
-  }
-  
-  .balance-label { display: none; }
-  .balance-amount { font-size: 12px; }
-
-  .header-actions .btn {
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  /* Tombol Masuk disembunyikan di ponsel agar tidak sesak */
-  .hide-mobile {
-    display: none !important;
-  }
-
-  /* Tombol Menu muncul di kanan */
-  .hamburger {
-    display: block !important;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 6px;
-    color: #fff;
-  }
+  .logo { font-size: 18px; }
+  .logo-vektor { width: 20px; height: 20px; }
+  .btn { padding: 6px 10px; font-size: 12px; }
 }
