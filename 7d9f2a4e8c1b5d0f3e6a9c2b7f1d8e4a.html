@@ -6,92 +6,262 @@
   <title>Dasbor RHF 777</title>
   <link rel="stylesheet" href="assets/style.css">
   <style>
-    body { background-color: #0a0a0f; padding: 20px; }
-    .wadah-dasbor { max-width: 800px; margin: 0 auto; }
-    .kepala { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #2a2a3a; }
+    body { background-color: #0a0a0f; padding: 20px; color: #fff; font-family: sans-serif; }
+    .wadah { max-width: 1000px; margin: 0 auto; }
+    .kepala { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #2a2a3a; padding-bottom: 15px; }
+    .kepala h1 { color: #ffd700; font-size: 24px; }
+    
+    /* Menu Navigasi Admin */
+    .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+    .tab-btn { padding: 10px 20px; background: #14141f; border: 1px solid #2a2a3a; color: #fff; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; }
+    .tab-btn.active { background: #ffd700; color: #000; border-color: #ffd700; }
+    
+    /* Kotak Ringkasan */
+    .ringkasan { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .kartu-ringkasan { background: #14141f; border: 1px solid #2a2a3a; padding: 20px; border-radius: 12px; }
+    .kartu-ringkasan h4 { color: #8b8b9e; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; }
+    .kartu-ringkasan .angka { font-size: 24px; font-weight: bold; color: #00e701; }
+
+    /* Tabel */
     .kotak-tabel { background: #14141f; border: 1px solid #2a2a3a; border-radius: 12px; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th, td { padding: 12px 16px; border-bottom: 1px solid #2a2a3a; font-size: 14px; }
     th { background: #1e1e2e; color: #8b8b9e; font-size: 12px; text-transform: uppercase; }
-    .saldo { font-weight: bold; color: #00e701; }
-    .btn-ubah { background: #ffd700; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; border: none; margin-right: 4px;}
+    
+    /* Tombol Aksi */
+    .btn-aksi { padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; border: none; font-size: 12px; margin-right: 5px; }
+    .btn-edit { background: #4a9eff; color: #fff; }
+    .btn-hapus { background: #ff3838; color: #fff; }
+    .btn-tambah { background: #00e701; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; margin-bottom: 15px; }
   </style>
 </head>
 <body>
 
-<div class="wadah-dasbor">
+<div class="wadah">
   <div class="kepala">
-    <h1 style="color: #ffd700; font-size: 22px;">Dasbor Pengelola</h1>
-    <button class="btn btn-outline" onclick="sessionStorage.removeItem('akses_pengelola'); window.location.href='masuk-rahasia.html';">Keluar</button>
+    <h1>Dasbor Pengelola</h1>
+    <button class="btn-aksi btn-hapus" onclick="sessionStorage.removeItem('akses_pengelola'); window.location.href='masuk-rahasia.html';">Keluar</button>
   </div>
 
-  <div class="kotak-tabel">
-    <table>
-      <thead>
-        <tr>
-          <th>Nama & Telepon</th>
-          <th>Saldo</th>
-          <th style="text-align: right;">Aksi</th>
-        </tr>
-      </thead>
-      <tbody id="isi-tabel">
-        <tr><td colspan="3" style="text-align: center; padding: 30px;">Memuat data...</td></tr>
-      </tbody>
-    </table>
+  <!-- Menu Navigasi -->
+  <div class="tab-menu">
+    <button class="tab-btn active" onclick="bukaTab('pengguna')">Data Pengguna</button>
+    <button class="tab-btn" onclick="bukaTab('games')">Kelola Games</button>
+    <button class="tab-btn" onclick="bukaTab('transaksi')">Riwayat Transaksi</button>
   </div>
+
+  <!-- ================= TAB PENGGUNA ================= -->
+  <div id="tab-pengguna" class="konten-tab">
+    <div class="ringkasan">
+      <div class="kartu-ringkasan">
+        <h4>Total Pengguna</h4>
+        <div class="angka" id="total-user">0</div>
+      </div>
+      <div class="kartu-ringkasan">
+        <h4>Total Saldo Beredar</h4>
+        <div class="angka" id="total-saldo">Rp 0</div>
+      </div>
+    </div>
+
+    <div class="kotak-tabel">
+      <table>
+        <thead>
+          <tr>
+            <th>Nama & Email</th>
+            <th>Nomor HP</th>
+            <th>Saldo</th>
+            <th style="text-align: right;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabel-user">
+          <tr><td colspan="4" style="text-align: center;">Memuat data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================= TAB GAMES ================= -->
+  <div id="tab-games" class="konten-tab" style="display:none;">
+    <button class="btn-tambah" onclick="tambahGame()">+ Tambah Game Baru</button>
+    <div class="kotak-tabel">
+      <table>
+        <thead>
+          <tr>
+            <th>Nama Game</th>
+            <th>Perusahaan</th>
+            <th style="text-align: right;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabel-games">
+          <tr><td colspan="3" style="text-align: center;">Memuat data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================= TAB TRANSAKSI ================= -->
+  <div id="tab-transaksi" class="konten-tab" style="display:none;">
+    <div class="kotak-tabel">
+      <table>
+        <thead>
+          <tr>
+            <th>Waktu</th>
+            <th>Pemain</th>
+            <th>Keterangan</th>
+            <th>Nominal</th>
+          </tr>
+        </thead>
+        <tbody id="tabel-transaksi">
+          <tr><td colspan="4" style="text-align: center;">Belum ada transaksi.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="assets/firebase.js"></script>
 <script>
-  const SUPABASE_URL = 'https://zteyvjflniyehvnjakvd.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_m2VxTR2Q4WTN4LvmkEMHFQ_ySEwcAzf';
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // Pastikan Firebase sudah termuat
+  window.onload = () => {
+    setTimeout(() => {
+      if(!window.fbDb) {
+        alert("Gagal terhubung ke Firebase.");
+        return;
+      }
+      muatPengguna();
+      muatGames();
+    }, 1000);
+  };
 
-  async function muatData() {
-    const tabel = document.getElementById('isi-tabel');
-    const { data, error } = await db.from('profiles').select('*').order('created_at', { ascending: false });
-
-    if (error || !data) {
-      tabel.innerHTML = `<tr><td colspan="3" style="color: #ff3838;">Gagal memuat data.</td></tr>`;
-      return;
-    }
-
-    if (data.length === 0) {
-      tabel.innerHTML = `<tr><td colspan="3" style="text-align: center;">Belum ada pengguna.</td></tr>`;
-      return;
-    }
-
-    tabel.innerHTML = data.map(user => `
-      <tr>
-        <td>
-          <div style="font-weight: bold; color: #fff;">${user.username || 'Tanpa Nama'}</div>
-          <div style="font-size: 12px; color: #8b8b9e;">${user.phone || 'Tidak ada nomor'}</div>
-        </td>
-        <td class="saldo">Rp ${Number(user.balance).toLocaleString('id-ID')}</td>
-        <td style="text-align: right;">
-          <button class="btn-ubah" onclick="ubahSaldo('${user.id}', ${user.balance})">+ / - Saldo</button>
-        </td>
-      </tr>
-    `).join('');
+  // ============ NAVIGASI TAB ============
+  function bukaTab(nama) {
+    document.querySelectorAll('.konten-tab').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + nama).style.display = 'block';
+    event.target.classList.add('active');
   }
 
-  async function ubahSaldo(id, saldoSaatIni) {
-    const input = prompt("Masukkan nominal (contoh: 50000 atau -20000):");
-    if (!input) return;
+  // ============ 1. DATA PENGGUNA ============
+  async function muatPengguna() {
+    const tabel = document.getElementById('tabel-user');
+    try {
+      const querySnapshot = await window.fbGetDocs(window.fbCollection(window.fbDb, "users"));
+      let html = "";
+      let totalSaldo = 0;
+      let jumlahUser = 0;
 
-    const jumlah = Number(input);
-    if (isNaN(jumlah)) { alert("Nominal tidak valid."); return; }
+      querySnapshot.forEach((doc) => {
+        const user = doc.data();
+        const id = doc.id;
+        jumlahUser++;
+        totalSaldo += Number(user.balance || 0);
 
-    let saldoBaru = saldoSaatIni + jumlah;
-    if (saldoBaru < 0) saldoBaru = 0;
+        html += `
+          <tr>
+            <td>
+              <div style="font-weight:bold;">${user.username || 'Tanpa Nama'}</div>
+              <div style="font-size:12px; color:#8b8b9e;">${user.email || '-'}</div>
+            </td>
+            <td>${user.phone || '-'}</td>
+            <td style="color:#00e701; font-weight:bold;">Rp ${Number(user.balance || 0).toLocaleString('id-ID')}</td>
+            <td style="text-align: right;">
+              <button class="btn-aksi btn-edit" onclick="editUser('${id}', '${user.username}', '${user.balance}')">Edit</button>
+            </td>
+          </tr>
+        `;
+      });
 
-    const { error } = await db.from('profiles').update({ balance: saldoBaru }).eq('id', id);
+      tabel.innerHTML = html || `<tr><td colspan="4" style="text-align: center;">Belum ada pengguna.</td></tr>`;
+      document.getElementById('total-user').textContent = jumlahUser;
+      document.getElementById('total-saldo').textContent = "Rp " + totalSaldo.toLocaleString('id-ID');
+
+    } catch (e) {
+      tabel.innerHTML = `<tr><td colspan="4" style="color:red;">Gagal memuat pengguna: ${e.message}</td></tr>`;
+    }
+  }
+
+  async function editUser(id, namaLama, saldoLama) {
+    const namaBaru = prompt("Ubah Nama Pengguna:", namaLama);
+    if (namaBaru === null) return;
     
-    if (error) alert("Gagal mengubah saldo.");
-    else muatData();
+    const saldoBaru = prompt("Ubah Saldo (Angka saja):", saldoLama);
+    if (saldoBaru === null) return;
+
+    if (isNaN(Number(saldoBaru))) { alert("Saldo harus berupa angka!"); return; }
+
+    try {
+      await window.fbUpdateDoc(window.fbDoc(window.fbDb, "users", id), {
+        username: namaBaru,
+        balance: Number(saldoBaru)
+      });
+      alert("Data pengguna berhasil diperbarui!");
+      muatPengguna();
+    } catch (e) {
+      alert("Gagal update: " + e.message);
+    }
   }
 
-  muatData();
+  // ============ 2. KELOLA GAMES ============
+  async function muatGames() {
+    const tabel = document.getElementById('tabel-games');
+    try {
+      const querySnapshot = await window.fbGetDocs(window.fbCollection(window.fbDb, "games"));
+      let html = "";
+      
+      querySnapshot.forEach((doc) => {
+        const game = doc.data();
+        html += `
+          <tr>
+            <td style="font-weight:bold;">${game.name}</td>
+            <td style="color:#8b8b9e;">${game.provider}</td>
+            <td style="text-align: right;">
+              <button class="btn-aksi btn-edit" onclick="editGame('${doc.id}', '${game.name}', '${game.provider}')">Edit</button>
+              <button class="btn-aksi btn-hapus" onclick="hapusGame('${doc.id}')">Hapus</button>
+            </td>
+          </tr>
+        `;
+      });
+      tabel.innerHTML = html || `<tr><td colspan="3" style="text-align: center;">Belum ada game.</td></tr>`;
+    } catch (e) {
+      tabel.innerHTML = `<tr><td colspan="3" style="color:red;">Gagal memuat game: ${e.message}</td></tr>`;
+    }
+  }
+
+  async function tambahGame() {
+    const nama = prompt("Masukkan Nama Game Baru:");
+    if (!nama) return;
+    const provider = prompt("Masukkan Nama Perusahaan (PG Soft, Pragmatic, dll):");
+    if (!provider) return;
+
+    try {
+      await window.fbAddDoc(window.fbCollection(window.fbDb, "games"), { name: nama, provider: provider });
+      alert("Game berhasil ditambahkan!");
+      muatGames();
+    } catch (e) {
+      alert("Gagal tambah game: " + e.message);
+    }
+  }
+
+  async function editGame(id, namaLama, providerLama) {
+    const namaBaru = prompt("Ubah Nama Game:", namaLama);
+    if (!namaBaru) return;
+    const providerBaru = prompt("Ubah Perusahaan:", providerLama);
+    if (!providerBaru) return;
+
+    try {
+      await window.fbUpdateDoc(window.fbDoc(window.fbDb, "games", id), { name: namaBaru, provider: providerBaru });
+      muatGames();
+    } catch (e) { alert("Gagal edit: " + e.message); }
+  }
+
+  async function hapusGame(id) {
+    if (!confirm("Yakin ingin menghapus game ini?")) return;
+    try {
+      await window.fbDeleteDoc(window.fbDoc(window.fbDb, "games", id));
+      muatGames();
+    } catch (e) { alert("Gagal hapus: " + e.message); }
+  }
 </script>
 </body>
 </html>

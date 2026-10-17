@@ -66,3 +66,11 @@ import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager
 window.fbDb = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
 });
+
+// Impor fungsi tambahan untuk admin
+import { deleteDoc, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+window.fbDeleteDoc = deleteDoc;
+window.fbAddDoc = addDoc;
+window.fbQuery = query;
+window.fbWhere = where;
