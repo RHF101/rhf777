@@ -9,22 +9,21 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; user-select: none; }
     body { background: #0a0a0f; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* Header Atas */
     .header-game { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #14141f; border-bottom: 1px solid #2a2a3a; z-index: 10;}
     .tombol-kembali { color: #8b8b9e; text-decoration: none; font-size: 24px; }
     .saldo-game { font-size: 18px; font-weight: bold; color: #00e701; }
 
-    /* Area Grafik */
     .area-grafik { flex: 1; position: relative; background: #0a0a0f; width: 100%; }
     
     .status-tengah { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 10; pointer-events: none; width: 100%; }
     .angka-pengali { font-size: 80px; font-weight: 900; color: #00e701; text-shadow: 0 4px 20px rgba(0,231,1,0.3); transition: color 0.2s; }
     .angka-pengali.crashed { color: #ff3838; text-shadow: 0 4px 20px rgba(255,56,56,0.3); }
+    .angka-pengali.peringatan { color: #ffd700; text-shadow: 0 4px 20px rgba(255,215,0,0.3); animation: kedip 0.5s infinite; }
+    @keyframes kedip { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     .hitung-mundur { font-size: 40px; font-weight: bold; color: #ffd700; }
     
     canvas { width: 100% !important; height: 100% !important; position: absolute; top: 0; left: 0; }
 
-    /* Panel Kontrol Bawah */
     .panel-kontrol { background: #14141f; border-top: 1px solid #2a2a3a; padding: 15px 20px 20px; border-radius: 20px 20px 0 0; box-shadow: 0 -10px 20px rgba(0,0,0,0.5); z-index: 20; }
     
     .grup-nominal { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
@@ -93,8 +92,9 @@
     let idUser = null;
     let multiplierSekarang = 1.00;
     let intervalNaik = null;
-    let statusGame = "menunggu"; 
+    let statusGame = "menunggu"; // menunggu, terbang, meledak
     let sudahTarikSetengah = false;
+    let sudahTarikSemua = false; // Penanda jika pemain sudah cash out
     let taruhanAktif = 0;
     let sudahPasangTaruhan = false;
     let batasPengali = 1.00;
@@ -103,6 +103,7 @@
     let canvas, ctx;
     let dataGrafik = [];
     let animasiFrame;
+    let sedangTipuan = false;
 
     function setTaruhan(angka) {
       document.getElementById("inputTaruhan").value = angka;
@@ -112,18 +113,14 @@
     function inisialisasiKanvas() {
       canvas = document.getElementById('kanvasGrafik');
       ctx = canvas.getContext('2d');
-      
-      // Sesuaikan ukuran kanvas dengan ukuran layar
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight;
-      
       dataGrafik = [];
       gambarUlangGrafik();
     }
 
     function gambarUlangGrafik() {
       if(!ctx || !canvas) return;
-      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       if(dataGrafik.length === 0) {
@@ -138,18 +135,19 @@
         ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
       }
 
-      // Cari nilai tertinggi untuk skala Y
+      // Skala Y Dinamis
       let maxY = Math.max(...dataGrafik.map(d => d.y));
       if(maxY < 2) maxY = 2; 
 
-      // Gambar Area & Garis Grafik
       ctx.beginPath();
       ctx.lineWidth = 4;
       
-      // Warna berubah jika meledak
       if(statusGame === "meledak") {
         ctx.strokeStyle = "#ff3838";
         ctx.fillStyle = "rgba(255, 56, 56, 0.1)";
+      } else if(sedangTipuan) {
+        ctx.strokeStyle = "#ffd700"; // Warna kuning saat tipuan
+        ctx.fillStyle = "rgba(255, 215, 0, 0.1)";
       } else {
         ctx.strokeStyle = "#00e701";
         ctx.fillStyle = "rgba(0, 231, 1, 0.1)";
@@ -157,22 +155,18 @@
 
       for(let i=0; i<dataGrafik.length; i++) {
         let x = (i / (dataGrafik.length - 1)) * canvas.width;
-        // Skala Y: Makin tinggi nilai, makin ke atas
         let y = canvas.height - ((dataGrafik[i].y / maxY) * (canvas.height - 50));
-        
         if(i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
       
       ctx.stroke();
-
-      // Isi area di bawah garis (gradien)
       ctx.lineTo(canvas.width, canvas.height);
       ctx.lineTo(0, canvas.height);
       ctx.closePath();
       ctx.fill();
 
-      // Animasi terus berjalan agar mulus
+      // Animasi terus berjalan agar mulus, selama tidak meledak
       if(statusGame === "terbang") {
         animasiFrame = requestAnimationFrame(gambarUlangGrafik);
       }
@@ -199,9 +193,9 @@
     }, 1000);
 
     function mulaiRondeBaru() {
-      if(statusGame === "terbang") return;
       statusGame = "menunggu";
       sudahPasangTaruhan = false;
+      sudahTarikSemua = false;
       taruhanAktif = 0;
       multiplierSekarang = 1.00;
       sudahTarikSetengah = false;
@@ -216,7 +210,6 @@
 
       inisialisasiKanvas();
       
-      // Hitung Mundur 10 Detik
       let hitung = 10;
       document.getElementById("teksHitung").textContent = hitung + "s";
       
@@ -234,7 +227,6 @@
     function pasangTaruhan() {
       if(statusGame === "terbang") return;
       const taruhan = Number(document.getElementById("inputTaruhan").value);
-      
       if(taruhan < 100) return alert("Minimal taruhan Rp 100");
       if(taruhan > saldoPemain) return alert("Saldo tidak cukup!");
 
@@ -265,31 +257,47 @@
         document.getElementById("panelInput").style.display = "none";
       }
 
-      // Tentukan batas pengali rahasia (1.2x - 15x)
+      // Tentukan batas meledak rahasia (1.2x - 15x)
       batasPengali = (Math.random() * 13.8) + 1.2;
-      
-      // Titik awal grafik (tengah layar)
       dataGrafik.push({ x: 0, y: multiplierSekarang });
       gambarUlangGrafik();
 
       intervalNaik = setInterval(() => {
-        let kenaikan = 0.05 + (Math.random() * 0.1);
-        
-        // TRIK TIPUAN: Kadang turun sedikit agar grafik naik turun
-        if(Math.random() > 0.8) kenaikan = -0.02; 
-        
-        multiplierSekarang += kenaikan;
-        if(multiplierSekarang < 1) multiplierSekarang = 1;
+        // Peluang tipuan jatuh ekstrem (5% setiap tick)
+        if(Math.random() > 0.95 && multiplierSekarang > 1.5 && !sedangTipuan) {
+          sedangTipuan = true;
+          // Turunkan ekstrem
+          let targetTipuan = multiplierSekarang * 0.2; // Turun 80%
+          let turunInterval = setInterval(() => {
+            multiplierSekarang -= (multiplierSekarang - targetTipuan) * 0.2;
+            document.getElementById("teksPengali").textContent = multiplierSekarang.toFixed(2) + "x";
+            document.getElementById("teksPengali").className = "angka-pengali peringatan";
+            dataGrafik.push({ x: dataGrafik.length, y: multiplierSekarang });
+            
+            if(multiplierSekarang <= targetTipuan + 0.1) {
+              clearInterval(turunInterval);
+              sedangTipuan = false;
+              document.getElementById("teksPengali").className = "angka-pengali";
+              // Lanjut naik lagi
+            }
+          }, 50);
+        } else {
+          // Normal naik
+          let kenaikan = 0.05 + (Math.random() * 0.1);
+          if(Math.random() > 0.8) kenaikan = -0.02; 
+          
+          multiplierSekarang += kenaikan;
+          if(multiplierSekarang < 1) multiplierSekarang = 1;
 
-        document.getElementById("teksPengali").textContent = multiplierSekarang.toFixed(2) + "x";
-        
-        // Masukkan data ke grafik
-        dataGrafik.push({ x: dataGrafik.length, y: multiplierSekarang });
-        
+          document.getElementById("teksPengali").textContent = multiplierSekarang.toFixed(2) + "x";
+          dataGrafik.push({ x: dataGrafik.length, y: multiplierSekarang });
+        }
+
+        // Jika pemain sudah tarik semua, kita tetap lanjut jalan sampai meledak
         if(multiplierSekarang >= batasPengali) {
           meledak();
         }
-      }, 200); // Update cepat
+      }, 200); 
     }
 
     async function tarikSetengah() {
@@ -311,17 +319,15 @@
     }
 
     async function tarikDana() {
-      if(statusGame !== "terbang" || !sudahPasangTaruhan) return;
-      clearInterval(intervalNaik);
-      cancelAnimationFrame(animasiFrame);
-      statusGame = "selesai";
+      if(statusGame !== "terbang" || !sudahPasangTaruhan || sudahTarikSemua) return;
+      sudahTarikSemua = true;
       
       const nilaiSekarang = taruhanAktif * multiplierSekarang;
       const kemenangan = Math.floor(nilaiSekarang);
       
       document.getElementById("grupAksi").style.display = "none";
       document.getElementById("pesan").style.color = "#00e701";
-      document.getElementById("pesan").textContent = `Berhasil Tarik! + Rp ${kemenangan.toLocaleString('id-ID')}`;
+      document.getElementById("pesan").textContent = `Berhasil Tarik! + Rp ${kemenangan.toLocaleString('id-ID')}. Tonton terus grafiknya!`;
 
       saldoPemain += kemenangan;
       await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
@@ -329,7 +335,8 @@
       
       if(window.simpanRiwayat) window.simpanRiwayat(idUser, usernamePemain, "Crash", true, kemenangan);
       
-      setTimeout(mulaiRondeBaru, 3000); 
+      // PERUBAHAN: Kita tidak menghentikan interval. Grafik tetap berjalan.
+      // Ronde baru akan dimulai otomatis setelah meledak.
     }
 
     async function meledak() {
@@ -340,18 +347,26 @@
       document.getElementById("teksPengali").textContent = "CRASH!";
       document.getElementById("grupAksi").style.display = "none";
       document.getElementById("pesan").style.color = "#ff3838";
-      document.getElementById("pesan").textContent = sudahPasangTaruhan ? "Anda Kalah." : "Roket meledak!";
+      
+      if(!sudahPasangTaruhan) {
+        document.getElementById("pesan").textContent = "Roket meledak!";
+      } else if(sudahTarikSemua) {
+        document.getElementById("pesan").textContent = "Roket meledak! Anda sudah mengamankan uang.";
+      } else {
+        document.getElementById("pesan").textContent = "Anda Kalah.";
+      }
 
       // TRIK JATUH EKSTREM: Paksa nilai Y jadi 0 (mentok bawah)
       dataGrafik.push({ x: dataGrafik.length, y: 0 });
       gambarUlangGrafik();
 
-      if(sudahPasangTaruhan && window.simpanRiwayat) window.simpanRiwayat(idUser, usernamePemain, "Crash", false, taruhanAktif);
+      if(!sudahTarikSemua && sudahPasangTaruhan && window.simpanRiwayat) {
+        window.simpanRiwayat(idUser, usernamePemain, "Crash", false, taruhanAktif);
+      }
       
-      setTimeout(mulaiRondeBaru, 3000); 
+      setTimeout(mulaiRondeBaru, 4000); // 4 detik jeda sebelum ronde baru
     }
 
-    // Tangani jika layar diputar atau di-resize
     window.addEventListener('resize', inisialisasiKanvas);
   </script>
 </body>
