@@ -198,3 +198,87 @@ img { max-width: 100%; display: block; object-fit: contain; }
   .hide-mobile { display: none !important; }
   .bottom-nav { display: flex; }
 }
+
+/* ============ JIPLAKAN HEADER GAMBAR KE-2 ============ */
+.header-inner {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.logo {
+  font-size: 20px;
+}
+.logo-vektor { width: 22px; height: 22px; }
+
+/* Kotak Saldo (Ikon Koin Kiri, Teks Kanan) */
+.balance-pill {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #14141f;
+  border: 1px solid #2a2a3a;
+}
+.icon-vektor {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.balance-info {
+  display: flex;
+  flex-direction: row; /* Teks Rp dan 0 menyamping */
+  align-items: center;
+  gap: 3px;
+  line-height: 1;
+}
+.balance-label {
+  font-size: 11px;
+  color: #8b8b9e;
+}
+.balance-amount {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Tombol-tombol di Kanan */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.header-actions .btn {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+}
+.header-actions .btn-primary {
+  background: #00e701; /* Hijau menyala */
+  color: #000;
+}
+.header-actions .btn-gold {
+  background: #ffb800; /* Emas agak gelap sesuai gambar */
+  color: #000;
+}
+
+/* Tulisan Menu */
+.hamburger-menu {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-left: 4px;
+  background: transparent;
+  padding: 0;
+}
+
+/* Menyembunyikan tombol Masuk lama (jika masih ada) */
+.btn-outline.hide-mobile {
+  display: none !important;
+}

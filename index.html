@@ -28,26 +28,29 @@
   </div>
 </div>
 
+
 <header class="header">
   <div class="header-inner">
-    <a href="#" class="logo" onclick="bukaHalaman('beranda'); return false;">
+    <a href="#" class="logo" onclick="bukaHalaman(&quot;beranda&quot;); return false;">
       <svg class="logo-vektor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"></path><path d="M5 20h14"></path></svg>
       <span class="logo-text">RHF<span class="logo-num">777</span></span>
     </a>
 
-    <div class="header-actions" style="margin-left: auto;">
+    <div class="header-actions">
       <div class="balance-pill">
-        <svg class="icon-vektor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path></svg>
+        <svg class="icon-vektor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path><path d="M7 6h1v4"></path><path d="m16.71 13.88.7.71-2.82 2.82"></path></svg>
         <div class="balance-info">
-          <span class="balance-amount" id="balanceAmount">Rp 0</span>
+          <span class="balance-label">Rp</span>
+          <span class="balance-amount" id="balanceAmount">0</span>
         </div>
       </div>
       <button class="btn btn-primary" onclick="openDeposit()">+ Deposit</button>
       <button class="btn btn-gold" onclick="openRegister()">Daftar</button>
-      <button class="hamburger" style="display:block; font-weight:bold; margin-left:8px;" onclick="alert('Gunakan menu di bawah untuk berpindah halaman.')">Menu</button>
+      <button class="hamburger-menu" onclick="alert(&quot;Gunakan menu di bawah.&quot;)">Menu</button>
     </div>
   </div>
 </header>
+
 
 <div id="halaman-beranda" class="halaman-konten aktif">
   <section class="hero">
