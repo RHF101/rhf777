@@ -646,3 +646,34 @@ img { max-width: 100%; display: block; object-fit: contain; }
 @media (max-width: 900px) {
   .bottom-nav { display: flex; }
 }
+
+/* ============ IKON VEKTOR (SVG) ============ */
+.logo-vektor {
+  width: 26px;
+  height: 26px;
+  color: var(--gold);
+}
+
+.icon-vektor {
+  width: 20px;
+  height: 20px;
+  color: var(--gold);
+}
+
+.bn-icon-vektor {
+  width: 22px;
+  height: 22px;
+  color: var(--text-mute);
+  transition: all 0.3s;
+}
+
+.bn-item.active .bn-icon-vektor {
+  color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.bn-icon-tengah-vektor {
+  width: 28px;
+  height: 28px;
+  color: #000; /* Warna hitam karena latar lingkaran tengah emas */
+}
