@@ -282,3 +282,37 @@ img { max-width: 100%; display: block; object-fit: contain; }
 .btn-outline.hide-mobile {
   display: none !important;
 }
+
+/* ============ UKURAN TOMBOL ATAS (PERSIS GAMBAR) ============ */
+.header-inner {
+  padding: 10px 12px !important;
+}
+
+.logo-text { font-size: 18px !important; }
+.logo-vektor { width: 20px !important; height: 20px !important; }
+
+.header-actions { gap: 6px !important; }
+
+/* Kotak Saldo */
+.balance-pill {
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  gap: 4px !important;
+}
+.icon-vektor { width: 14px !important; height: 14px !important; }
+.balance-label { font-size: 10px !important; color: #8b8b9e !important; }
+.balance-amount { font-size: 11px !important; }
+
+/* Tombol Deposit & Daftar */
+.header-actions .btn {
+  padding: 6px 10px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+  height: auto !important;
+}
+.header-actions .btn-primary { background: #00e701 !important; color: #000 !important; }
+.header-actions .btn-gold { background: #ffb800 !important; color: #000 !important; }
+
+/* Menyembunyikan tombol Menu lama (jika ada) */
+.hamburger-menu, .hamburger { display: none !important; }
