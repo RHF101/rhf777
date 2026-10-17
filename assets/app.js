@@ -32,7 +32,7 @@ function renderGamesDepan() {
 // Fungsi Buka/Tutup Menu Ponsel
 function toggleMobileMenu(event) {
   if(event) event.preventDefault(); // Mencegah halaman melompat ke atas
-  const menu = document.getElementById('mobileMenu');
+  const menu = document.getElementById("mobileMenu");
   if(menu) {
     menu.classList.toggle('open');
   }

@@ -816,3 +816,36 @@ body {
 .mobile-menu-actions .btn {
   flex: 1;
 }
+
+/* ============ PERBAIKAN MUTLAK MENU PONSEL ============ */
+.mobile-menu {
+  display: none !important; /* Tersembunyi secara mutlak */
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  background: #14141f;
+  border-bottom: 1px solid #2a2a3a;
+  padding: 16px;
+  z-index: 9999;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+.mobile-menu.open {
+  display: flex !important; /* Muncul saat tombol diklik */
+}
+
+.mobile-menu a {
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #8b8b9e;
+  text-decoration: none;
+  border-bottom: 1px solid #2a2a3a;
+}
+
+.mobile-menu a:hover {
+  background: #1e1e2e;
+  color: #ffd700;
+}
