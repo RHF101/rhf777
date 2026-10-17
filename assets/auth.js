@@ -94,39 +94,48 @@
     }, 800);
   };
 
+  
   // ============ PROSES DAFTAR ============
   window.prosesDaftar = async function(e) {
     e.preventDefault();
-    const nama = document.getElementById('namaPengguna').value;
-    const telepon = document.getElementById('teleponDaftar').value;
-    const surel = document.getElementById('surelDaftar').value;
-    const sandi = document.getElementById('sandiDaftar').value;
-    const pesan = document.getElementById('pesanAuth');
+    const nama = document.getElementById("namaPengguna").value;
+    const telepon = document.getElementById("teleponDaftar").value;
+    const surel = document.getElementById("surelDaftar").value;
+    const sandi = document.getElementById("sandiDaftar").value;
+    const pesan = document.getElementById("pesanAuth");
 
-    pesan.style.color = '#ffd700';
-    pesan.textContent = 'Sedang mendaftarkan...';
+    pesan.style.color = "#ffd700";
+    pesan.textContent = "Sedang mendaftarkan...";
 
-    // Daftar ke Supabase, sekaligus simpan nama dan telepon ke data profil
-    const { error } = await window.penghubung.auth.signUp({
+    // 1. Daftarkan email dan sandi ke sistem Supabase
+    const { data, error } = await window.penghubung.auth.signUp({
       email: surel,
-      password: sandi,
-      options: { data: { username: nama, phone: telepon } }
+      password: sandi
     });
 
     if (error) {
-      pesan.style.color = '#ff3838';
-      pesan.textContent = 'Gagal mendaftar: ' + error.message;
+      pesan.style.color = "#ff3838";
+      pesan.textContent = "Gagal mendaftar: " + error.message;
       return;
     }
 
-    pesan.style.color = '#00e701';
-    pesan.textContent = 'Berhasil mendaftar! Silakan masuk.';
+    // 2. Jika berhasil, simpan nama dan nomor telepon ke profil
+    if (data && data.user) {
+      await window.penghubung.from("profiles").update({
+        username: nama,
+        phone: telepon
+      }).eq("id", data.user.id);
+    }
+
+    pesan.style.color = "#00e701";
+    pesan.textContent = "Berhasil mendaftar! Silakan masuk.";
 
     setTimeout(() => {
       tampilkanMasuk();
-      document.getElementById('surelMasuk').value = surel;
+      document.getElementById("surelMasuk").value = surel;
     }, 1500);
   };
+
 
   // ============ KELUAR ============
   window.prosesKeluar = async function() {
