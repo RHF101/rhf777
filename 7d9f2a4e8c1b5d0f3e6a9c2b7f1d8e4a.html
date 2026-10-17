@@ -39,6 +39,7 @@
   <div class="tab-menu">
     <button class="tab-btn active" onclick="bukaTab('pengguna')">Data Pengguna</button>
     <button class="tab-btn" onclick="bukaTab('games')">Kelola Games & RTP</button>
+    <button class="tab-btn" onclick="bukaTab('bandar')">Pengaturan Bandar</button>
   </div>
 
   <!-- ================= TAB PENGGUNA ================= -->
@@ -68,14 +69,64 @@
         <tbody id="tabel-games"><tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr></tbody>
       </table>
     </div>
+  
+  <!-- ================= TAB BANDAR ================= -->
+  <div id="tab-bandar" class="konten-tab" style="display:none;">
+    <div style="background: #14141f; border: 1px solid #2a2a3a; border-radius: 12px; padding: 24px; max-width: 600px;">
+      <h3 style="color: #ffd700; margin-bottom: 15px;">Pengaturan Untung / Rugi</h3>
+      <p style="color: #8b8b9e; font-size: 14px; margin-bottom: 20px;">Atur batas maksimal kemenangan pemain. Jika saldo pemain menembus batas ini, sistem akan otomatis mempersulit kemenangan.</p>
+      
+      <div style="margin-bottom: 15px;">
+        <label style="display:block; color:#fff; margin-bottom:5px; font-size:14px;">Batas Maksimal Untung Bandar (Rp)</label>
+        <input type="number" id="maxProfit" placeholder="Contoh: 5000000" style="width:100%; padding:12px; background:#0a0a0f; border:1px solid #2a2a3a; color:#fff; border-radius:8px;">
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display:block; color:#fff; margin-bottom:5px; font-size:14px;">Batas Maksimal Rugi Bandar (Rp)</label>
+        <input type="number" id="maxLoss" placeholder="Contoh: 1000000" style="width:100%; padding:12px; background:#0a0a0f; border:1px solid #2a2a3a; color:#fff; border-radius:8px;">
+      </div>
+
+      <button onclick="simpanBandar()" class="btn-tambah" style="width:100%;">Simpan Pengaturan</button>
+      <p id="statusBandar" style="color:#00e701; margin-top:15px; text-align:center;"></p>
+    </div>
   </div>
+
+</div>
 </div>
 
 <script type="module" src="assets/firebase.js"></script>
 <script>
   window.onload = () => {
-    setTimeout(() => { if(window.fbDb) { muatPengguna(); muatGames(); } }, 1000);
+    setTimeout(() => { if(window.fbDb) { muatPengguna(); muatGames(); muatBandar(); } }, 1000);
   };
+
+  
+  // ============ 3. PENGATURAN BANDAR ============
+  async function muatBandar() {
+    try {
+      const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
+      if (snap.exists()) {
+        const data = snap.val();
+        document.getElementById("maxProfit").value = data.maxProfit || "";
+        document.getElementById("maxLoss").value = data.maxLoss || "";
+      }
+    } catch(e) { console.log(e); }
+  }
+
+  async function simpanBandar() {
+    const profit = Number(document.getElementById("maxProfit").value);
+    const loss = Number(document.getElementById("maxLoss").value);
+    
+    await window.fbSet(window.fbRef(window.fbDb, "pengaturan/bandar"), {
+      maxProfit: profit,
+      maxLoss: loss,
+      updatedAt: new Date().toISOString()
+    });
+    
+    document.getElementById("statusBandar").textContent = "Pengaturan berhasil disimpan!";
+    setTimeout(() => document.getElementById("statusBandar").textContent = "", 3000);
+  }
+
 
   function bukaTab(nama) {
     document.querySelectorAll('.konten-tab').forEach(el => el.style.display = 'none');
