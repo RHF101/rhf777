@@ -47,10 +47,7 @@
         <input type="text" class="input-cari" placeholder="Cari nama permainan..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2a2a3a; background: #0a0a0f; color: #fff; margin-bottom: 0;">
       </div>
       <h2 style="font-size: 20px; margin-bottom: 15px;">Semua Permainan</h2>
-      <div class="game-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;">
-        <!-- Nanti game dari database akan muncul di sini -->
-        <div style="grid-column: 1/-1; text-align: center; color: #8b8b9e; padding: 40px; background: #14141f; border-radius: 12px;">Belum ada game yang ditambahkan.</div>
-      </div>
+      <div class="game-grid" id="gameGridSlot" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;"></div>
     </div>
   </section>
 
@@ -103,6 +100,34 @@
   });
 </script>
 
+
+<script type="module">
+  setTimeout(async () => {
+    if(window.fbAuth && window.fbDb) {
+      const snap = await window.fbGet(window.fbRef(window.fbDb, "games"));
+      const grid = document.getElementById("gameGridSlot");
+      if(grid) {
+        if(snap.exists()) {
+          let html = "";
+          snap.forEach(child => {
+            const g = child.val();
+            html += `
+              <div class="game-card" onclick="window.location.href='games/${g.fileUrl}'" style="background:#14141f; border-radius:10px; overflow:hidden;">
+                <div style="height:140px; background:linear-gradient(135deg,#1e1e2e,#14141f); display:flex; align-items:center; justify-content:center; font-size:40px;">🎮</div>
+                <div style="padding:12px;">
+                  <div style="font-weight:bold; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${g.name}</div>
+                  <div style="font-size:11px; color:#8b8b9e;">${g.provider}</div>
+                </div>
+              </div>`;
+          });
+          grid.innerHTML = html;
+        } else {
+          grid.innerHTML = "<div style='grid-column: 1/-1; text-align: center; color: #8b8b9e; padding: 40px; background: #14141f; border-radius: 12px;'>Belum ada game di database.</div>";
+        }
+      }
+    }
+  }, 1500);
+</script>
 </body>
 
 </html>

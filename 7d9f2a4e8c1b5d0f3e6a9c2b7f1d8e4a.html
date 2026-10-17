@@ -89,6 +89,7 @@
           <tr>
             <th>Nama Game</th>
             <th>Perusahaan</th>
+            <th>Link File</th>
             <th style="text-align: right;">Aksi</th>
           </tr>
         </thead>
@@ -218,6 +219,7 @@
             <tr>
               <td style="font-weight:bold;">${game.name}</td>
               <td style="color:#8b8b9e;">${game.provider}</td>
+              <td style="color:#4a9eff;">${game.fileUrl || "-"}</td>
               <td style="text-align: right;">
                 <button class="btn-aksi btn-edit" onclick="editGame('${id}', '${game.name}', '${game.provider}')">Edit</button>
                 <button class="btn-aksi btn-hapus" onclick="hapusGame('${id}')">Hapus</button>
@@ -226,7 +228,7 @@
           `;
         }
       }
-      tabel.innerHTML = html || `<tr><td colspan="3" style="text-align: center;">Belum ada game.</td></tr>`;
+      tabel.innerHTML = html || `<tr><td colspan="4" style="text-align: center;">Belum ada game.</td></tr>`;
     } catch (e) {
       tabel.innerHTML = `<tr><td colspan="3" style="color:red;">Gagal memuat: ${e.message}</td></tr>`;
     }
@@ -237,11 +239,13 @@
     if (!nama) return;
     const provider = prompt("Perusahaan (PG Soft, Pragmatic, dll):");
     if (!provider) return;
+    const fileUrl = prompt("Nama File Game (contoh: dice.html):");
+    if (!fileUrl) return;
 
     try {
       const newRef = window.fbRef(window.fbDb, "games/" + Date.now());
-      await window.fbSet(newRef, { name: nama, provider: provider });
-      alert("Game ditambahkan!");
+      await window.fbSet(newRef, { name: nama, provider: provider, fileUrl: fileUrl });
+      alert("Game berhasil ditambahkan ke katalog!");
       muatGames();
     } catch (e) { alert("Gagal: " + e.message); }
   }
@@ -251,11 +255,12 @@
     if (!namaBaru) return;
     const providerBaru = prompt("Ubah Perusahaan:", providerLama);
     if (!providerBaru) return;
-
+    const fileLama = prompt("Ubah Nama File Game:", "dice.html"); // Sederhananya minta input baru
+    
     try {
-      await window.fbUpdate(window.fbRef(window.fbDb, "games/" + id), { name: namaBaru, provider: providerBaru });
+      await window.fbUpdate(window.fbRef(window.fbDb, "games/" + id), { name: namaBaru, provider: providerBaru, fileUrl: fileLama });
       muatGames();
-    } catch (e) { alert("Gagal: " + e.message); }
+    } catch (e) { alert("Gagal edit: " + e.message); }
   }
 
   async function hapusGame(id) {
