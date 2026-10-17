@@ -25,7 +25,16 @@
         <div style="font-size: 24px; font-weight: bold; color: #00e701;" id="saldoAkun">Rp 0</div>
       </div>
 
-      <button onclick="keluarAkun()" style="width: 100%; padding: 16px; background: rgba(255, 56, 56, 0.1); border: 1px solid #ff3838; color: #ff3838; border-radius: 12px; font-weight: bold;">Keluar Akun</button>
+      
+      <button onclick="keluarAkun()" style="width: 100%; padding: 16px; background: rgba(255, 56, 56, 0.1); border: 1px solid #ff3838; color: #ff3838; border-radius: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        Keluar Akun
+      </button>
+
     </div>
   </section>
 
@@ -73,9 +82,17 @@
         });
       }, 1000);
     };
+    
     function keluarAkun() {
-      if(window.prosesKeluar) window.prosesKeluar().then(()=> window.location.href='index.html');
+      if(confirm("Apakah Anda yakin ingin keluar?")) {
+        if(window.fbSignOut) {
+          window.fbSignOut(window.fbAuth).then(() => {
+            window.location.href = "index.html";
+          });
+        }
+      }
     }
+
   </script>
 </body>
 </html>

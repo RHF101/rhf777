@@ -184,3 +184,30 @@
   window.perbaruiSaldo();
   window.periksaStatusTampilan();
 })();
+
+// ============ FITUR LOGIN OTOMATIS (SESSION PERSISTENCE) ============
+// Kode ini memastikan jika pengguna sudah login sebelumnya, 
+// sistem akan otomatis mengenali mereka di halaman manapun.
+window.addEventListener('DOMContentLoaded', () => {
+  if (!window.fbAuth) return;
+  
+  window.fbOnAuthStateChanged(window.fbAuth, (user) => {
+    const btnDaftar = document.querySelector('.header-actions .btn-gold');
+    
+    // Jika pengguna sudah login, ubah tombol Daftar menjadi Akun di semua halaman
+    if (user) {
+      if (btnDaftar) {
+        btnDaftar.textContent = 'Akun';
+        btnDaftar.onclick = () => window.location.href = 'akun.html';
+      }
+    } else {
+      // Jika pengguna belum login atau sudah keluar
+      if (btnDaftar && btnDaftar.textContent === 'Akun') {
+        btnDaftar.textContent = 'Daftar';
+        btnDaftar.onclick = () => { 
+          if(typeof bukaAuth === 'function') { bukaAuth(); tampilkanDaftar(); }
+        };
+      }
+    }
+  });
+});
