@@ -53,6 +53,7 @@
       <button class="btn btn-primary" onclick="openDeposit()">+ Deposit</button>
       <button class="btn btn-outline hide-mobile" onclick="openLogin()">Masuk</button>
       <button class="btn btn-gold" onclick="openRegister()">Daftar</button>
+      <button class="hamburger" onclick="bukaMenuAtas()">Menu</button>
     </div>
   </div>
 </header>
@@ -235,3 +236,11 @@
 </script>
 </body>
 </html>
+<script>
+  // Fungsi tombol menu atas
+  function bukaMenuAtas() {
+    // Karena navigasi sudah ada di bawah, kita arahkan menu atas ke fungsi yang sama
+    const pesan = "Silakan gunakan menu di bagian bawah layar untuk berpindah halaman.";
+    alert(pesan);
+  }
+</script>
