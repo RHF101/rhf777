@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galat Sistem</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body style="background: #0a0a0f; padding: 40px 20px;">
+
+<div style="max-width: 500px; margin: 0 auto; text-align: center; padding-top: 40px;">
+  <h1 style="color: #ff3838; font-size: 28px; margin-bottom: 16px;">Kesalahan 403</h1>
+  <p style="color: #8b8b9e; margin-bottom: 32px;">
+    Anda tidak memiliki izin untuk mengakses direktori ini. Silakan kembali ke halaman utama.
+  </p>
+
+  <!-- BANYAK TOMBOL TIPUAN -->
+  <div style="display: grid; gap: 8px; margin-bottom: 32px;">
+    <button class="btn btn-outline" onclick="tipuan()">Masuk Panel Admin</button>
+    <button class="btn btn-outline" onclick="tipuan()">Buka Dasbor</button>
+    <button class="btn btn-outline" onclick="tipuan()">Kelola Pengguna</button>
+    <button class="btn btn-outline" onclick="tipuan()">Pengaturan Sistem</button>
+    <button class="btn btn-outline" onclick="tipuan()">Lihat Basis Data</button>
+    <button class="btn btn-outline" onclick="tipuan()">Ekspor Laporan</button>
+    <button class="btn btn-outline" onclick="tipuan()">Ubah Kata Sandi</button>
+    <button class="btn btn-outline" onclick="tipuan()">Log Aktivitas</button>
+    <button class="btn btn-outline" onclick="tipuan()">Backup Sistem</button>
+    <button class="btn btn-outline" onclick="tipuan()">Pengaturan RTP</button>
+    <button class="btn btn-outline" onclick="tipuan()">Manajemen Saldo</button>
+    <button class="btn btn-outline" onclick="tipuan()">Buka Sesi Aktif</button>
+    <button class="btn btn-outline" onclick="tipuan()">Matikan Sistem</button>
+
+    <!-- SATU TOMBOL BENAR YANG DISAMARKAN DI ANTARA TIPUAN -->
+    <button class="btn btn-outline" onclick="bukaPanelAsli()" style="color: #5a5a6e;">Batal</button>
+  </div>
+
+  <a href="/" class="link-more">Kembali ke Beranda</a>
+</div>
+
+<!-- JENDELA PANEL ASLI YANG MUNCUL SETELAH MASUK -->
+<div class="modal" id="modalAsli">
+  <div class="modal-content" style="text-align: left;">
+    <button class="modal-close" onclick="document.getElementById('modalAsli').classList.remove('open')">Tutup</button>
+    <h3 style="color: #ffd700; margin-bottom: 16px;">Panel Admin RHF 777</h3>
+    <p style="color: #8b8b9e; margin-bottom: 16px;">Selamat datang. Anda berhasil masuk.</p>
+    <div style="display: grid; gap: 8px;">
+      <button class="btn btn-gold" onclick="openModal('Segera', 'Fitur segera hadir')">Kelola Pengguna</button>
+      <button class="btn btn-gold" onclick="openModal('Segera', 'Fitur segera hadir')">Ubah RTP</button>
+      <button class="btn btn-gold" onclick="openModal('Segera', 'Fitur segera hadir')">Tambah Saldo</button>
+      <button class="btn btn-gold" onclick="openModal('Segera', 'Fitur segera hadir')">Lihat Transaksi</button>
+    </div>
+  </div>
+</div>
+
+<!-- JENDELA UNTUK TIPUAN -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">Tutup</button>
+    <h3 id="modalTitle">Galat</h3>
+    <p id="modalBody">Fitur ini tidak tersedia.</p>
+  </div>
+</div>
+
+<script>
+  // ============ FUNGSI TIPUAN ============
+  function tipuan() {
+    const pesan = [
+      'Akses ditolak. Sesi tidak valid.',
+      'Kesalahan internal. Kode: ' + Math.floor(Math.random() * 9999),
+      'Pengguna tidak memiliki hak akses.',
+      'Basis data tidak merespons.',
+      'Silakan login ulang.',
+      'Tindakan mencurigakan terdeteksi.'
+    ];
+    const acak = pesan[Math.floor(Math.random() * pesan.length)];
+    openModal('Galat Sistem', acak);
+  }
+
+  // ============ BUKA PANEL ASLI ============
+  function bukaPanelAsli() {
+    document.getElementById('modalAsli').classList.add('open');
+  }
+
+  // ============ JENDELA MELAYANG ============
+  function openModal(judul, isi) {
+    document.getElementById('modalTitle').textContent = judul;
+    document.getElementById('modalBody').textContent = isi;
+    document.getElementById('modal').classList.add('open');
+  }
+</script>
+
+</body>
+</html>

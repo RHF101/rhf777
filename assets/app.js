@@ -111,3 +111,16 @@ document.querySelectorAll('.nav-link').forEach(link => {
     link.classList.add('active');
   });
 });
+
+// ============ JEBAKAN ANGKA ACAK ============
+function jebakan(event) {
+  event.preventDefault();
+  // Melempar pengunjung iseng ke halaman kosong atau sekadar menampilkan pesan
+  const pesan = ['Akses ditolak', 'Halaman tidak ditemukan', 'Kesalahan sistem', 'Silakan coba lagi nanti'];
+  const acak = pesan[Math.floor(Math.random() * pesan.length)];
+  openModal('Galat', acak);
+}
+
+// ============ MENAMPILKAN ANGKA RAHASIA ============
+// Angka acak tampil di kaki halaman. Satu di antaranya menuju halaman admin.
+// Kamu bisa melihat angka rahasia dengan memeriksa kode halaman ini di peramban.
