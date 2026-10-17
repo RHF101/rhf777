@@ -58,3 +58,11 @@ window.fbSetDoc = setDoc;
 window.fbUpdateDoc = updateDoc;
 window.fbCollection = collection;
 window.fbGetDocs = getDocs;
+
+// Impor fungsi pengaturan database agar tidak offline
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+// Ganti inisialisasi database lama agar lebih stabil
+window.fbDb = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+});

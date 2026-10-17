@@ -109,7 +109,7 @@
       
       pesan.style.color = '#00e701';
       pesan.textContent = 'Berhasil masuk!';
-      setTimeout(() => { tutupAuth(); window.perbaruiSaldo(); window.periksaStatusTampilan(); }, 800);
+      setTimeout(() => { tutupAuth(); window.perbaruiSaldo(); window.periksaStatusTampilan(); }, 1500);
 
     } catch (error) {
       pesan.style.color = '#ff3838';
@@ -129,7 +129,7 @@
       
       pesan.style.color = '#00e701';
       pesan.textContent = 'Berhasil masuk!';
-      setTimeout(() => { tutupAuth(); window.perbaruiSaldo(); window.periksaStatusTampilan(); }, 800);
+      setTimeout(() => { tutupAuth(); window.perbaruiSaldo(); window.periksaStatusTampilan(); }, 1500);
 
     } catch (error) {
       pesan.style.color = '#ff3838';
