@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RHF 777 — Situs Game Online #1 Indonesia</title>
+  <meta name="description" content="RHF 777 — slot, live casino, sportsbook, togel. Bonus 100% member baru. Minimal deposit Rp 10.000.">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👑</text></svg>">
+</head>
+<body>
+
+<!-- TICKER TOP -->
+<div class="top-ticker">
+  <div class="ticker-track">
+    <span>🎰 <b>Jackpot!</b> Budi*** menang <b>Rp 12.500.000</b> di Gates of Olympus</span>
+    <span>💎 Siti*** menang <b>Rp 8.700.000</b> di Sweet Bonanza</span>
+    <span>🔥 Andi*** menang <b>Rp 24.300.000</b> di Mahjong Ways</span>
+    <span>👑 Rina*** menang <b>Rp 5.200.000</b> di Fortune Tiger</span>
+    <span>🎰 Jackpot! Budi*** menang Rp 12.500.000 di Gates of Olympus</span>
+    <span>💎 Siti*** menang Rp 8.700.000 di Sweet Bonanza</span>
+    <span>🔥 Andi*** menang Rp 24.300.000 di Mahjong Ways</span>
+    <span>👑 Rina*** menang Rp 5.200.000 di Fortune Tiger</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <span class="logo-icon">👑</span>
+      <span class="logo-text">RHF<span class="logo-num">777</span></span>
+    </a>
+
+    <nav class="nav">
+      <a href="#beranda" class="nav-link active">Beranda</a>
+      <a href="#slot" class="nav-link">Slot</a>
+      <a href="#live" class="nav-link">Live Casino</a>
+      <a href="#sports" class="nav-link">Sportsbook</a>
+      <a href="#promosi" class="nav-link">Promosi</a>
+      <a href="#vip" class="nav-link">VIP</a>
+    </nav>
+
+    <div class="header-actions">
+      <div class="balance-pill">
+        <span class="balance-icon">💰</span>
+        <div class="balance-info">
+          <span class="balance-label">Saldo</span>
+          <span class="balance-amount" id="balanceAmount">Rp 0</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="openDeposit()">+ Deposit</button>
+      <button class="btn btn-outline hide-mobile" onclick="openLogin()">Masuk</button>
+      <button class="btn btn-gold" onclick="openRegister()">Daftar</button>
+    </div>
+
+    <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#beranda">Beranda</a>
+  <a href="#slot">Slot</a>
+  <a href="#live">Live Casino</a>
+  <a href="#sports">Sportsbook</a>
+  <a href="#promosi">Promosi</a>
+  <a href="#vip">VIP</a>
+  <div class="mobile-menu-actions">
+    <button class="btn btn-outline" onclick="openLogin()">Masuk</button>
+    <button class="btn btn-gold" onclick="openRegister()">Daftar</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🎉 MEMBER BARU · KHUSUS HARI INI</div>
+    <h1 class="hero-title">BONUS <span class="gold-text">100%</span><br>DI DEPAN</h1>
+    <p class="hero-sub">Minimal deposit Rp 10.000 · Proses instan 1 menit · Online 24/7</p>
+    <div class="hero-actions">
+      <button class="btn btn-gold btn-lg" onclick="openRegister()">Klaim Bonus Sekarang</button>
+      <button class="btn btn-ghost btn-lg" onclick="openPromo()">Lihat Promo</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-value">250K+</div>
+        <div class="stat-label">Member Aktif</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-value">Rp 8.5T</div>
+        <div class="stat-label">Total Payout</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-value">24/7</div>
+        <div class="stat-label">Live Support</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-decoration">
+    <span class="float-coin c1">💰</span>
+    <span class="float-coin c2">💎</span>
+    <span class="float-coin c3">🪙</span>
+    <span class="float-coin c4">⭐</span>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section" id="slot">
+  <div class="container">
+    <div class="section-header">
+      <h2>Kategori Game</h2>
+      <a href="#" class="link-more">Lihat Semua →</a>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-cat="all">Semua</button>
+      <button class="tab" data-cat="slot">Slot</button>
+      <button class="tab" data-cat="live">Live Casino</button>
+      <button class="tab" data-cat="sports">Sportsbook</button>
+      <button class="tab" data-cat="togel">Togel</button>
+      <button class="tab" data-cat="arcade">Arcade</button>
+    </div>
+
+    <div class="game-grid" id="gameGrid"></div>
+  </div>
+</section>
+
+<!-- PROMOTIONS -->
+<section class="section" id="promosi">
+  <div class="container">
+    <div class="section-header">
+      <h2>Promosi Spesial</h2>
+    </div>
+
+    <div class="promo-grid">
+      <div class="promo-card">
+        <div class="promo-emoji">🎁</div>
+        <div class="promo-badge">MEMBER BARU</div>
+        <h3>Bonus 100%</h3>
+        <p>Klaim bonus deposit pertamamu hingga Rp 1.000.000</p>
+        <button class="btn btn-gold" onclick="openRegister()">Klaim</button>
+      </div>
+      <div class="promo-card">
+        <div class="promo-emoji">💸</div>
+        <div class="promo-badge">CASHBACK</div>
+        <h3>Cashback 10%</h3>
+        <p>Cashback mingguan untuk semua member aktif</p>
+        <button class="btn btn-gold" onclick="openRegister()">Klaim</button>
+      </div>
+      <div class="promo-card">
+        <div class="promo-emoji">🔄</div>
+        <div class="promo-badge">ROLLINGAN</div>
+        <h3>Rollingan 0.8%</h3>
+        <p>Dibagikan setiap hari tanpa minimum turnover</p>
+        <button class="btn btn-gold" onclick="openRegister()">Klaim</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-icon">👑</span>
+          <span class="logo-text">RHF<span class="logo-num">777</span></span>
+        </div>
+        <p class="footer-desc">Situs game online terpercaya sejak 2020. Ribuan game, proses deposit & withdraw cepat, support 24/7.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Menu</h4>
+        <a href="#">Beranda</a>
+        <a href="#slot">Slot</a>
+        <a href="#live">Live Casino</a>
+        <a href="#promosi">Promosi</a>
+      </div>
+      <div class="footer-col">
+        <h4>Bantuan</h4>
+        <a href="#">Tentang Kami</a>
+        <a href="#">Kontak</a>
+        <a href="#">Syarat & Ketentuan</a>
+        <a href="#">Kebijakan Privasi</a>
+      </div>
+      <div class="footer-col">
+        <h4>Pembayaran</h4>
+        <div class="pay-methods">
+          <span>BCA</span><span>Mandiri</span><span>BNI</span><span>BRI</span>
+          <span>OVO</span><span>GoPay</span><span>Dana</span><span>LinkAja</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2024 RHF 777. All rights reserved. · 18+ · Bermain dengan bijak.
+    </div>
+  </div>
+</footer>
+
+<!-- FLOATING CHAT -->
+<button class="chat-fab" onclick="openChat()" title="Live Chat">💬</button>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="#beranda" class="bn-item active"><span>🏠</span>Beranda</a>
+  <a href="#slot" class="bn-item"><span>🎰</span>Slot</a>
+  <a href="#live" class="bn-item"><span>🎲</span>Live</a>
+  <a href="#promosi" class="bn-item"><span>🎁</span>Promo</a>
+  <a href="#" class="bn-item" onclick="openLogin(); return false;"><span>👤</span>Akun</a>
+</nav>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle">Coming Soon</h3>
+    <p id="modalBody">Fitur ini akan segera tersedia.</p>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
