@@ -59,16 +59,17 @@
   window.tampilkanMasuk = function() { document.getElementById('tampilanMasuk').style.display = 'block'; document.getElementById('tampilanDaftar').style.display = 'none'; };
   window.tampilkanDaftar = function() { document.getElementById('tampilanMasuk').style.display = 'none'; document.getElementById('tampilanDaftar').style.display = 'block'; };
 
-  // FUNGSI SAKTI: Otomatis buat dompet jika belum ada
+  // FUNGSI SAKTI: Otomatis buat dompet di Realtime Database
   async function pastikanProfilAda(user, namaTambahan = "") {
-    if (!window.fbDb) throw new Error("Koneksi database terputus. Coba lagi.");
-    const docRef = window.fbDoc(window.fbDb, "users", user.uid);
+    if (!window.fbDb) throw new Error("Koneksi database terputus.");
     
     try {
-      const docSnap = await window.fbGetDoc(docRef);
-      if (!docSnap.exists()) {
+      const dbRef = window.fbRef(window.fbDb, "users/" + user.uid);
+      const snapshot = await window.fbGet(dbRef);
+      
+      if (!snapshot.exists()) {
         const namaBaru = namaTambahan || user.displayName || user.email.split('@')[0];
-        await window.fbSetDoc(docRef, {
+        await window.fbSet(dbRef, {
           username: namaBaru,
           email: user.email,
           phone: "",
@@ -77,9 +78,9 @@
         });
         return { username: namaBaru, balance: 1000 };
       }
-      return docSnap.data();
+      return snapshot.val();
     } catch (e) {
-      throw new Error("Gagal membaca database. Pastikan internet stabil.");
+      throw new Error("Gagal membaca database: " + e.message);
     }
   }
 
@@ -92,7 +93,7 @@
 
     try {
       const userCredential = await window.fbSignInWithEmailAndPassword(window.fbAuth, surel, sandi);
-      await pastikanProfilAda(userCredential.user); // Buat dompet jika belum ada
+      await pastikanProfilAda(userCredential.user); 
       
       pesan.style.color = '#00e701'; pesan.textContent = 'Berhasil masuk!';
       setTimeout(() => { tutupAuth(); window.perbaruiSaldo(); window.periksaStatusTampilan(); }, 1500);
@@ -107,7 +108,7 @@
 
     try {
       const result = await window.fbSignInGoogle(window.fbAuth, window.fbGoogleProvider);
-      await pastikanProfilAda(result.user); // Buat dompet jika belum ada
+      await pastikanProfilAda(result.user); 
       
       pesan.style.color = '#00e701'; pesan.textContent = 'Berhasil masuk!';
       setTimeout(() => { tutupAuth(); window.perbaruiSaldo(); window.periksaStatusTampilan(); }, 1500);
@@ -126,7 +127,6 @@
     pesan.style.color = '#ffd700'; pesan.textContent = 'Mendaftarkan...';
 
     try {
-      
       const userCredential = await window.fbCreateUserWithEmailAndPassword(window.fbAuth, surel, sandi);
       
       await window.fbSet(window.fbRef(window.fbDb, "users/" + userCredential.user.uid), {
@@ -136,7 +136,6 @@
         balance: 1000,
         created_at: new Date().toISOString()
       });
-
 
       pesan.style.color = '#00e701'; pesan.textContent = 'Berhasil daftar! Silakan masuk.';
       setTimeout(() => { tampilkanMasuk(); }, 1500);
