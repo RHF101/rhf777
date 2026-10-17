@@ -14,21 +14,26 @@
       <span>Siti*** menang <b>Rp 8.700.000</b></span>
     </div>
   </div>
-  <header class="header">
-    <div class="header-inner">
-      <a href="index.html" class="logo">
-        <svg class="logo-vektor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"></path></svg>
-        <span class="logo-text">RHF<span class="logo-num">777</span></span>
-      </a>
-      <div class="header-actions" style="margin-left: auto;">
-        <div class="balance-pill">
-          <div class="balance-info"><span class="balance-amount" id="balanceAmount">Rp 0</span></div>
+  
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <svg class="logo-vektor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"></path></svg>
+      <span class="logo-text">RHF<span class="logo-num">777</span></span>
+    </a>
+    <div class="header-actions" style="margin-left: auto;">
+      <div class="balance-pill">
+        <svg class="icon-vektor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"></circle><path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path></svg>
+        <div class="balance-info">
+          <span class="balance-amount" id="balanceAmount">Rp 0</span>
         </div>
-        <button class="btn btn-primary" onclick="window.location.href='deposit.html'">+ Deposit</button>
-        <button class="btn btn-gold" onclick="window.location.href='akun.html'">Akun</button>
       </div>
+      <button class="btn btn-primary" onclick="window.location.href='deposit.html'">+ Deposit</button>
+      <button class="btn btn-gold" onclick="window.location.href='akun.html'">Akun</button>
     </div>
-  </header>
+  </div>
+</header>
+
 
   <!-- KONTEN SLOT -->
   <section class="section">
@@ -70,16 +75,18 @@
 
 <script type="module" src="assets/firebase.js"></script>
   <script src="assets/auth.js"></script>
-</body>
-</html>
-
-
 
 <script>
-  // Menunggu 1 detik agar Firebase siap, lalu tarik saldo
   setTimeout(() => {
     if (typeof window.muatSaldoHeader === 'function') {
       window.muatSaldoHeader();
     }
-  }, 1000);
+  }, 1200);
 </script>
+</body>
+
+</html>
+
+
+
+
