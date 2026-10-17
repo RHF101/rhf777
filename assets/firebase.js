@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getDatabase, ref, set, get, child, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB-6xbQLaV7gBUxu3xXqJkp_8_6Yu1oAKE",
@@ -15,7 +15,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = getDatabase(app); // Ganti ke Realtime Database
 const googleProvider = new GoogleAuthProvider();
 
 // Daftarkan ke jendela global
@@ -27,13 +27,14 @@ window.fbCreateUserWithEmailAndPassword = createUserWithEmailAndPassword;
 window.fbSignInWithEmailAndPassword = signInWithEmailAndPassword;
 window.fbSignOut = signOut;
 window.fbOnAuthStateChanged = onAuthStateChanged;
-window.fbDoc = doc;
-window.fbGetDoc = getDoc;
-window.fbSetDoc = setDoc;
-window.fbUpdateDoc = updateDoc;
-window.fbCollection = collection;
-window.fbGetDocs = getDocs;
-window.fbDeleteDoc = deleteDoc;
-window.fbAddDoc = addDoc;
 
-console.log("Firebase berhasil dimuat dan siap!");
+// Fungsi khusus Realtime Database
+window.fbRef = ref;
+window.fbSet = set;
+window.fbGet = get;
+window.fbChild = child;
+window.fbUpdate = update;
+window.fbRemove = remove;
+window.fbOnValue = onValue;
+
+console.log("Firebase Realtime Database siap!");

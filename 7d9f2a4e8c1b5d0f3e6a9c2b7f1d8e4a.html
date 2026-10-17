@@ -120,64 +120,64 @@
 
 </div>
 
+
 <script type="module" src="assets/firebase.js"></script>
 <script>
-  // Pastikan Firebase sudah termuat
   window.onload = () => {
     setTimeout(() => {
-      if(!window.fbDb) {
-        alert("Gagal terhubung ke Firebase.");
-        return;
-      }
+      if(!window.fbDb) return;
       muatPengguna();
       muatGames();
     }, 1000);
   };
 
-  // ============ NAVIGASI TAB ============
   function bukaTab(nama) {
-    document.querySelectorAll('.konten-tab').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById('tab-' + nama).style.display = 'block';
-    event.target.classList.add('active');
+    document.querySelectorAll(".konten-tab").forEach(el => el.style.display = "none");
+    document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+    document.getElementById("tab-" + nama).style.display = "block";
+    event.target.classList.add("active");
   }
 
   // ============ 1. DATA PENGGUNA ============
   async function muatPengguna() {
-    const tabel = document.getElementById('tabel-user');
+    const tabel = document.getElementById("tabel-user");
     try {
-      const querySnapshot = await window.fbGetDocs(window.fbCollection(window.fbDb, "users"));
+      const dbRef = window.fbRef(window.fbDb, "users");
+      const snapshot = await window.fbGet(dbRef);
+      
       let html = "";
       let totalSaldo = 0;
       let jumlahUser = 0;
 
-      querySnapshot.forEach((doc) => {
-        const user = doc.data();
-        const id = doc.id;
-        jumlahUser++;
-        totalSaldo += Number(user.balance || 0);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        for (const id in data) {
+          const user = data[id];
+          jumlahUser++;
+          totalSaldo += Number(user.balance || 0);
 
-        html += `
-          <tr>
-            <td>
-              <div style="font-weight:bold;">${user.username || 'Tanpa Nama'}</div>
-              <div style="font-size:12px; color:#8b8b9e;">${user.email || '-'}</div>
-            </td>
-            <td>${user.phone || '-'}</td>
-            <td style="color:#00e701; font-weight:bold;">Rp ${Number(user.balance || 0).toLocaleString('id-ID')}</td>
-            <td style="text-align: right;">
-              <button class="btn-aksi btn-edit" onclick="editUser('${id}', '${user.username}', '${user.balance}')">Edit</button>
-            </td>
-          </tr>
-        `;
-      });
+          html += `
+            <tr>
+              <td>
+                <div style="font-weight:bold;">${user.username || "Tanpa Nama"}</div>
+                <div style="font-size:12px; color:#8b8b9e;">${user.email || "-"}</div>
+              </td>
+              <td>${user.phone || "-"}</td>
+              <td style="color:#00e701; font-weight:bold;">Rp ${Number(user.balance || 0).toLocaleString("id-ID")}</td>
+              <td style="text-align: right;">
+                <button class="btn-aksi btn-edit" onclick="editUser('${id}', '${user.username}', '${user.balance}')">Edit</button>
+              </td>
+            </tr>
+          `;
+        }
+      }
 
       tabel.innerHTML = html || `<tr><td colspan="4" style="text-align: center;">Belum ada pengguna.</td></tr>`;
-      document.getElementById('total-user').textContent = jumlahUser;
-      document.getElementById('total-saldo').textContent = "Rp " + totalSaldo.toLocaleString('id-ID');
+      document.getElementById("total-user").textContent = jumlahUser;
+      document.getElementById("total-saldo").textContent = "Rp " + totalSaldo.toLocaleString("id-ID");
 
     } catch (e) {
-      tabel.innerHTML = `<tr><td colspan="4" style="color:red;">Gagal memuat pengguna: ${e.message}</td></tr>`;
+      tabel.innerHTML = `<tr><td colspan="4" style="color:red;">Gagal memuat: ${e.message}</td></tr>`;
     }
   }
 
@@ -188,14 +188,14 @@
     const saldoBaru = prompt("Ubah Saldo (Angka saja):", saldoLama);
     if (saldoBaru === null) return;
 
-    if (isNaN(Number(saldoBaru))) { alert("Saldo harus berupa angka!"); return; }
+    if (isNaN(Number(saldoBaru))) { alert("Saldo harus angka!"); return; }
 
     try {
-      await window.fbUpdateDoc(window.fbDoc(window.fbDb, "users", id), {
+      await window.fbUpdate(window.fbRef(window.fbDb, "users/" + id), {
         username: namaBaru,
         balance: Number(saldoBaru)
       });
-      alert("Data pengguna berhasil diperbarui!");
+      alert("Data pengguna diperbarui!");
       muatPengguna();
     } catch (e) {
       alert("Gagal update: " + e.message);
@@ -204,43 +204,46 @@
 
   // ============ 2. KELOLA GAMES ============
   async function muatGames() {
-    const tabel = document.getElementById('tabel-games');
+    const tabel = document.getElementById("tabel-games");
     try {
-      const querySnapshot = await window.fbGetDocs(window.fbCollection(window.fbDb, "games"));
+      const dbRef = window.fbRef(window.fbDb, "games");
+      const snapshot = await window.fbGet(dbRef);
       let html = "";
       
-      querySnapshot.forEach((doc) => {
-        const game = doc.data();
-        html += `
-          <tr>
-            <td style="font-weight:bold;">${game.name}</td>
-            <td style="color:#8b8b9e;">${game.provider}</td>
-            <td style="text-align: right;">
-              <button class="btn-aksi btn-edit" onclick="editGame('${doc.id}', '${game.name}', '${game.provider}')">Edit</button>
-              <button class="btn-aksi btn-hapus" onclick="hapusGame('${doc.id}')">Hapus</button>
-            </td>
-          </tr>
-        `;
-      });
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        for (const id in data) {
+          const game = data[id];
+          html += `
+            <tr>
+              <td style="font-weight:bold;">${game.name}</td>
+              <td style="color:#8b8b9e;">${game.provider}</td>
+              <td style="text-align: right;">
+                <button class="btn-aksi btn-edit" onclick="editGame('${id}', '${game.name}', '${game.provider}')">Edit</button>
+                <button class="btn-aksi btn-hapus" onclick="hapusGame('${id}')">Hapus</button>
+              </td>
+            </tr>
+          `;
+        }
+      }
       tabel.innerHTML = html || `<tr><td colspan="3" style="text-align: center;">Belum ada game.</td></tr>`;
     } catch (e) {
-      tabel.innerHTML = `<tr><td colspan="3" style="color:red;">Gagal memuat game: ${e.message}</td></tr>`;
+      tabel.innerHTML = `<tr><td colspan="3" style="color:red;">Gagal memuat: ${e.message}</td></tr>`;
     }
   }
 
   async function tambahGame() {
-    const nama = prompt("Masukkan Nama Game Baru:");
+    const nama = prompt("Nama Game Baru:");
     if (!nama) return;
-    const provider = prompt("Masukkan Nama Perusahaan (PG Soft, Pragmatic, dll):");
+    const provider = prompt("Perusahaan (PG Soft, Pragmatic, dll):");
     if (!provider) return;
 
     try {
-      await window.fbAddDoc(window.fbCollection(window.fbDb, "games"), { name: nama, provider: provider });
-      alert("Game berhasil ditambahkan!");
+      const newRef = window.fbRef(window.fbDb, "games/" + Date.now());
+      await window.fbSet(newRef, { name: nama, provider: provider });
+      alert("Game ditambahkan!");
       muatGames();
-    } catch (e) {
-      alert("Gagal tambah game: " + e.message);
-    }
+    } catch (e) { alert("Gagal: " + e.message); }
   }
 
   async function editGame(id, namaLama, providerLama) {
@@ -250,18 +253,19 @@
     if (!providerBaru) return;
 
     try {
-      await window.fbUpdateDoc(window.fbDoc(window.fbDb, "games", id), { name: namaBaru, provider: providerBaru });
+      await window.fbUpdate(window.fbRef(window.fbDb, "games/" + id), { name: namaBaru, provider: providerBaru });
       muatGames();
-    } catch (e) { alert("Gagal edit: " + e.message); }
+    } catch (e) { alert("Gagal: " + e.message); }
   }
 
   async function hapusGame(id) {
-    if (!confirm("Yakin ingin menghapus game ini?")) return;
+    if (!confirm("Hapus game ini?")) return;
     try {
-      await window.fbDeleteDoc(window.fbDoc(window.fbDb, "games", id));
+      await window.fbRemove(window.fbRef(window.fbDb, "games/" + id));
       muatGames();
-    } catch (e) { alert("Gagal hapus: " + e.message); }
+    } catch (e) { alert("Gagal: " + e.message); }
   }
 </script>
 </body>
 </html>
+

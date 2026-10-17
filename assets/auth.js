@@ -126,16 +126,17 @@
     pesan.style.color = '#ffd700'; pesan.textContent = 'Mendaftarkan...';
 
     try {
+      
       const userCredential = await window.fbCreateUserWithEmailAndPassword(window.fbAuth, surel, sandi);
       
-      // Buat dompet lengkap dengan nama dan telepon
-      await window.fbSetDoc(window.fbDoc(window.fbDb, "users", userCredential.user.uid), {
+      await window.fbSet(window.fbRef(window.fbDb, "users/" + userCredential.user.uid), {
         username: nama,
         email: surel,
         phone: telepon,
         balance: 1000,
         created_at: new Date().toISOString()
       });
+
 
       pesan.style.color = '#00e701'; pesan.textContent = 'Berhasil daftar! Silakan masuk.';
       setTimeout(() => { tampilkanMasuk(); }, 1500);
