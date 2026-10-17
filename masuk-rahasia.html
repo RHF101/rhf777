@@ -211,7 +211,7 @@
         pesan.textContent = '';
         document.getElementById('inputSurel').value = '';
         document.getElementById('inputSandi').value = '';
-        window.location.href='dasbor-pengelola.html';
+        sessionStorage.setItem('akses_pengelola', 'diberikan'); window.location.href='dasbor-pengelola.html';
       }, 800);
 
     } else {

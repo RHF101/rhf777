@@ -235,7 +235,13 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // Pemeriksaan keamanan: Jika belum login, tendang kembali ke halaman masuk
+    if (sessionStorage.getItem("akses_pengelola") !== "diberikan") {
+      window.location.href = "masuk-rahasia.html";
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // ==========================================
   // KONFIGURASI HUBUNGAN DATABASE
@@ -355,7 +361,7 @@
   // ==========================================
   function keluar() {
     // Kembali ke halaman masuk
-    window.location.href = 'masuk-rahasia.html';
+    sessionStorage.removeItem('akses_pengelola'); window.location.href = 'masuk-rahasia.html';
   }
 
   // ==========================================
