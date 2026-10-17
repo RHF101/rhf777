@@ -69,25 +69,13 @@
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Permainan Populer</h2>
-        <a href="#" class="link-more" onclick="bukaHalaman('slot'); return false;">Lihat Semua</a>
-      </div>
-      <div class="game-grid" id="gameGridPopuler"></div>
-    </div>
-  </section>
+  
 </div>
 
 <div id="halaman-slot" class="halaman-konten">
   <div class="wadah-pencarian">
     <input type="text" id="pencarian" class="input-cari" placeholder="Cari nama permainan..." onkeyup="cariPermainan()">
-    <div class="filter-provider">
-      <button class="btn-provider active" onclick="filterPerusahaan('semua', this)">Semua</button>
-      <button class="btn-provider" onclick="filterPerusahaan('Pragmatic Play', this)">Pragmatic Play</button>
-      <button class="btn-provider" onclick="filterPerusahaan('PG Soft', this)">PG Soft</button>
-    </div>
+    
   </div>
   <section class="section">
     <div class="container">
@@ -190,25 +178,35 @@
     { name: 'Fortune Tiger', provider: 'PG Soft' }
   ];
 
-  document.getElementById('gameGridPopuler').innerHTML = SEMUA_GAME.map(g => {
-    const imgName = g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
-    return `<div class="game-card"><div class="game-img-wrap"><img src="assets/img/games/${imgName}" class="game-img" onerror="this.style.display='none'"></div><div class="game-info"><div class="game-name">${g.name}</div><div class="game-provider">${g.provider}</div></div></div>`;
-  }).join('');
+  
 
-  document.getElementById('gameGridSlot').innerHTML = SEMUA_GAME.map(g => {
-    const imgName = g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
-    return `<div class="game-card"><div class="game-img-wrap"><img src="assets/img/games/${imgName}" class="game-img" onerror="this.style.display='none'"></div><div class="game-info"><div class="game-name">${g.name}</div><div class="game-provider">${g.provider}</div></div></div>`;
-  }).join('');
+  
 
+  
   function bukaHalaman(nama) {
-    document.querySelectorAll('.halaman-konten').forEach(el => el.classList.remove('aktif'));
-    document.getElementById('halaman-' + nama).classList.add('aktif');
-    document.querySelectorAll('.bn-item').forEach(el => el.classList.remove('active'));
-    const btn = document.getElementById('btn-nav-' + nama);
-    if(btn) btn.classList.add('active');
+    // Sembunyikan semua halaman
+    document.querySelectorAll(".halaman-konten").forEach(el => el.style.display = "none");
+    // Tampilkan halaman yang dituju
+    const target = document.getElementById("halaman-" + nama);
+    if(target) target.style.display = "block";
+    
+    // Ubah warna ikon menu bawah
+    document.querySelectorAll(".bn-item").forEach(el => el.classList.remove("active"));
+    const btnAktif = document.getElementById("btn-nav-" + nama);
+    if(btnAktif) btnAktif.classList.add("active");
+    
+    // Gulir ke atas
     window.scrollTo(0, 0);
-    if(nama === 'akun') periksaAkun();
+    
+    // Jika yang dibuka halaman akun, muat datanya
+    if(nama === "akun") periksaAkun();
   }
+
+  // Menjalankan halaman beranda secara default saat web dibuka
+  window.onload = function() {
+    bukaHalaman("beranda");
+  };
+
 
   
   

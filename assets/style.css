@@ -316,3 +316,13 @@ img { max-width: 100%; display: block; object-fit: contain; }
 
 /* Menyembunyikan tombol Menu lama (jika ada) */
 .hamburger-menu, .hamburger { display: none !important; }
+
+/* ============ PERBAIKAN NAVIGASI HALAMAN ============ */
+.halaman-konten {
+  display: none; /* Semua halaman disembunyikan secara default */
+  padding-bottom: 90px;
+}
+.halaman-konten.aktif, 
+.halaman-konten[style*="display: block"] {
+  display: block !important; /* Hanya halaman yang aktif yang ditampilkan */
+}
