@@ -153,42 +153,60 @@
 
   async function prosesSekarang() {
     if(!userSekarang) return alert("Silakan login terlebih dahulu!");
-    const nominal = Number(document.getElementById('inputNominal').value);
-    if(!nominal || nominal < 1000) return alert("Minimal Rp 1.000");
+    
+    // AMBIL SALDO TERBARU DARI DATABASE
+    const snapUser = await window.fbGet(window.fbRef(window.fbDb, "users/" + userSekarang.uid));
+    if(!snapUser.exists()) return alert("Data akun tidak ditemukan.");
+    const saldoSaatIni = Number(snapUser.val().balance || 0);
 
-    const btn = document.getElementById('btnProses');
-    const pesan = document.getElementById('pesan');
+    const nominal = Number(document.getElementById("inputNominal").value);
+    
+    // VALIDASI NOMINAL
+    if(!nominal || nominal < 1000) {
+      return alert("Minimal transaksi adalah Rp 1.000");
+    }
+
+    // VALIDASI SALDO UNTUK WIDROW
+    if(modeSekarang === "widrow" && saldoSaatIni < nominal) {
+      return alert("Saldo Anda tidak mencukupi! Saldo saat ini: Rp " + saldoSaatIni.toLocaleString("id-ID"));
+    }
+
+    const btn = document.getElementById("btnProses");
+    const pesan = document.getElementById("pesan");
     btn.disabled = true; btn.textContent = "Memproses...";
 
     try {
       let hasil;
-      if(modeSekarang === 'deposit') {
+      if(modeSekarang === "deposit") {
         hasil = await window.ajukanDeposit(userSekarang.uid, usernameSekarang, nominal, "Manual");
         pesan.style.color = "#ffd700";
-        pesan.textContent = `Pesanan deposit Rp ${nominal.toLocaleString('id-ID')} dikirim! Tunggu persetujuan Admin.`;
+        pesan.textContent = `Pesanan deposit Rp ${nominal.toLocaleString("id-ID")} dikirim! Tunggu persetujuan Admin.`;
       } else {
-        const nomorTujuan = document.getElementById('inputNomorTujuan').value;
-        if(!nomorTujuan) { btn.disabled = false; btn.textContent = "Konfirmasi Penarikan"; return alert("Masukkan nomor tujuan DANA/OVO!"); }
+        const nomorTujuan = document.getElementById("inputNomorTujuan").value;
+        if(!nomorTujuan) { 
+          btn.disabled = false; btn.textContent = "Konfirmasi Penarikan"; 
+          return alert("Masukkan nomor tujuan DANA/OVO!"); 
+        }
         
         hasil = await window.ajukanWidrow(userSekarang.uid, usernameSekarang, nominal, nomorTujuan, "Manual");
         pesan.style.color = "#ffb800";
-        pesan.textContent = `Penarikan Rp ${nominal.toLocaleString('id-ID')} sedang diproses Admin.`;
+        pesan.textContent = `Penarikan Rp ${nominal.toLocaleString("id-ID")} sedang diproses Admin.`;
         
-        if(typeof window.kirimNotifWidrow === 'function') {
+        if(typeof window.kirimNotifWidrow === "function") {
            window.kirimNotifWidrow(usernameSekarang, nominal, nomorTujuan);
         }
       }
       
-      // Update saldo terbaru jika ada
-      const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + userSekarang.uid));
-      if(snap.exists()) document.getElementById('balanceAmount').textContent = Number(snap.val().balance).toLocaleString('id-ID');
-      document.getElementById('inputNominal').value = "";
+      // Update saldo terbaru di header
+      const snapUpdate = await window.fbGet(window.fbRef(window.fbDb, "users/" + userSekarang.uid));
+      if(snapUpdate.exists()) document.getElementById("balanceAmount").textContent = Number(snapUpdate.val().balance).toLocaleString("id-ID");
+      document.getElementById("inputNominal").value = "";
 
     } catch (err) {
       pesan.style.color = "#ff3838";
       pesan.textContent = "Gagal: " + err.message;
     } finally {
-      btn.textContent = modeSekarang === 'deposit' ? 'Konfirmasi Deposit' : 'Konfirmasi Penarikan';
+      btn.textContent = modeSekarang === "deposit" ? "Konfirmasi Deposit" : "Konfirmasi Penarikan";
       btn.disabled = false;
     }
   }
