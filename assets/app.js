@@ -1,28 +1,28 @@
-// ============ GAME DATA ============
+// ============ DATA PERMAINAN ============
 const GAMES = [
-  { name: 'Gates of Olympus', provider: 'Pragmatic Play', cat: 'slot', emoji: '⚡', bg: 'linear-gradient(135deg, #667eea, #764ba2)' },
-  { name: 'Sweet Bonanza', provider: 'Pragmatic Play', cat: 'slot', emoji: '🍬', bg: 'linear-gradient(135deg, #f093fb, #f5576c)' },
-  { name: 'Mahjong Ways', provider: 'PG Soft', cat: 'slot', emoji: '🀄', bg: 'linear-gradient(135deg, #f6d365, #fda085)' },
-  { name: 'Fortune Tiger', provider: 'PG Soft', cat: 'slot', emoji: '🐯', bg: 'linear-gradient(135deg, #ff6a00, #ee0979)' },
-  { name: 'Starlight Princess', provider: 'Pragmatic Play', cat: 'slot', emoji: '⭐', bg: 'linear-gradient(135deg, #8e2de2, #4a00e0)' },
-  { name: 'Sugar Rush', provider: 'Pragmatic Play', cat: 'slot', emoji: '🍭', bg: 'linear-gradient(135deg, #ff9a9e, #fecfef)' },
-  { name: 'Wild West Gold', provider: 'Pragmatic Play', cat: 'slot', emoji: '🤠', bg: 'linear-gradient(135deg, #b79891, #94716b)' },
-  { name: 'Big Bass Bonanza', provider: 'Pragmatic Play', cat: 'slot', emoji: '🎣', bg: 'linear-gradient(135deg, #4facfe, #00f2fe)' },
-  { name: '5 Lions Megaways', provider: 'Pragmatic Play', cat: 'slot', emoji: '🦁', bg: 'linear-gradient(135deg, #f12711, #f5af19)' },
-  { name: 'Aztec Gems', provider: 'Pragmatic Play', cat: 'slot', emoji: '💎', bg: 'linear-gradient(135deg, #00b09b, #96c93d)' },
-  { name: 'Blackjack', provider: 'Live Casino', cat: 'live', emoji: '🃏', bg: 'linear-gradient(135deg, #0f2027, #2c5364)' },
-  { name: 'Roulette', provider: 'Live Casino', cat: 'live', emoji: '🎡', bg: 'linear-gradient(135deg, #7b4397, #dc2430)' },
-  { name: 'Baccarat', provider: 'Live Casino', cat: 'live', emoji: '🎴', bg: 'linear-gradient(135deg, #16a085, #f4d03f)' },
-  { name: 'Dragon Tiger', provider: 'Live Casino', cat: 'live', emoji: '🐉', bg: 'linear-gradient(135deg, #cb2d3e, #ef473a)' },
-  { name: 'Sports Betting', provider: 'Saba Sports', cat: 'sports', emoji: '⚽', bg: 'linear-gradient(135deg, #11998e, #38ef7d)' },
-  { name: 'E-Sports', provider: 'TF Gaming', cat: 'sports', emoji: '🎮', bg: 'linear-gradient(135deg, #FC466B, #3F5EFB)' },
-  { name: '4D Togel', provider: 'Internal', cat: 'togel', emoji: '🎯', bg: 'linear-gradient(135deg, #c31432, #240b36)' },
-  { name: 'Crash', provider: 'Internal', cat: 'arcade', emoji: '🚀', bg: 'linear-gradient(135deg, #3a1c71, #d76d77)' },
-  { name: 'Dice', provider: 'Internal', cat: 'arcade', emoji: '🎲', bg: 'linear-gradient(135deg, #2c3e50, #4ca1af)' },
-  { name: 'Mines', provider: 'Internal', cat: 'arcade', emoji: '💣', bg: 'linear-gradient(135deg, #8e2de2, #4a00e0)' },
+  { name: 'Gates of Olympus', provider: 'Pragmatic Play', cat: 'slot' },
+  { name: 'Sweet Bonanza', provider: 'Pragmatic Play', cat: 'slot' },
+  { name: 'Mahjong Ways', provider: 'PG Soft', cat: 'slot' },
+  { name: 'Fortune Tiger', provider: 'PG Soft', cat: 'slot' },
+  { name: 'Starlight Princess', provider: 'Pragmatic Play', cat: 'slot' },
+  { name: 'Sugar Rush', provider: 'Pragmatic Play', cat: 'slot' },
+  { name: 'Wild West Gold', provider: 'Pragmatic Play', cat: 'slot' },
+  { name: 'Big Bass Bonanza', provider: 'Pragmatic Play', cat: 'slot' },
+  { name: '5 Lions Megaways', provider: 'Pragmatic Play', cat: 'slot' },
+  { name: 'Aztec Gems', provider: 'Pragmatic Play', cat: 'slot' },
+  { name: 'Blackjack', provider: 'Kasino Langsung', cat: 'live' },
+  { name: 'Roulette', provider: 'Kasino Langsung', cat: 'live' },
+  { name: 'Baccarat', provider: 'Kasino Langsung', cat: 'live' },
+  { name: 'Dragon Tiger', provider: 'Kasino Langsung', cat: 'live' },
+  { name: 'Taruhan Olahraga', provider: 'Saba Sports', cat: 'sports' },
+  { name: 'Olahraga Elektronik', provider: 'TF Gaming', cat: 'sports' },
+  { name: 'Togel 4D', provider: 'Internal', cat: 'togel' },
+  { name: 'Crash', provider: 'Internal', cat: 'arcade' },
+  { name: 'Dadu', provider: 'Internal', cat: 'arcade', playUrl: 'games/dice.html' },
+  { name: 'Tambang', provider: 'Internal', cat: 'arcade' },
 ];
 
-// ============ RENDER GAMES ============
+// ============ TAMPILKAN PERMAINAN ============
 let currentFilter = 'all';
 
 function renderGames() {
@@ -31,19 +31,24 @@ function renderGames() {
     ? GAMES
     : GAMES.filter(g => g.cat === currentFilter);
 
-  grid.innerHTML = filtered.map(g => `
+  grid.innerHTML = filtered.map(g => {
+    const imgName = g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
+
+    return `
     <div class="game-card" onclick="openGame('${g.name}')">
-      <div class="game-bg" style="background: ${g.bg};">${g.emoji}</div>
+      <div class="game-img-wrap">
+        <img src="assets/img/games/${imgName}" alt="${g.name}" class="game-img" onerror="this.style.display='none'">
+      </div>
       <div class="game-play">MAIN</div>
       <div class="game-info">
         <div class="game-name">${g.name}</div>
         <div class="game-provider">${g.provider}</div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
-// ============ TABS ============
+// ============ TAB KATEGORI ============
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -53,12 +58,12 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// ============ MOBILE MENU ============
+// ============ MENU PONSEL ============
 function toggleMobileMenu() {
   document.getElementById('mobileMenu').classList.toggle('open');
 }
 
-// ============ MODAL ============
+// ============ JENDELA MELAYANG ============
 function openModal(title, body) {
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalBody').textContent = body;
@@ -68,41 +73,38 @@ function closeModal() {
   document.getElementById('modal').classList.remove('open');
 }
 
-// ============ PLACEHOLDER ACTIONS ============
+// ============ TINDAKAN SEMENTARA ============
 function openDeposit() {
-  openModal('💳 Deposit', 'Fitur deposit akan segera tersedia. Untuk sekarang, hubungi live chat.');
+  openModal('Deposit', 'Fitur deposit akan segera tersedia.');
 }
 function openLogin() {
-  openModal('🔐 Masuk', 'Form login akan segera hadir. Nantikan update berikutnya!');
+  openModal('Masuk', 'Halaman masuk sedang disiapkan.');
 }
 function openRegister() {
-  openModal('📝 Daftar', 'Form registrasi akan segera hadir. Nantikan update berikutnya!');
+  openModal('Daftar', 'Halaman daftar sedang disiapkan.');
 }
 function openPromo() {
   document.getElementById('promosi').scrollIntoView({ behavior: 'smooth' });
 }
 function openChat() {
-  openModal('💬 Live Chat', 'Customer service kami online 24/7. Fitur chat akan segera hadir.');
+  openModal('Obrolan Langsung', 'Layanan pelanggan daring 24/7.');
 }
 function openGame(name) {
-  openModal('🎮 ' + name, 'Game akan segera tersedia. Nantikan update berikutnya!');
+  const game = GAMES.find(g => g.name === name);
+  if (game && game.playUrl) {
+    window.open(game.playUrl, '_blank');
+    return;
+  }
+  openModal('Permainan', 'Permainan ini akan segera tersedia.');
 }
 
-// ============ INIT ============
+// ============ MULAI ============
 renderGames();
 
-// format saldo
-function updateBalance(amount) {
-  const formatted = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(amount);
-  document.getElementById('balanceAmount').textContent = formatted;
+if (typeof window.perbaruiSaldo === 'function') {
+  window.perbaruiSaldo();
 }
-updateBalance(0);
 
-// update header active link
 document.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', () => {
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));

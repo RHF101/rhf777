@@ -1,4 +1,4 @@
-/* ============ RESET ============ */
+/* ============ DASAR ============ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
@@ -11,9 +11,9 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
-img { max-width: 100%; display: block; }
+img { max-width: 100%; display: block; object-fit: contain; }
 
-/* ============ VARIABLES ============ */
+/* ============ WARNA ============ */
 :root {
   --bg: #0a0a0f;
   --surface: #14141f;
@@ -29,7 +29,7 @@ img { max-width: 100%; display: block; }
   --text-mute: #5a5a6e;
 }
 
-/* ============ TICKER ============ */
+/* ============ JALUR BERJALAN ============ */
 .top-ticker {
   background: linear-gradient(90deg, #1a1a2e, #2a1a3e);
   border-bottom: 1px solid var(--border);
@@ -52,7 +52,7 @@ img { max-width: 100%; display: block; }
   100% { transform: translateX(-50%); }
 }
 
-/* ============ HEADER ============ */
+/* ============ BAGIAN ATAS ============ */
 .header {
   position: sticky;
   top: 0;
@@ -79,7 +79,7 @@ img { max-width: 100%; display: block; }
   letter-spacing: -0.5px;
   flex-shrink: 0;
 }
-.logo-icon { font-size: 26px; }
+.logo-img { width: 28px; height: 28px; }
 .logo-text {
   background: linear-gradient(135deg, var(--gold), var(--gold-2));
   -webkit-background-clip: text;
@@ -122,18 +122,14 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--border);
   border-radius: 8px;
 }
-.balance-icon { font-size: 18px; }
+.icon-img { width: 20px; height: 20px; }
 .balance-info { display: flex; flex-direction: column; line-height: 1.1; }
 .balance-label { font-size: 10px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.5px; }
 .balance-amount { font-size: 14px; font-weight: 700; color: var(--gold); }
 
-.hamburger {
-  display: none;
-  font-size: 24px;
-  padding: 8px;
-}
+.hamburger { display: none; font-size: 16px; font-weight: 600; padding: 8px; }
 
-/* ============ BUTTONS ============ */
+/* ============ TOMBOL ============ */
 .btn {
   padding: 8px 16px;
   border-radius: 8px;
@@ -141,32 +137,21 @@ img { max-width: 100%; display: block; }
   font-weight: 600;
   transition: all 0.15s;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-.btn-primary {
-  background: var(--green);
-  color: #000;
-}
+.btn-primary { background: var(--green); color: #000; }
 .btn-primary:hover { background: #00c701; }
-.btn-gold {
-  background: linear-gradient(135deg, var(--gold), var(--gold-2));
-  color: #000;
-}
+.btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-2)); color: #000; }
 .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3); }
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-}
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
 .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-.btn-ghost {
-  background: rgba(255,255,255,0.05);
-  color: var(--text);
-  border: 1px solid rgba(255,255,255,0.1);
-}
+.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
 .btn-ghost:hover { background: rgba(255,255,255,0.1); }
 .btn-lg { padding: 14px 28px; font-size: 16px; }
 
-/* ============ HERO ============ */
+/* ============ BAGIAN UTAMA ============ */
 .hero {
   position: relative;
   padding: 80px 20px 60px;
@@ -193,11 +178,7 @@ img { max-width: 100%; display: block; }
   0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
   50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
 }
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 700px;
-}
+.hero-content { position: relative; z-index: 2; max-width: 700px; }
 .hero-badge {
   display: inline-block;
   padding: 8px 16px;
@@ -223,11 +204,7 @@ img { max-width: 100%; display: block; }
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.hero-sub {
-  color: var(--text-dim);
-  font-size: 16px;
-  margin-bottom: 32px;
-}
+.hero-sub { color: var(--text-dim); font-size: 16px; margin-bottom: 32px; }
 .hero-actions {
   display: flex;
   gap: 12px;
@@ -242,11 +219,7 @@ img { max-width: 100%; display: block; }
   align-items: center;
   flex-wrap: wrap;
 }
-.stat-value {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--gold);
-}
+.stat-value { font-size: 24px; font-weight: 800; color: var(--gold); }
 .stat-label {
   font-size: 12px;
   color: var(--text-mute);
@@ -254,35 +227,9 @@ img { max-width: 100%; display: block; }
   letter-spacing: 1px;
   margin-top: 4px;
 }
-.stat-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--border);
-}
+.stat-divider { width: 1px; height: 40px; background: var(--border); }
 
-.hero-decoration {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-.float-coin {
-  position: absolute;
-  font-size: 40px;
-  opacity: 0.5;
-  animation: float 6s ease-in-out infinite;
-  filter: blur(0.5px);
-}
-.c1 { top: 20%; left: 10%; animation-delay: 0s; }
-.c2 { top: 60%; left: 8%; animation-delay: 1s; font-size: 30px; }
-.c3 { top: 30%; right: 12%; animation-delay: 2s; font-size: 50px; }
-.c4 { top: 70%; right: 8%; animation-delay: 3s; font-size: 24px; }
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(10deg); }
-}
-
-/* ============ SECTIONS ============ */
+/* ============ BAGIAN UMUM ============ */
 .section { padding: 40px 0; }
 .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
 .section-header {
@@ -291,18 +238,10 @@ img { max-width: 100%; display: block; }
   align-items: center;
   margin-bottom: 24px;
 }
-.section-header h2 {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-.link-more {
-  color: var(--gold);
-  font-size: 14px;
-  font-weight: 600;
-}
+.section-header h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.link-more { color: var(--gold); font-size: 14px; font-weight: 600; }
 
-/* ============ TABS ============ */
+/* ============ TAB KATEGORI ============ */
 .tabs {
   display: flex;
   gap: 8px;
@@ -324,13 +263,9 @@ img { max-width: 100%; display: block; }
   transition: all 0.15s;
 }
 .tab:hover { border-color: var(--gold); color: var(--gold); }
-.tab.active {
-  background: linear-gradient(135deg, var(--gold), var(--gold-2));
-  color: #000;
-  border-color: transparent;
-}
+.tab.active { background: linear-gradient(135deg, var(--gold), var(--gold-2)); color: #000; border-color: transparent; }
 
-/* ============ GAME GRID ============ */
+/* ============ KARTU PERMAINAN ============ */
 .game-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -344,42 +279,32 @@ img { max-width: 100%; display: block; }
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   border: 1px solid var(--border);
+  background: var(--surface);
 }
-.game-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.15);
-}
-.game-card:hover .game-play {
-  opacity: 1;
-}
-.game-bg {
+.game-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(255, 215, 0, 0.15); }
+.game-card:hover .game-play { opacity: 1; }
+.game-img-wrap {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 72px;
+  background: linear-gradient(135deg, #1e1e2e, #14141f);
+}
+.game-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .game-info {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   padding: 12px;
   background: linear-gradient(transparent, rgba(0,0,0,0.95));
+  z-index: 2;
 }
-.game-name {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 2px;
-}
-.game-provider {
-  font-size: 10px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.game-name { font-size: 13px; font-weight: 700; line-height: 1.2; margin-bottom: 2px; }
+.game-provider { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
 .game-play {
   position: absolute;
   inset: 0;
@@ -393,9 +318,10 @@ img { max-width: 100%; display: block; }
   color: var(--gold);
   font-size: 14px;
   letter-spacing: 1px;
+  z-index: 3;
 }
 
-/* ============ PROMOS ============ */
+/* ============ PROMOSI ============ */
 .promo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -411,10 +337,14 @@ img { max-width: 100%; display: block; }
   transition: transform 0.2s;
 }
 .promo-card:hover { transform: translateY(-4px); border-color: var(--gold); }
-.promo-emoji {
-  font-size: 40px;
+.promo-icon-wrap {
+  width: 48px; height: 48px;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.promo-img { width: 100%; height: 100%; }
 .promo-badge {
   display: inline-block;
   padding: 4px 10px;
@@ -426,24 +356,11 @@ img { max-width: 100%; display: block; }
   letter-spacing: 1px;
   margin-bottom: 8px;
 }
-.promo-card h3 {
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-.promo-card p {
-  color: var(--text-dim);
-  font-size: 14px;
-  line-height: 1.5;
-  margin-bottom: 16px;
-}
+.promo-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.promo-card p { color: var(--text-dim); font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
 
-/* ============ FOOTER ============ */
-.footer {
-  border-top: 1px solid var(--border);
-  padding: 48px 0 80px;
-  margin-top: 40px;
-}
+/* ============ BAGIAN BAWAH ============ */
+.footer { border-top: 1px solid var(--border); padding: 48px 0 80px; margin-top: 40px; }
 .footer-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -451,12 +368,7 @@ img { max-width: 100%; display: block; }
   margin-bottom: 32px;
 }
 .footer-brand .logo { margin-bottom: 12px; }
-.footer-desc {
-  color: var(--text-dim);
-  font-size: 13px;
-  line-height: 1.6;
-  max-width: 320px;
-}
+.footer-desc { color: var(--text-dim); font-size: 13px; line-height: 1.6; max-width: 320px; }
 .footer-col h4 {
   font-size: 13px;
   font-weight: 700;
@@ -465,19 +377,9 @@ img { max-width: 100%; display: block; }
   margin-bottom: 12px;
   color: var(--gold);
 }
-.footer-col a {
-  display: block;
-  color: var(--text-dim);
-  font-size: 13px;
-  padding: 4px 0;
-  transition: color 0.15s;
-}
+.footer-col a { display: block; color: var(--text-dim); font-size: 13px; padding: 4px 0; transition: color 0.15s; }
 .footer-col a:hover { color: var(--text); }
-.pay-methods {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
+.pay-methods { display: flex; flex-wrap: wrap; gap: 6px; }
 .pay-methods span {
   padding: 4px 10px;
   background: var(--surface);
@@ -495,7 +397,7 @@ img { max-width: 100%; display: block; }
   font-size: 12px;
 }
 
-/* ============ FLOATING ============ */
+/* ============ TOMBOL OBROLAN ============ */
 .chat-fab {
   position: fixed;
   bottom: 90px;
@@ -504,24 +406,25 @@ img { max-width: 100%; display: block; }
   height: 56px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--green), #00b301);
-  color: #000;
-  font-size: 24px;
   box-shadow: 0 4px 20px rgba(0, 231, 1, 0.4);
   z-index: 90;
   animation: bounce 2s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
 }
+.fab-img { width: 100%; height: 100%; object-fit: contain; }
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
 
-/* ============ BOTTOM NAV ============ */
+/* ============ MENU BAWAH ============ */
 .bottom-nav {
   display: none;
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   background: rgba(20, 20, 31, 0.98);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--border);
@@ -539,16 +442,14 @@ img { max-width: 100%; display: block; }
   color: var(--text-mute);
   transition: color 0.15s;
 }
-.bn-item span { font-size: 20px; }
+.bn-icon { width: 20px; height: 20px; margin-bottom: 2px; }
 .bn-item.active { color: var(--gold); }
 
-/* ============ MOBILE MENU ============ */
+/* ============ MENU PONSEL ============ */
 .mobile-menu {
   display: none;
   position: fixed;
-  top: 57px;
-  left: 0;
-  right: 0;
+  top: 57px; left: 0; right: 0;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   padding: 16px;
@@ -557,12 +458,7 @@ img { max-width: 100%; display: block; }
   gap: 4px;
 }
 .mobile-menu.open { display: flex; }
-.mobile-menu a {
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 15px;
-  color: var(--text-dim);
-}
+.mobile-menu a { padding: 12px; border-radius: 8px; font-size: 15px; color: var(--text-dim); }
 .mobile-menu a:hover { background: var(--surface-2); color: var(--text); }
 .mobile-menu-actions {
   display: flex;
@@ -573,7 +469,7 @@ img { max-width: 100%; display: block; }
 }
 .mobile-menu-actions .btn { flex: 1; justify-content: center; text-align: center; }
 
-/* ============ MODAL ============ */
+/* ============ JENDELA MELAYANG ============ */
 .modal {
   display: none;
   position: fixed;
@@ -597,16 +493,16 @@ img { max-width: 100%; display: block; }
 }
 .modal-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  font-size: 20px;
+  top: 12px; right: 12px;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text-dim);
   padding: 8px;
 }
 .modal-content h3 { font-size: 22px; margin-bottom: 12px; }
 .modal-content p { color: var(--text-dim); font-size: 14px; line-height: 1.6; }
 
-/* ============ RESPONSIVE ============ */
+/* ============ UKURAN LAYAR ============ */
 @media (max-width: 900px) {
   .nav { display: none; }
   .hide-mobile { display: none; }
@@ -621,10 +517,9 @@ img { max-width: 100%; display: block; }
 }
 @media (max-width: 500px) {
   .logo { font-size: 18px; }
-  .logo-icon { font-size: 22px; }
+  .logo-img { width: 22px; height: 22px; }
   .btn { padding: 6px 12px; font-size: 13px; }
   .game-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .game-bg { font-size: 48px; }
   .game-name { font-size: 11px; }
   .game-info { padding: 8px; }
   .promo-grid { grid-template-columns: 1fr; }
