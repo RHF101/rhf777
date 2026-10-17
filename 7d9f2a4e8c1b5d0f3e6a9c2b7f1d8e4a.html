@@ -265,6 +265,33 @@
     } catch(e) { console.log(e); }
   }
 
+  async function muatWidrow() {
+    const tabel = document.getElementById("tabel-widrow");
+    try {
+      const snapshot = await window.fbGet(window.fbRef(window.fbDb, "widrow_pending"));
+      let html = "";
+      if (snapshot.exists()) {
+        let dataArray = [];
+        snapshot.forEach(child => { dataArray.push({ key: child.key, val: child.val() }); });
+        dataArray.reverse().forEach(item => {
+          const data = item.val;
+          if(data.status === "pending") {
+            const tgl = new Date(data.waktu).toLocaleString("id-ID");
+            html += `<tr><td style="font-size:12px; color:#8b8b9e;">${tgl}</td><td>${data.username}</td><td style="color:#ffd700;">${data.nomorTujuan}</td><td style="color:#ff3838; font-weight:bold;">Rp ${Number(data.nominal).toLocaleString("id-ID")}</td><td style="text-align: right;"><button class="btn-aksi btn-tambah" style="width:auto; margin:0;" onclick="selesaikanTarik('${item.key}', '${data.userId}', ${data.nominal}, '${data.username}')">Selesai</button></td></tr>`;
+          }
+        });
+      }
+      tabel.innerHTML = html || `<tr><td colspan="5" style="text-align: center;">Tidak ada penarikan pending.</td></tr>`;
+    } catch(e) { console.log(e); }
+  }
+  async function selesaikanTarik(key, userId, nominal, username) {
+    if(!confirm(`Selesaikan penarikan Rp ${nominal} untuk ${username}?`)) return;
+    try {
+      await window.selesaikanWidrow(key, userId, nominal, username);
+      alert("Penarikan berhasil diselesaikan!");
+      muatWidrow();
+    } catch(e) { alert("Gagal: " + e.message); }
+  }
   // ============ 3. PENGATURAN BANDAR ============
   async function muatBandar() {
     try {

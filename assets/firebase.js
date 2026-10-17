@@ -151,3 +151,143 @@ window.simpanRiwayat = async function(idUser, username, game, menang, nominal) {
     waktu: new Date().toISOString()
   });
 };
+
+// ============ FUNGSI SIMULASI DEPOSIT ============
+window.prosesDeposit = async function(idUser, username, nominal) {
+  try {
+    // 1. Ambil saldo saat ini
+    const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + idUser));
+    if (!snap.exists()) throw new Error("User tidak ditemukan");
+
+    const saldoLama = Number(snap.val().balance || 0);
+    const saldoBaru = saldoLama + nominal;
+
+    // 2. Update saldo pemain
+    await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), {
+      balance: saldoBaru
+    });
+
+    // 3. Catat ke Riwayat Transaksi
+    await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
+      userId: idUser,
+      username: username,
+      game: "Deposit",
+      menang: true,
+      nominal: nominal,
+      waktu: new Date().toISOString()
+    });
+
+    if(window.kirimNotifWidrow) await window.kirimNotifWidrow(username, nominal, nomorTujuan);
+    return { sukses: true, saldoBaru: saldoBaru };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// ============ FUNGSI SIMULASI WIDROW (TARIK DANA) ============
+window.prosesWidrow = async function(idUser, username, nominal) {
+  try {
+    const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + idUser));
+    if (!snap.exists()) throw new Error("User tidak ditemukan");
+
+    const saldoLama = Number(snap.val().balance || 0);
+    
+    // Cek apakah saldo cukup
+    if (saldoLama < nominal) throw new Error("Saldo tidak mencukupi untuk penarikan ini.");
+    
+    const saldoBaru = saldoLama - nominal;
+
+    // 1. Update saldo pemain (potong)
+    await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), {
+      balance: saldoBaru
+    });
+
+    // 2. Catat ke Riwayat Transaksi
+    await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
+      userId: idUser,
+      username: username,
+      game: "Widrow",
+      menang: false, // Anggap false (uang keluar)
+      nominal: nominal,
+      waktu: new Date().toISOString()
+    });
+
+    if(window.kirimNotifWidrow) await window.kirimNotifWidrow(username, nominal, nomorTujuan);
+    return { sukses: true, saldoBaru: saldoBaru };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// ============ FUNGSI WIDROW (TARIK DANA) ============
+window.ajukanWidrow = async function(idUser, username, nominal, nomorTujuan, metode) {
+  try {
+    // 1. Cek saldo user
+    const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + idUser));
+    if (!snap.exists()) throw new Error("User tidak ditemukan");
+    
+    const saldoLama = Number(snap.val().balance || 0);
+    if (saldoLama < nominal) throw new Error("Saldo tidak mencukupi");
+
+    // 2. Potong saldo user
+    const saldoBaru = saldoLama - nominal;
+    await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoBaru });
+
+    // 3. Simpan ke antrean widrow
+    await window.fbSet(window.fbRef(window.fbDb, "widrow_pending/" + Date.now() + "_" + idUser), {
+      userId: idUser,
+      username: username,
+      nominal: nominal,
+      nomorTujuan: nomorTujuan,
+      metode: metode,
+      status: "pending",
+      waktu: new Date().toISOString()
+    });
+
+    if(window.kirimNotifWidrow) await window.kirimNotifWidrow(username, nominal, nomorTujuan);
+    return { sukses: true, saldoBaru: saldoBaru };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// ============ FUNGSI ADMIN: SELESAIKAN WIDROW ============
+window.selesaikanWidrow = async function(keyPending, idUser, nominal, username) {
+  try {
+    // Ubah status di antrean menjadi selesai
+    await window.fbUpdate(window.fbRef(window.fbDb, "widrow_pending/" + keyPending), { status: "selesai" });
+
+    // Catat ke riwayat
+    await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
+      userId: idUser,
+      username: username,
+      game: "Widrow Selesai",
+      menang: false,
+      nominal: nominal,
+      waktu: new Date().toISOString()
+    });
+
+    return { sukses: true };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// ============ FUNGSI NOTIFIKASI WIDROW KE TELEGRAM ============
+window.kirimNotifWidrow = async function(username, nominal, nomorTujuan) {
+  const BOT_TOKEN = "8819039324:AAF3oeJhVzwH_D2T1uAhdkJo7mLym92eBKw";
+  const CHAT_ID = "8717792350";
+  
+  const pesan = `🚨 <b>PENARIKAN DANA BARU</b>\n\nPemain: <b>${username}</b>\nNominal: <b>Rp ${nominal.toLocaleString('id-ID')}</b>\nNomor Tujuan: <b>${nomorTujuan}</b>\n\nSegera buka aplikasi DANA/OVO untuk transfer, lalu klik Selesai di Dasbor Admin.`;
+
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: pesan, parse_mode: 'HTML' })
+    });
+  } catch (e) {
+    console.log("Gagal kirim notif Telegram", e);
+  }
+};
