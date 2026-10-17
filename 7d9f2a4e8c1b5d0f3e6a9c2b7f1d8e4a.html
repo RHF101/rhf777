@@ -81,10 +81,18 @@
         Atur target kekalahan pemain. Jika target tercapai, bandar berhenti membayar (peluang menang pemain mengecil secara halus).
       </p>
       
-      <div style="margin-bottom: 20px; padding: 15px; background: #0a0a0f; border-radius: 8px; border: 1px solid #2a2a3a; text-align: center;">
-        <label style="display:block; color:#8b8b9e; margin-bottom:5px; font-size:12px;">UANG TERKUMPUL DARI KEKALAHAN PEMAIN</label>
-        <div id="dompetBandar" style="font-size: 32px; font-weight: bold; color: #00e701;">Rp 0</div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+        <div style="padding: 15px; background: #0a0a0f; border-radius: 8px; border: 1px solid #2a2a3a; text-align: center;">
+          <label style="display:block; color:#8b8b9e; margin-bottom:5px; font-size:12px;">TARGET MUTLAK (TERKUNCI)</label>
+          <div id="dompetBandar" style="font-size: 24px; font-weight: bold; color: #ffd700;">Rp 0</div>
+        </div>
+        <div style="padding: 15px; background: #0a0a0f; border-radius: 8px; border: 1px solid #2a2a3a; text-align: center;">
+          <label style="display:block; color:#8b8b9e; margin-bottom:5px; font-size:12px;">KAS PEMBAYAR (SIRKULASI)</label>
+          <div id="dompetPembayar" style="font-size: 24px; font-weight: bold; color: #00e701;">Rp 0</div>
+        </div>
       </div>
+
 
       <label class="label-admin">Target Keuntungan Bandar (Kas Terkunci) (Rp)</label>
       <input type="number" id="targetKekalahan" class="input-admin" placeholder="Contoh: 1000000">
@@ -220,25 +228,10 @@
       const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
       if (snap.exists()) {
         const data = snap.val();
-        
-        // Logika Reset 24 Jam
-        let dompetSekarang = Number(data.dompetBandar || 0);
-        const waktuSekarang = Date.now();
-        const waktuResetTerakhir = data.resetTime || 0;
-        const bedaHari = (waktuSekarang - waktuResetTerakhir) / (1000 * 60 * 60); // dalam jam
-
-        // Jika target sudah penuh DAN sudah lewat 24 jam, reset dompet
-        if (dompetSekarang >= data.target && bedaHari >= 24) {
-          await window.fbUpdate(window.fbRef(window.fbDb, "pengaturan/bandar"), { 
-            dompetBandar: 0, 
-            resetTime: waktuSekarang 
-          });
-          dompetSekarang = 0;
-        }
-
         document.getElementById("targetKekalahan").value = data.target || "";
         document.getElementById("rtpDasar").value = data.rtpDasar || 45;
-        document.getElementById("dompetBandar").textContent = "Rp " + dompetSekarang.toLocaleString("id-ID");
+        document.getElementById("dompetBandar").textContent = "Rp " + Number(data.dompetBandar || 0).toLocaleString("id-ID");
+        document.getElementById("dompetPembayar").textContent = "Rp " + Number(data.dompetPembayar || 0).toLocaleString("id-ID");
       }
     } catch(e) { console.log(e); }
   }
@@ -247,19 +240,16 @@
     const target = Number(document.getElementById("targetKekalahan").value);
     const rtp = Number(document.getElementById("rtpDasar").value);
     
-    const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
-    let dompet = 0;
-    if (snap.exists()) dompet = snap.val().dompetBandar || 0;
-
     await window.fbSet(window.fbRef(window.fbDb, "pengaturan/bandar"), {
       target: target,
       rtpDasar: rtp,
-      dompetBandar: dompet,
-      resetTime: Date.now(), // Catat waktu reset
+      dompetBandar: 0,
+      dompetPembayar: 0,
+      resetTime: Date.now(),
       updatedAt: new Date().toISOString()
     });
     
-    document.getElementById("statusBandar").textContent = "Pengaturan disimpan! Dompet bandar di-reset.";
+    document.getElementById("statusBandar").textContent = "Target disimpan. Kedua dompet di-reset.";
     setTimeout(() => document.getElementById("statusBandar").textContent = "", 3000);
     muatBandar();
   }
