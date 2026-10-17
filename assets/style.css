@@ -127,177 +127,68 @@ img { max-width: 100%; display: block; object-fit: contain; }
 
 .hamburger { display: none; font-size: 16px; font-weight: 600; padding: 8px; }
 
-/* ============ MENU PONSEL ============ */
+
+/* ============ MENU PONSEL BARU ============ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 9999; /* Memastikan header selalu di lapisan paling atas */
+}
+
 .mobile-menu {
-  display: none;
+  display: none !important; /* Tersembunyi secara mutlak */
   position: absolute;
-  top: 100%;
+  top: 100%; /* Tepat di bawah header */
   left: 0; right: 0;
   background: #14141f;
   border-bottom: 1px solid #2a2a3a;
   padding: 16px;
-  z-index: 999;
   flex-direction: column;
   gap: 8px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.8);
 }
-.mobile-menu.open { display: flex; }
+
+.mobile-menu.open {
+  display: flex !important; /* Munculkan saat tombol diklik */
+}
+
 .mobile-menu a {
   padding: 14px;
-  border-radius: 8px;
-  font-size: 15px;
-  color: var(--text-dim);
+  font-size: 16px;
+  color: #fff;
   text-decoration: none;
+  border-bottom: 1px solid #2a2a3a;
 }
-.mobile-menu a:hover { background: var(--surface-2); color: var(--text); }
+
+.mobile-menu a:hover {
+  background: #1e1e2e;
+  color: #ffd700;
+}
+
 .mobile-menu-actions {
   display: flex;
   gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  margin-top: 8px;
+  margin-top: 10px;
 }
-.mobile-menu-actions .btn { flex: 1; justify-content: center; }
 
-/* ============ TOMBOL ============ */
-.btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.15s;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.mobile-menu-actions .btn {
+  flex: 1;
 }
-.btn-primary { background: var(--green); color: #000; }
-.btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-2)); color: #000; }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid rgba(255,255,255,0.1); }
-.btn-lg { padding: 14px 28px; font-size: 16px; }
 
-/* ============ BAGIAN UTAMA ============ */
-.hero {
-  position: relative;
-  padding: 80px 20px 60px;
-  overflow: hidden;
-  background: radial-gradient(ellipse at top, #2a1a3e 0%, #0a0a0f 60%);
-  min-height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+/* Tombol Menu */
+.hamburger {
+  display: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
 }
-.hero-glow {
-  position: absolute;
-  top: -200px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
-  animation: pulse 4s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
-}
-.hero-content { position: relative; z-index: 2; max-width: 700px; }
-.hero-badge {
-  display: inline-block;
-  padding: 8px 16px;
-  background: rgba(255, 215, 0, 0.1);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--gold);
-  margin-bottom: 24px;
-  letter-spacing: 1px;
-}
-.hero-title { font-size: clamp(36px, 8vw, 64px); font-weight: 900; line-height: 1.05; letter-spacing: -2px; margin-bottom: 16px; }
-.gold-text { background: linear-gradient(135deg, var(--gold), var(--gold-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.hero-sub { color: var(--text-dim); font-size: 16px; margin-bottom: 32px; }
-.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
-/* ============ BAGIAN UMUM ============ */
-.section { padding: 40px 0; }
-.container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.section-header h2 { font-size: 24px; font-weight: 800; }
-.link-more { color: var(--gold); font-size: 14px; font-weight: 600; }
-
-/* ============ KARTU PERMAINAN ============ */
-.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-.game-card {
-  position: relative; aspect-ratio: 3/4; border-radius: 12px; overflow: hidden;
-  cursor: pointer; border: 1px solid var(--border); background: var(--surface);
-}
-.game-img-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-.game-img { width: 100%; height: 100%; object-fit: cover; }
-.game-info {
-  position: absolute; bottom: 0; left: 0; right: 0; padding: 12px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.95)); z-index: 2;
-}
-.game-name { font-size: 13px; font-weight: 700; }
-.game-provider { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
-
-/* ============ BAGIAN BAWAH ============ */
-.footer { border-top: 1px solid var(--border); padding: 40px 0 100px; margin-top: 40px; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; margin-bottom: 32px; }
-.footer-desc { color: var(--text-dim); font-size: 13px; line-height: 1.6; max-width: 320px; }
-.footer-col h4 { font-size: 13px; color: var(--gold); margin-bottom: 12px; }
-.footer-col a { display: block; color: var(--text-dim); font-size: 13px; padding: 4px 0; }
-.footer-random { display: flex; gap: 12px; justify-content: center; opacity: 0.3; padding: 20px 0; border-top: 1px solid var(--border); }
-.angka-acak { font-size: 11px; color: #fff; }
-.footer-bottom { text-align: center; color: var(--text-mute); font-size: 12px; }
-
-/* ============ IKON VEKTOR ============ */
-.logo-vektor { width: 26px; height: 26px; color: var(--gold); }
-.icon-vektor { width: 20px; height: 20px; color: var(--gold); }
-.bn-icon-vektor { width: 22px; height: 22px; color: var(--text-mute); }
-.bn-icon-tengah-vektor { width: 28px; height: 28px; color: #000; }
-.bn-item.active .bn-icon-vektor { color: var(--gold); }
-
-/* ============ MENU BAWAH ============ */
-.bottom-nav {
-  display: none; position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(20, 20, 31, 0.98); border-top: 1px solid var(--border);
-  z-index: 100; height: 70px; align-items: center; justify-content: space-around;
-}
-.bn-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  font-size: 11px; color: var(--text-mute); text-decoration: none;
-}
-.bn-tengah { position: relative; top: -15px; }
-.lingkaran-tengah {
-  width: 55px; height: 55px; background: linear-gradient(135deg, var(--gold), var(--gold-2));
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  border: 4px solid var(--bg); box-shadow: 0 0 15px rgba(255,215,0,0.3);
-}
-.teks-tengah { margin-top: 2px; color: var(--gold); font-weight: 700; }
-
-/* ============ JENDELA MELAYANG ============ */
-.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
-.modal.open { display: flex; }
-.modal-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 400px; width: 100%; position: relative; text-align: center; }
-.modal-close { position: absolute; top: 12px; right: 12px; font-size: 14px; color: var(--text-dim); padding: 8px; }
-.modal-content h3 { font-size: 22px; margin-bottom: 12px; }
-.modal-content p { color: var(--text-dim); font-size: 14px; }
-
-/* ============ UKURAN LAYAR ============ */
 @media (max-width: 900px) {
   .nav { display: none; }
+  .hamburger { display: block; } /* Tampilkan tombol menu di ponsel */
   .hide-mobile { display: none; }
-  .hamburger { display: block; }
-  .header-inner { justify-content: space-between; }
-  .balance-info { display: none; }
-  .bottom-nav { display: flex; }
-}
-@media (max-width: 500px) {
-  .logo { font-size: 18px; }
-  .btn { padding: 6px 12px; font-size: 13px; }
-  .game-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .footer-grid { grid-template-columns: 1fr; }
 }
