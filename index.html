@@ -187,8 +187,8 @@
   }
 
   
+  
   async function periksaAkun() {
-    // Memastikan Firebase sudah termuat
     if (!window.fbAuth) return;
 
     window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
@@ -197,24 +197,27 @@
       const elSaldo = document.getElementById("saldoUser");
 
       if (user) {
-        // Jika pengguna sudah login, ambil data dari database Firebase
-        const docRef = window.fbDoc(window.fbDb, "users", user.uid);
-        const docSnap = await window.fbGetDoc(docRef);
+        const dbRef = window.fbRef(window.fbDb, "users/" + user.uid);
+        const snapshot = await window.fbGet(dbRef);
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+        if (snapshot.exists()) {
+          const data = snapshot.val();
           elNama.textContent = data.username || "Pengguna";
           elSurel.textContent = data.email || user.email;
-          elSaldo.textContent = "Rp " + Number(data.balance).toLocaleString("id-ID");
+          elSaldo.textContent = "Rp " + Number(data.balance || 0).toLocaleString("id-ID");
+        } else {
+          elNama.textContent = user.displayName || user.email.split("@")[0];
+          elSurel.textContent = user.email;
+          elSaldo.textContent = "Rp 0";
         }
       } else {
-        // Jika belum login
         elNama.textContent = "Tamu";
         elSurel.textContent = "Silakan masuk terlebih dahulu";
         elSaldo.textContent = "Rp 0";
       }
     });
   }
+
 
 
   function openModal(t, b) { document.getElementById('modalTitle').textContent = t; document.getElementById('modalBody').textContent = b; document.getElementById('modal').classList.add('open'); }
