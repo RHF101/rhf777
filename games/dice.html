@@ -63,37 +63,30 @@
       const taruhan = Number(document.getElementById("taruhan").value);
       if(taruhan <= 0 || taruhan > saldoPemain) return alert("Taruhan tidak valid atau saldo kurang!");
 
-      // Kurangi saldo sementara
-      saldoPemain -= taruhan;
-      document.getElementById("saldoSekarang").textContent = saldoPemain;
+      // Kunci tombol sementara
+      document.getElementById("hasilDadu").textContent = "...";
 
-      const dadu = Math.floor(Math.random() * 6) + 1;
-      document.getElementById("hasilDadu").textContent = dadu;
+      // Panggil Mesin Bandar (dengan peluang menang dasar 50%)
+      const hasil = await window.mainkanGame(idUser, taruhan, saldoPemain, 50);
 
-      let menang = false;
-      let pesan = "";
-
-      // Logika Bandar: Peluang menang diatur oleh rtpBandar dari Admin
-      const peluang = Math.random() * 100;
-      
-      if (dadu >= 4) { // Pemain menang jika dadu 4,5,6
-        if (peluang < rtpBandar) {
-          menang = true;
-          saldoPemain += taruhan * 2;
-          pesan = "MENANG! +" + (taruhan * 2);
-        } else {
-          pesan = "KALAH! Bandar menahan kemenangan.";
+      // Animasi Lempar Dadu
+      let count = 0;
+      const interval = setInterval(() => {
+        document.getElementById("hasilDadu").textContent = Math.floor(Math.random() * 6) + 1;
+        count++;
+        if(count > 10) {
+          clearInterval(interval);
+          
+          // Tampilkan hasil akhir
+          document.getElementById("hasilDadu").textContent = Math.floor(Math.random() * 6) + 1;
+          saldoPemain = hasil.saldoBaru;
+          document.getElementById("saldoSekarang").textContent = saldoPemain;
+          
+          const pesan = hasil.menang ? "MENANG! +" + taruhan : "KALAH! Dompet Bandar bertambah.";
+          document.getElementById("pesan").style.color = hasil.menang ? "#00e701" : "#ff3838";
+          document.getElementById("pesan").textContent = pesan;
         }
-      } else {
-        pesan = "KALAH! Angka dadu kecil.";
-      }
-
-      // Simpan saldo baru ke Database
-      await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
-      
-      document.getElementById("saldoSekarang").textContent = saldoPemain;
-      document.getElementById("pesan").style.color = menang ? "#00e701" : "#ff3838";
-      document.getElementById("pesan").textContent = pesan;
+      }, 100);
     }
   </script>
 </body>

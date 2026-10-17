@@ -25,7 +25,9 @@
     .btn-edit { background: #4a9eff; }
     .btn-hapus { background: #ff3838; }
     .btn-ban { background: #ffb800; color: #000; }
-    .btn-tambah { background: #00e701; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; margin-bottom: 15px; }
+    .btn-tambah { background: #00e701; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; margin-bottom: 15px; width: 100%; font-size: 16px;}
+    .input-admin { width: 100%; padding: 12px; background: #0a0a0f; border: 1px solid #2a2a3a; color: #fff; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
+    .label-admin { display: block; color: #fff; margin-bottom: 5px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -37,9 +39,9 @@
   </div>
 
   <div class="tab-menu">
-    <button class="tab-btn active" onclick="bukaTab('pengguna')">Data Pengguna</button>
-    <button class="tab-btn" onclick="bukaTab('games')">Kelola Games & RTP</button>
-    <button class="tab-btn" onclick="bukaTab('bandar')">Pengaturan Bandar</button>
+    <button class="tab-btn active" onclick="bukaTab('pengguna', this)">Data Pengguna</button>
+    <button class="tab-btn" onclick="bukaTab('games', this)">Kelola Games</button>
+    <button class="tab-btn" onclick="bukaTab('bandar', this)">Pengaturan Bandar</button>
   </div>
 
   <!-- ================= TAB PENGGUNA ================= -->
@@ -69,29 +71,32 @@
         <tbody id="tabel-games"><tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr></tbody>
       </table>
     </div>
-  
-  <!-- ================= TAB BANDAR ================= -->
-  <div id="tab-bandar" class="konten-tab" style="display:none;">
-    <div style="background: #14141f; border: 1px solid #2a2a3a; border-radius: 12px; padding: 24px; max-width: 600px;">
-      <h3 style="color: #ffd700; margin-bottom: 15px;">Pengaturan Untung / Rugi</h3>
-      <p style="color: #8b8b9e; font-size: 14px; margin-bottom: 20px;">Atur batas maksimal kemenangan pemain. Jika saldo pemain menembus batas ini, sistem akan otomatis mempersulit kemenangan.</p>
-      
-      <div style="margin-bottom: 15px;">
-        <label style="display:block; color:#fff; margin-bottom:5px; font-size:14px;">Batas Maksimal Untung Bandar (Rp)</label>
-        <input type="number" id="maxProfit" placeholder="Contoh: 5000000" style="width:100%; padding:12px; background:#0a0a0f; border:1px solid #2a2a3a; color:#fff; border-radius:8px;">
-      </div>
-
-      <div style="margin-bottom: 20px;">
-        <label style="display:block; color:#fff; margin-bottom:5px; font-size:14px;">Batas Maksimal Rugi Bandar (Rp)</label>
-        <input type="number" id="maxLoss" placeholder="Contoh: 1000000" style="width:100%; padding:12px; background:#0a0a0f; border:1px solid #2a2a3a; color:#fff; border-radius:8px;">
-      </div>
-
-      <button onclick="simpanBandar()" class="btn-tambah" style="width:100%;">Simpan Pengaturan</button>
-      <p id="statusBandar" style="color:#00e701; margin-top:15px; text-align:center;"></p>
-    </div>
   </div>
 
-</div>
+  <!-- ================= TAB BANDAR ================= -->
+  <div id="tab-bandar" class="konten-tab" style="display:none;">
+    <div style="background: #14141f; border: 1px solid #2a2a3a; border-radius: 12px; padding: 24px;">
+      <h3 style="color: #ffd700; margin-bottom: 15px; text-align: center;">Mesin Pengatur Bandar (Zero-Sum)</h3>
+      <p style="color: #8b8b9e; font-size: 14px; margin-bottom: 20px; text-align: center;">
+        Atur target kekalahan pemain. Jika target tercapai, bandar berhenti membayar (peluang menang pemain mengecil secara halus).
+      </p>
+      
+      <div style="margin-bottom: 20px; padding: 15px; background: #0a0a0f; border-radius: 8px; border: 1px solid #2a2a3a; text-align: center;">
+        <label style="display:block; color:#8b8b9e; margin-bottom:5px; font-size:12px;">UANG TERKUMPUL DARI KEKALAHAN PEMAIN</label>
+        <div id="dompetBandar" style="font-size: 32px; font-weight: bold; color: #00e701;">Rp 0</div>
+      </div>
+
+      <label class="label-admin">Target Kekalahan Pemain (Rp)</label>
+      <input type="number" id="targetKekalahan" class="input-admin" placeholder="Contoh: 1000000">
+
+      <label class="label-admin">Peluang Menang Dasar (%)</label>
+      <input type="number" id="rtpDasar" class="input-admin" value="45" placeholder="Contoh: 45">
+      <small style="color:#8b8b9e; display: block; margin-top: -10px; margin-bottom: 20px;">Persentase ini akan turun secara otomatis jika mendekati target.</small>
+
+      <button onclick="simpanBandar()" class="btn-tambah">Simpan Pengaturan</button>
+      <p id="statusBandar" style="color:#00e701; margin-top:15px; text-align:center; font-weight: bold;"></p>
+    </div>
+  </div>
 </div>
 
 <script type="module" src="assets/firebase.js"></script>
@@ -100,39 +105,11 @@
     setTimeout(() => { if(window.fbDb) { muatPengguna(); muatGames(); muatBandar(); } }, 1000);
   };
 
-  
-  // ============ 3. PENGATURAN BANDAR ============
-  async function muatBandar() {
-    try {
-      const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
-      if (snap.exists()) {
-        const data = snap.val();
-        document.getElementById("maxProfit").value = data.maxProfit || "";
-        document.getElementById("maxLoss").value = data.maxLoss || "";
-      }
-    } catch(e) { console.log(e); }
-  }
-
-  async function simpanBandar() {
-    const profit = Number(document.getElementById("maxProfit").value);
-    const loss = Number(document.getElementById("maxLoss").value);
-    
-    await window.fbSet(window.fbRef(window.fbDb, "pengaturan/bandar"), {
-      maxProfit: profit,
-      maxLoss: loss,
-      updatedAt: new Date().toISOString()
-    });
-    
-    document.getElementById("statusBandar").textContent = "Pengaturan berhasil disimpan!";
-    setTimeout(() => document.getElementById("statusBandar").textContent = "", 3000);
-  }
-
-
-  function bukaTab(nama) {
+  function bukaTab(nama, tombol) {
     document.querySelectorAll('.konten-tab').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById('tab-' + nama).style.display = 'block';
-    event.target.classList.add('active');
+    tombol.classList.add('active');
   }
 
   // ============ 1. DATA PENGGUNA (BAN/UNBAN) ============
@@ -151,7 +128,7 @@
           
           const isBanned = user.banned === true;
           const statusText = isBanned ? "<span style='color:#ff3838'>BANNED</span>" : "<span style='color:#00e701'>Aktif</span>";
-          const banBtn = isBanned ? `<button class="btn-aksi btn-tambah" onclick="toggleBan('${id}', false)">Unban</button>` : `<button class="btn-aksi btn-ban" onclick="toggleBan('${id}', true)">Ban</button>`;
+          const banBtn = isBanned ? `<button class="btn-aksi btn-tambah" style="width:auto; margin:0;" onclick="toggleBan('${id}', false)">Unban</button>` : `<button class="btn-aksi btn-ban" onclick="toggleBan('${id}', true)">Ban</button>`;
 
           html += `
             <tr>
@@ -235,6 +212,38 @@
     if(!confirm("Hapus game ini?")) return;
     await window.fbRemove(window.fbRef(window.fbDb, "games/" + id));
     muatGames();
+  }
+
+  // ============ 3. PENGATURAN BANDAR ============
+  async function muatBandar() {
+    try {
+      const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
+      if (snap.exists()) {
+        const data = snap.val();
+        document.getElementById("targetKekalahan").value = data.target || "";
+        document.getElementById("rtpDasar").value = data.rtpDasar || 45;
+        document.getElementById("dompetBandar").textContent = "Rp " + Number(data.dompetBandar || 0).toLocaleString("id-ID");
+      }
+    } catch(e) { console.log(e); }
+  }
+
+  async function simpanBandar() {
+    const target = Number(document.getElementById("targetKekalahan").value);
+    const rtp = Number(document.getElementById("rtpDasar").value);
+    
+    const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
+    let dompet = 0;
+    if (snap.exists()) dompet = snap.val().dompetBandar || 0;
+
+    await window.fbSet(window.fbRef(window.fbDb, "pengaturan/bandar"), {
+      target: target,
+      rtpDasar: rtp,
+      dompetBandar: dompet,
+      updatedAt: new Date().toISOString()
+    });
+    
+    document.getElementById("statusBandar").textContent = "Pengaturan disimpan!";
+    setTimeout(() => document.getElementById("statusBandar").textContent = "", 3000);
   }
 </script>
 </body>
