@@ -43,61 +43,89 @@ import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.
 window.fbResetPassword = sendPasswordResetEmail;
 
 // ============ MESIN PENGATUR BANDAR (ZERO-SUM) ============
-window.mainkanGame = async function(idPemain, taruhan, saldoSaatIni, peluangMenangGame = 50) {
-  // 1. Ambil pengaturan bandar
-  const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
+
+
+// ============ MESIN PENGATUR BANDAR (KAS TERKUNCI) ============
+window.mainkanGame = async function(idPemain, taruhan, saldoPemain, peluangMenangGame = 50) {
+  const snapBandar = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
   let target = 0;
   let dompetBandar = 0;
-  let rtpDasar = 45; // Default jika admin belum atur
+  let rtpDasar = 45;
 
-  if (snap.exists()) {
-    const data = snap.val();
+  if (snapBandar.exists()) {
+    const data = snapBandar.val();
     target = Number(data.target) || 0;
     dompetBandar = Number(data.dompetBandar) || 0;
     rtpDasar = Number(data.rtpDasar) || 45;
   }
 
-  // 2. Hitung Peluang Menang (Logika Transisi Halus)
+  // 1. Cek Apakah Dompet Bandar Penuh (Target Tercapai)
+  let dompetPenuh = (target > 0 && dompetBandar >= target);
+
+  // 2. Tentukan Peluang Menang
   let peluangFinal = rtpDasar;
-  if (target > 0) {
-    // Jika uang terkumpul mendekati target, peluang menang dikecilkan perlahan
-    const persentaseMendekatiTarget = (dompetBandar / target) * 100;
-    if (persentaseMendekatiTarget >= 100) {
-      peluangFinal = 5; // Jika target sudah penuh, peluang menang sangat kecil (5%)
-    } else if (persentaseMendekatiTarget > 80) {
-      peluangFinal = 15; // Jika sudah 80% target, peluang mengecil (15%)
-    } else {
-      peluangFinal = rtpDasar; // Masih normal
-    }
+  
+  if (dompetPenuh) {
+    // Jika dompet penuh, sistem berhenti "menahan". Pemain mulai bisa menang.
+    // Peluang dinaikkan secara halus (misal jadi 55%)
+    peluangFinal = 55; 
+  } else {
+    // Jika dompet belum penuh, sistem menahan kemenangan.
+    // Peluang mengecil perlahan seiring dompet mendekati target.
+    const persentase = (dompetBandar / target) * 100;
+    if (persentase > 80) peluangFinal = 10; // Sangat susah menang jika hampir penuh
+    else if (persentase > 50) peluangFinal = 25; // Susah menang
+    else peluangFinal = rtpDasar; // Normal di awal
   }
 
-  // 3. Tentukan Hasil (Bandar vs Pemain)
+  // 3. Tentukan Hasil
   const roll = Math.random() * 100;
   let pemainMenang = roll <= peluangFinal;
 
-  // 4. Update Saldo (Zero-Sum)
-  let saldoBaru = saldoSaatIni;
+  // 4. Logika Uang (Zero-Sum & Batas Saldo)
+  let saldoBaru = saldoPemain;
   let updateBandar = dompetBandar;
+  let pesanKhusus = "";
 
   if (pemainMenang) {
-    // Uang kemenangan diambil dari dompet bandar
-    saldoBaru += taruhan; 
-    updateBandar -= taruhan; // Dompet bandar berkurang
-    if (updateBandar < 0) updateBandar = 0; // Dompet tidak boleh minus
+    let kemenangan = taruhan; // Asumsi menang dapat 2x taruhan (modal + untung)
+    let untungPemain = taruhan; 
+
+    // Cek apakah dompet bandar cukup untuk membayar
+    if (dompetBandar >= untungPemain) {
+      saldoBaru += untungPemain;
+      updateBandar -= untungPemain;
+      pesanKhusus = "MENANG! +" + untungPemain;
+    } else {
+      // Jika dompet bandar tidak cukup, pemain hanya dapat sisa dompet
+      let sisaDompet = dompetBandar;
+      saldoBaru += sisaDompet;
+      updateBandar = 0;
+      pesanKhusus = "MENANG (Sisa Kas)! +" + sisaDompet;
+    }
   } else {
-    // Pemain kalah, uang masuk ke dompet bandar
+    // Pemain kalah
     saldoBaru -= taruhan;
     updateBandar += taruhan;
+    pesanKhusus = "KALAH! -" + taruhan;
   }
 
   // 5. Simpan ke Database
   await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idPemain), { balance: saldoBaru });
-  await window.fbUpdate(window.fbRef(window.fbDb, "pengaturan/bandar"), { dompetBandar: updateBandar });
+  
+  // Jika dompet baru saja penuh, catat waktu resetnya
+  let waktuReset = (dompetPenuh && updateBandar < target) ? Date.now() : (snapBandar.exists() ? snapBandar.val().resetTime : Date.now());
+  
+  await window.fbUpdate(window.fbRef(window.fbDb, "pengaturan/bandar"), { 
+    dompetBandar: updateBandar,
+    resetTime: waktuReset
+  });
 
   return {
     menang: pemainMenang,
     saldoBaru: saldoBaru,
     peluang: peluangFinal,
-    dompetBandar: updateBandar
+    pesan: pesanKhusus,
+    dompetPenuh: dompetPenuh
   };
 };

@@ -86,7 +86,7 @@
         <div id="dompetBandar" style="font-size: 32px; font-weight: bold; color: #00e701;">Rp 0</div>
       </div>
 
-      <label class="label-admin">Target Kekalahan Pemain (Rp)</label>
+      <label class="label-admin">Target Keuntungan Bandar (Kas Terkunci) (Rp)</label>
       <input type="number" id="targetKekalahan" class="input-admin" placeholder="Contoh: 1000000">
 
       <label class="label-admin">Peluang Menang Dasar (%)</label>
@@ -220,9 +220,25 @@
       const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
       if (snap.exists()) {
         const data = snap.val();
+        
+        // Logika Reset 24 Jam
+        let dompetSekarang = Number(data.dompetBandar || 0);
+        const waktuSekarang = Date.now();
+        const waktuResetTerakhir = data.resetTime || 0;
+        const bedaHari = (waktuSekarang - waktuResetTerakhir) / (1000 * 60 * 60); // dalam jam
+
+        // Jika target sudah penuh DAN sudah lewat 24 jam, reset dompet
+        if (dompetSekarang >= data.target && bedaHari >= 24) {
+          await window.fbUpdate(window.fbRef(window.fbDb, "pengaturan/bandar"), { 
+            dompetBandar: 0, 
+            resetTime: waktuSekarang 
+          });
+          dompetSekarang = 0;
+        }
+
         document.getElementById("targetKekalahan").value = data.target || "";
         document.getElementById("rtpDasar").value = data.rtpDasar || 45;
-        document.getElementById("dompetBandar").textContent = "Rp " + Number(data.dompetBandar || 0).toLocaleString("id-ID");
+        document.getElementById("dompetBandar").textContent = "Rp " + dompetSekarang.toLocaleString("id-ID");
       }
     } catch(e) { console.log(e); }
   }
@@ -239,11 +255,13 @@
       target: target,
       rtpDasar: rtp,
       dompetBandar: dompet,
+      resetTime: Date.now(), // Catat waktu reset
       updatedAt: new Date().toISOString()
     });
     
-    document.getElementById("statusBandar").textContent = "Pengaturan disimpan!";
+    document.getElementById("statusBandar").textContent = "Pengaturan disimpan! Dompet bandar di-reset.";
     setTimeout(() => document.getElementById("statusBandar").textContent = "", 3000);
+    muatBandar();
   }
 </script>
 </body>

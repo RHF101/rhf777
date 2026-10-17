@@ -82,9 +82,8 @@
           saldoPemain = hasil.saldoBaru;
           document.getElementById("saldoSekarang").textContent = saldoPemain;
           
-          const pesan = hasil.menang ? "MENANG! +" + taruhan : "KALAH! Dompet Bandar bertambah.";
           document.getElementById("pesan").style.color = hasil.menang ? "#00e701" : "#ff3838";
-          document.getElementById("pesan").textContent = pesan;
+          document.getElementById("pesan").textContent = hasil.pesan;
         }
       }, 100);
     }
