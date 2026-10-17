@@ -1,4 +1,4 @@
-// Data Permainan (Hanya untuk halaman depan)
+// Data Permainan untuk Halaman Depan
 const GAMES_DEPAN = [
   { name: 'Gates of Olympus', provider: 'Pragmatic Play' },
   { name: 'Sweet Bonanza', provider: 'Pragmatic Play' },
@@ -13,6 +13,7 @@ function renderGamesDepan() {
   if (!grid) return;
 
   grid.innerHTML = GAMES_DEPAN.map(g => {
+    // Nama gambar otomatis: gates-of-olympus.png
     const imgName = g.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.png';
     return `
     <div class="game-card" onclick="alert('Membuka game ${g.name}')">
@@ -28,9 +29,13 @@ function renderGamesDepan() {
   }).join('');
 }
 
-// Menu Ponsel
-function toggleMobileMenu() {
-  document.getElementById('mobileMenu').classList.toggle('open');
+// Fungsi Buka/Tutup Menu Ponsel
+function toggleMobileMenu(event) {
+  if(event) event.preventDefault(); // Mencegah halaman melompat ke atas
+  const menu = document.getElementById('mobileMenu');
+  if(menu) {
+    menu.classList.toggle('open');
+  }
 }
 
 // Jendela Melayang
@@ -51,7 +56,7 @@ function jebakan(event) {
   openModal('Galat', 'Halaman tidak ditemukan.');
 }
 
-// Mulai
+// Jalankan saat halaman dimuat
 renderGamesDepan();
 if (typeof window.perbaruiSaldo === 'function') {
   window.perbaruiSaldo();

@@ -772,3 +772,47 @@ img { max-width: 100%; display: block; object-fit: contain; }
 body {
   padding-bottom: 90px;
 }
+
+/* ============ PERBAIKAN MENU PONSEL ============ */
+.mobile-menu {
+  display: none; /* Awalnya tersembunyi */
+  position: absolute; /* Mengikuti bagian atas, bukan melayang di tengah */
+  top: 100%;
+  left: 0; right: 0;
+  background: #14141f;
+  border-bottom: 1px solid #2a2a3a;
+  padding: 16px;
+  z-index: 999;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.mobile-menu.open {
+  display: flex;
+}
+
+.mobile-menu a {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #8b8b9e;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.mobile-menu a:hover {
+  background: #1e1e2e;
+  color: #fff;
+}
+
+.mobile-menu-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #2a2a3a;
+  margin-top: 8px;
+}
+.mobile-menu-actions .btn {
+  flex: 1;
+}
