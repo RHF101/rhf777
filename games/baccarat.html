@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Baccarat — RHF 777</title>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; }
+    
+    body { 
+      background: radial-gradient(circle at center, #064e3b 0%, #022c22 100%); /* Warna Meja Kasino */
+      color: #fff; height: 100vh; height: 100dvh; 
+      display: flex; flex-direction: column; overflow: hidden; position: fixed; width: 100vw; top: 0; left: 0;
+    }
+
+    /* HEADER */
+    .header-game { 
+      display: flex; justify-content: space-between; align-items: center; 
+      padding: 12px 20px; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-bottom: 1px solid #10b98150; z-index: 10;
+    }
+    .tombol-kembali { 
+      color: #94a3b8; text-decoration: none; display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 8px; background: #000; border: 1px solid #10b98150;
+    }
+    .saldo-box { 
+      display: flex; align-items: center; gap: 8px; background: #000; padding: 8px 16px; border-radius: 12px; border: 1px solid #10b98150;
+    }
+    .saldo-label { font-size: 10px; color: #94a3b8; }
+    .saldo-game { font-size: 16px; font-weight: 700; color: #10b981; }
+
+    /* AREA MEJA */
+    .meja-kasino { flex: 1; position: relative; display: flex; flex-direction: column; justify-content: space-around; padding: 20px; }
+    
+    .area-kartu { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .skor-kartu { font-size: 28px; font-weight: 700; color: #ffd700; background: rgba(0,0,0,0.6); padding: 4px 16px; border-radius: 20px; border: 1px solid #ffd70050; min-width: 60px; text-align: center; }
+    .label-pemain { font-size: 14px; font-weight: 600; letter-spacing: 2px; color: #94a3b8; }
+    
+    .kartu-container { display: flex; gap: 10px; min-height: 120px; }
+    
+    /* DESAIN KARTU REMI */
+    .kartu { 
+      width: 80px; height: 120px; background: #fff; border-radius: 8px; position: relative;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5) translateY(-50px);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .kartu.muncul { opacity: 1; transform: scale(1) translateY(0); }
+    
+    .kartu-merah { color: #ef4444; }
+    .kartu-hitam { color: #0f172a; }
+    
+    .kartu .atas { display: flex; flex-direction: column; align-items: flex-start; line-height: 1; }
+    .kartu .bawah { display: flex; flex-direction: column; align-items: flex-end; line-height: 1; transform: rotate(180deg); }
+    .kartu .tengah { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; }
+    .kartu .angka { font-size: 16px; font-weight: 700; }
+    .kartu .simbol { font-size: 14px; }
+
+    /* PANEL KONTROL BAWAH */
+    .panel-kontrol { 
+      background: #0f172a; border-top: 1px solid #1e293b; padding: 15px 20px; 
+      z-index: 30; display: flex; flex-direction: column; gap: 10px; width: 100%; flex-shrink: 0;
+    }
+
+    .grup-pilihan { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 5px; }
+    .btn-pilihan { 
+      padding: 15px 10px; border-radius: 8px; border: 2px solid #334155; background: #1e293b; color: #fff; 
+      font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; text-align: center;
+    }
+    .btn-pilihan.pemain { border-color: #3b82f6; }
+    .btn-pilihan.banker { border-color: #ef4444; }
+    .btn-pilihan.seri { border-color: #10b981; }
+    
+    .btn-pilihan.aktif.pemain { background: #3b82f6; color: #fff; box-shadow: 0 0 15px #3b82f6; }
+    .btn-pilihan.aktif.banker { background: #ef4444; color: #fff; box-shadow: 0 0 15px #ef4444; }
+    .btn-pilihan.aktif.seri { background: #10b981; color: #fff; box-shadow: 0 0 15px #10b981; }
+
+    .baris-taruhan { display: flex; align-items: center; gap: 8px; }
+    .btn-chip { background: #1e293b; border: 1px solid #334155; border-radius: 6px; color: #fff; font-weight: 600; padding: 10px 14px; cursor: pointer; font-size: 13px; }
+    .input-container { flex: 1; background: #0f172a; border: 1px solid #334155; border-radius: 6px; display: flex; align-items: center; padding: 0 12px; }
+    .input-taruhan { width: 100%; background: transparent; border: none; color: #fff; font-size: 16px; font-weight: 600; padding: 10px 0; outline: none; text-align: center; }
+
+    .tombol-utama { width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; background: #10b981; color: #000; }
+    .tombol-utama:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
+
+    @media (min-width: 768px) {
+      .kartu { width: 100px; height: 150px; }
+      .kartu .tengah { font-size: 50px; }
+      .kartu .angka { font-size: 20px; }
+      .panel-kontrol { padding: 20px 25%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header-game">
+    <a href="../slot.html" class="tombol-kembali">
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </a>
+    <div class="saldo-box">
+      <div class="saldo-text">
+        <span class="saldo-label">SALDO ANDA</span>
+        <div class="saldo-game">Rp <span id="saldoSekarang">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AREA MEJA -->
+  <div class="meja-kasino">
+    <!-- BANKER -->
+    <div class="area-kartu">
+      <div class="label-pemain">BANKER</div>
+      <div class="kartu-container" id="kartuBanker">
+        <div class="skor-kartu" id="skorBanker" style="display: none;">0</div>
+      </div>
+    </div>
+
+    <!-- VS -->
+    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #475569; letter-spacing: 5px;">VS</div>
+
+    <!-- PLAYER -->
+    <div class="area-kartu">
+      <div class="kartu-container" id="kartuPlayer">
+        <div class="skor-kartu" id="skorPlayer" style="display: none;">0</div>
+      </div>
+      <div class="label-pemain">PLAYER</div>
+    </div>
+  </div>
+  
+  <!-- PANEL KONTROL -->
+  <div class="panel-kontrol">
+    <div class="grup-pilihan">
+      <button class="btn-pilihan pemain" id="btnPemain" onclick="pilihTaruhan('player')">PLAYER</button>
+      <button class="btn-pilihan seri" id="btnSeri" onclick="pilihTaruhan('tie')">SERI</button>
+      <button class="btn-pilihan banker" id="btnBanker" onclick="pilihTaruhan('banker')">BANKER</button>
+    </div>
+
+    <div class="baris-taruhan">
+      <button class="btn-chip" onclick="setTaruhan(1000)">1K</button>
+      <button class="btn-chip" onclick="setTaruhan(5000)">5K</button>
+      <div class="input-container">
+        <input type="number" id="inputTaruhan" class="input-taruhan" value="1000">
+      </div>
+      <button class="btn-chip" onclick="setTaruhan(10000)">10K</button>
+    </div>
+
+    <button class="tombol-utama" id="btnMulai" onclick="mulaiMain()">PASANG TARUHAN & BAGIKAN KARTU</button>
+  </div>
+
+  <script type="module" src="../assets/firebase.js"></script>
+  <script>
+    let saldoPemain = 0;
+    let idUser = null;
+    let pilihanPemain = null;
+    let taruhanAktif = 0;
+
+    // Data Kartu Remi (Value & Simbol)
+    const kartuRemi = [
+      { val: 1, simbol: '♠', nama: 'A', warna: 'hitam' }, { val: 2, simbol: '♠', nama: '2', warna: 'hitam' }, { val: 3, simbol: '♠', nama: '3', warna: 'hitam' }, { val: 4, simbol: '♠', nama: '4', warna: 'hitam' }, { val: 5, simbol: '♠', nama: '5', warna: 'hitam' }, { val: 6, simbol: '♠', nama: '6', warna: 'hitam' }, { val: 7, simbol: '♠', nama: '7', warna: 'hitam' }, { val: 8, simbol: '♠', nama: '8', warna: 'hitam' }, { val: 9, simbol: '♠', nama: '9', warna: 'hitam' }, { val: 10, simbol: '♠', nama: '10', warna: 'hitam' }, { val: 10, simbol: '♠', nama: 'J', warna: 'hitam' }, { val: 10, simbol: '♠', nama: 'Q', warna: 'hitam' }, { val: 10, simbol: '♠', nama: 'K', warna: 'hitam' },
+      { val: 1, simbol: '♥', nama: 'A', warna: 'merah' }, { val: 2, simbol: '♥', nama: '2', warna: 'merah' }, { val: 3, simbol: '♥', nama: '3', warna: 'merah' }, { val: 4, simbol: '♥', nama: '4', warna: 'merah' }, { val: 5, simbol: '♥', nama: '5', warna: 'merah' }, { val: 6, simbol: '♥', nama: '6', warna: 'merah' }, { val: 7, simbol: '♥', nama: '7', warna: 'merah' }, { val: 8, simbol: '♥', nama: '8', warna: 'merah' }, { val: 9, simbol: '♥', nama: '9', warna: 'merah' }, { val: 10, simbol: '♥', nama: '10', warna: 'merah' }, { val: 10, simbol: '♥', nama: 'J', warna: 'merah' }, { val: 10, simbol: '♥', nama: 'Q', warna: 'merah' }, { val: 10, simbol: '♥', nama: 'K', warna: 'merah' },
+      { val: 1, simbol: '♦', nama: 'A', warna: 'merah' }, { val: 2, simbol: '♦', nama: '2', warna: 'merah' }, { val: 3, simbol: '♦', nama: '3', warna: 'merah' }, { val: 4, simbol: '♦', nama: '4', warna: 'merah' }, { val: 5, simbol: '♦', nama: '5', warna: 'merah' }, { val: 6, simbol: '♦', nama: '6', warna: 'merah' }, { val: 7, simbol: '♦', nama: '7', warna: 'merah' }, { val: 8, simbol: '♦', nama: '8', warna: 'merah' }, { val: 9, simbol: '♦', nama: '9', warna: 'merah' }, { val: 10, simbol: '♦', nama: '10', warna: 'merah' }, { val: 10, simbol: '♦', nama: 'J', warna: 'merah' }, { val: 10, simbol: '♦', nama: 'Q', warna: 'merah' }, { val: 10, simbol: '♦', nama: 'K', warna: 'merah' },
+      { val: 1, simbol: '♣', nama: 'A', warna: 'hitam' }, { val: 2, simbol: '♣', nama: '2', warna: 'hitam' }, { val: 3, simbol: '♣', nama: '3', warna: 'hitam' }, { val: 4, simbol: '♣', nama: '4', warna: 'hitam' }, { val: 5, simbol: '♣', nama: '5', warna: 'hitam' }, { val: 6, simbol: '♣', nama: '6', warna: 'hitam' }, { val: 7, simbol: '♣', nama: '7', warna: 'hitam' }, { val: 8, simbol: '♣', nama: '8', warna: 'hitam' }, { val: 9, simbol: '♣', nama: '9', warna: 'hitam' }, { val: 10, simbol: '♣', nama: '10', warna: 'hitam' }, { val: 10, simbol: '♣', nama: 'J', warna: 'hitam' }, { val: 10, simbol: '♣', nama: 'Q', warna: 'hitam' }, { val: 10, simbol: '♣', nama: 'K', warna: 'hitam' }
+    ];
+
+    function setTaruhan(angka) { document.getElementById("inputTaruhan").value = angka; }
+
+    function pilihTaruhan(pilihan) {
+      if(document.getElementById("btnMulai").disabled) return;
+      pilihanPemain = pilihan;
+      
+      document.getElementById("btnPemain").classList.remove("aktif");
+      document.getElementById("btnSeri").classList.remove("aktif");
+      document.getElementById("btnBanker").classList.remove("aktif");
+
+      if(pilihan === 'player') document.getElementById("btnPemain").classList.add("aktif");
+      if(pilihan === 'tie') document.getElementById("btnSeri").classList.add("aktif");
+      if(pilihan === 'banker') document.getElementById("btnBanker").classList.add("aktif");
+    }
+
+    // Fungsi membuat elemen HTML Kartu
+    function buatKartuHTML(kartu) {
+      let div = document.createElement("div");
+      div.className = `kartu kartu-${kartu.warna}`;
+      div.innerHTML = `
+        <div class="atas"><span class="angka">${kartu.nama}</span><span class="simbol">${kartu.simbol}</span></div>
+        <div class="tengah">${kartu.simbol}</div>
+        <div class="bawah"><span class="angka">${kartu.nama}</span><span class="simbol">${kartu.simbol}</span></div>
+      `;
+      return div;
+    }
+
+    function hitungSkor(kartu1, kartu2) {
+      let total = kartu1.val + kartu2.val;
+      return total % 10; // Dalam Baccarat, jika lebih dari 9, diambil angka terakhir
+    }
+
+    function acakKartu() {
+      let idx = Math.floor(Math.random() * kartuRemi.length);
+      return kartuRemi[idx];
+    }
+
+    // Firebase Load
+    setTimeout(() => {
+      if(window.fbAuth) {
+        window.fbOnAuthStateChanged(window.fbAuth, async (user) => {
+          if(user) {
+            idUser = user.uid;
+            const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + user.uid));
+            if(snap.exists()) {
+              saldoPemain = Number(snap.val().balance);
+              document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
+            }
+          } else { window.location.href = "../index.html"; }
+        });
+      }
+    }, 1000);
+
+    async function mulaiMain() {
+      if(!idUser) return alert("Sedang menghubungkan ke akun...");
+      if(!pilihanPemain) return alert("Pilih dulu: Player, Banker, atau Seri!");
+      
+      const taruhan = Number(document.getElementById("inputTaruhan").value);
+      if(taruhan < 1000) return alert("Minimal taruhan Rp 1.000");
+      if(taruhan > saldoPemain) return alert("Saldo tidak cukup!");
+
+      // Kunci tombol
+      document.getElementById("btnMulai").disabled = true;
+      document.getElementById("btnMulai").textContent = "MEMBAGIKAN KARTU...";
+
+      // Potong saldo
+      saldoPemain -= taruhan;
+      taruhanAktif = taruhan;
+      document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
+      window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
+
+      // Bersihkan meja
+      document.getElementById("kartuPlayer").innerHTML = `<div class="skor-kartu" id="skorPlayer" style="display: none;">0</div>`;
+      document.getElementById("kartuBanker").innerHTML = `<div class="skor-kartu" id="skorBanker" style="display: none;">0</div>`;
+
+      // Ambil Kartu Acak
+      let player1 = acakKartu(); let player2 = acakKartu();
+      let banker1 = acakKartu(); let banker2 = acakKartu();
+
+      // Animasi Bagikan Kartu Player
+      await new Promise(r => setTimeout(r, 500));
+      let elP1 = buatKartuHTML(player1); document.getElementById("kartuPlayer").prepend(elP1);
+      setTimeout(() => elP1.classList.add("muncul"), 50);
+
+      // Animasi Bagikan Kartu Banker
+      await new Promise(r => setTimeout(r, 500));
+      let elB1 = buatKartuHTML(banker1); document.getElementById("kartuBanker").prepend(elB1);
+      setTimeout(() => elB1.classList.add("muncul"), 50);
+
+      // Animasi Bagikan Kartu Player 2
+      await new Promise(r => setTimeout(r, 500));
+      let elP2 = buatKartuHTML(player2); document.getElementById("kartuPlayer").prepend(elP2);
+      setTimeout(() => elP2.classList.add("muncul"), 50);
+
+      // Animasi Bagikan Kartu Banker 2
+      await new Promise(r => setTimeout(r, 500));
+      let elB2 = buatKartuHTML(banker2); document.getElementById("kartuBanker").prepend(elB2);
+      setTimeout(() => elB2.classList.add("muncul"), 50);
+
+      // Hitung Skor
+      let skorP = hitungSkor(player1, player2);
+      let skorB = hitungSkor(banker1, banker2);
+
+      await new Promise(r => setTimeout(r, 1000));
+
+      // Tampilkan Skor
+      let skorPlayerEl = document.getElementById("skorPlayer");
+      let skorBankerEl = document.getElementById("skorBanker");
+      skorPlayerEl.style.display = "block"; skorPlayerEl.textContent = skorP;
+      skorBankerEl.style.display = "block"; skorBankerEl.textContent = skorB;
+
+      // Tentukan Pemenang
+      let pemenang = "";
+      if(skorP > skorB) pemenang = "player";
+      else if(skorB > skorP) pemenang = "banker";
+      else pemenang = "tie";
+
+      // Hitung Kemenangan
+      let menang = false;
+      let payout = 0;
+      if(pilihanPemain === pemenang) {
+        menang = true;
+        if(pemenang === "player") payout = taruhan * 2; // Player menang dapat 2x
+        if(pemenang === "banker") payout = Math.floor(taruhan * 1.95); // Banker menang dipotong komisi 5%
+        if(pemenang === "tie") payout = taruhan * 9; // Seri dapat 9x
+      }
+
+      if(menang) {
+        saldoPemain += payout;
+        await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
+        document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
+        
+        // Catat Riwayat
+        if(window.fbSet) {
+          await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
+            userId: idUser, username: "Pemain", game: "Baccarat", menang: true, nominal: payout, waktu: new Date().toISOString()
+          });
+        }
+      }
+
+      // Buka Kunci Tombol
+      document.getElementById("btnMulai").disabled = false;
+      document.getElementById("btnMulai").textContent = "PASANG TARUHAN & BAGIKAN KARTU";
+
+      // Tampilkan Pesan Singkat (bisa diganti alert jika mau)
+      if(menang) {
+        setTimeout(() => alert(`SELAMAT! Anda menang Rp ${payout.toLocaleString('id-ID')}`), 300);
+      } else {
+        setTimeout(() => alert(`KALAH. Anda kehilangan Rp ${taruhan.toLocaleString('id-ID')}`), 300);
+      }
+    }
+  </script>
+</body>
+</html>

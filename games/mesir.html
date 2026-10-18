@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Egyptian Guardians — RHF 777</title>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; }
+
+    /* Bersihkan html dan body total */
+    html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; }
+
+    body {
+      background: url('https://cdn.corenexis.com/f/2Odhjgyzykk.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff; position: fixed; top: 0; left: 0;
+      display: flex; flex-direction: column;
+    }
+
+    /* POSTER MENTOK ATAS (Tanpa Celah) */
+    .banner-atas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 72px;
+      z-index: 99;
+      margin: 0;
+      padding: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .banner-atas img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+
+    /* AREA PERMAINAN (Membawa Perkalian & Grid ke Tengah) */
+    .wadah-utama {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding-top: 72px; /* Jarak agar tidak tertutup poster */
+      padding-bottom: 150px; /* Jarak agar tidak tertutup panel bawah */
+    }
+
+    /* PENGALI — bentuk pill nempel sedikit menutupi grid, kayak referensi */
+    .wadah-pengali {
+      position: relative;
+      width: 92%;
+      max-width: 420px;
+      height: 38px;
+      margin-bottom: -16px;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #0d3b36, #14726a 45%, #0d3b36);
+      border: 1px solid rgba(251,191,36,0.6);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.3);
+    }
+    .teks-pengali {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 86%;
+    }
+    .teks-pengali span {
+      font-size: 15px;
+      font-weight: 900;
+      font-style: italic;
+      color: #a8d8d0;
+      text-shadow: 0 1px 2px #000;
+      opacity: 0.55;
+      transition: all 0.3s;
+    }
+    .teks-pengali span.aktif {
+      opacity: 1;
+      color: #fef08a;
+      text-shadow: 0 0 8px #fbbf24, 0 0 16px #ef4444;
+      transform: scale(1.3);
+    }
+
+    /* GRID BLOK */
+    .grid-mahjong {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 5px;
+      width: 92%;
+      max-width: 420px;
+      aspect-ratio: 5/6;
+      background: rgba(0,0,0,0.35);
+      padding: 22px 8px 8px 8px;
+      border-radius: 16px;
+      border: 1px solid rgba(251,191,36,0.35);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ubin {
+      width: 100%; height: 100%;
+      background: linear-gradient(145deg, #fffdf5, #ece3cf);
+      border-radius: 8px;
+      display: flex; justify-content: center; align-items: center;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .ubin img { width: 82%; height: 82%; object-fit: contain; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3)); }
+
+    .ubin.spinning { animation: putarKotak 0.1s linear infinite; }
+    @keyframes putarKotak {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0); }
+    }
+
+    .ubin.hancur { animation: hancur 0.4s forwards; }
+    @keyframes hancur {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+      100% { transform: scale(0) rotate(90deg); opacity: 0; }
+    }
+
+    /* PITA PROMO (opsional, kayak referensi) */
+    .pita-promo {
+      position: absolute;
+      bottom: 148px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      max-width: 420px;
+      text-align: center;
+      background: linear-gradient(90deg, #7a1620, #a8222f, #7a1620);
+      border: 1px solid #fbbf24;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fef08a;
+      z-index: 40;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+    }
+
+    /* PANEL BAWAH */
+    .panel-bawah {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      background: linear-gradient(180deg, rgba(20,10,5,0.85), rgba(10,5,3,0.98));
+      border-top: 2px solid #fbbf24;
+      padding: 12px 16px 22px 16px;
+      display: flex; flex-direction: column; gap: 12px;
+      z-index: 50;
+    }
+
+    .baris-info { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .kotak-info {
+      flex: 1;
+      background: #1a1008;
+      border-radius: 20px;
+      padding: 6px 14px;
+      display: flex; align-items: center; gap: 6px;
+      font-weight: 700; font-size: 13px;
+      border: 1px solid #fbbf2450;
+      color: #fef08a;
+    }
+    .kotak-info.kanan { justify-content: flex-end; }
+    .ikon-info { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; opacity: 0.9; }
+    .badge-tengah {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #1a1008;
+      border: 1px solid #fbbf2450;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 900; color: #fbbf24;
+      flex-shrink: 0;
+    }
+
+    .baris-kontrol { display: flex; justify-content: space-between; align-items: center; }
+    .btn-bulat {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: #1a1008;
+      border: 2px solid #fbbf24;
+      color: #fbbf24;
+      font-size: 18px; font-weight: bold;
+      display: flex; justify-content: center; align-items: center;
+      cursor: pointer;
+    }
+    .btn-bulat.kecil { width: 36px; height: 36px; font-size: 15px; border-width: 1px; opacity: 0.85; }
+
+    .btn-spin {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #1ec9b7, #0c7d70 70%);
+      border: 3px solid #fbbf24;
+      display: flex; justify-content: center; align-items: center;
+      cursor: pointer;
+      box-shadow: 0 0 14px rgba(20,185,160,0.6), 0 4px 10px rgba(0,0,0,0.6);
+    }
+    .putaran-tombol { width: 70%; height: 70%; display: flex; justify-content: center; align-items: center; transform-origin: 50% 50%; animation: putarIkon 1s linear infinite; animation-play-state: paused; }
+    .btn-spin.spinning .putaran-tombol { animation-play-state: running; }
+    .gambar-spin { width: 100%; height: 100%; object-fit: contain; }
+    @keyframes putarIkon { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- Poster Mentok Atas -->
+  <div class="banner-atas">
+    <img src="https://cdn.corenexis.com/f/4c8yGStlbOB.png" alt="Egyptian Guardians">
+  </div>
+
+  <!-- Area Permainan (Di Tengah) -->
+  <div class="wadah-utama">
+    <div class="wadah-pengali">
+      <div class="teks-pengali">
+        <span id="mult-0">x1</span>
+        <span id="mult-1">x2</span>
+        <span id="mult-2">x3</span>
+        <span id="mult-3">x5</span>
+      </div>
+    </div>
+    <div class="grid-mahjong" id="slotGrid"></div>
+  </div>
+
+  <!-- Pita Promo -->
+  <div class="pita-promo">MENANG BERUNTUN DAPAT PENGALI SAMPAI X10</div>
+
+  <!-- Panel Bawah -->
+  <div class="panel-bawah">
+    <div class="baris-info">
+      <div class="kotak-info">
+        <span class="ikon-info">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="#fbbf24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </span>
+        <span id="saldoSekarang">0</span>
+      </div>
+      <div class="badge-tengah">RHF</div>
+      <div class="kotak-info kanan">
+        <span id="infoTaruhan">1.000</span>
+        <span class="ikon-info">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.1 3 2.5-1.3 2-3 2.5-3 1.1-3 2.5 1.3 2.5 3 2.5 3-1.1 3-2.5"/></svg>
+        </span>
+      </div>
+    </div>
+    <div class="baris-kontrol">
+      <div class="btn-bulat kecil" id="btnSuara" onclick="toggleSuara()">🔇</div>
+      <div class="btn-bulat" onclick="kurangiTaruhan()">−</div>
+      <div class="btn-spin" id="btnSpin" onclick="putarSlot()">
+        <div class="putaran-tombol"><img src="https://cdn.corenexis.com/f/fOtNGPI2pC9.png" class="gambar-spin" alt="Spin"></div>
+      </div>
+      <div class="btn-bulat" onclick="tambahTaruhan()">+</div>
+      <div class="btn-bulat kecil" id="btnAuto" onclick="toggleAuto()">▶</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getDatabase, ref, get, update, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-6xbQLaV7gBUxu3xXqJkp_8_6Yu1oAKE",
+      authDomain: "rhf777-44bc1.firebaseapp.com",
+      databaseURL: "https://rhf777-44bc1-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rhf777-44bc1",
+      storageBucket: "rhf777-44bc1.firebasestorage.app",
+      messagingSenderId: "819275932186",
+      appId: "1:819275932186:web:b6dda67391347cc8cd67a3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let saldoPemain = 0, idUser = null, taruhanSaatIni = 1000, sedangSpinning = false;
+    const multipliers = [1, 2, 3, 5];
+    let multiplierIndex = 0;
+
+    const simbolMesir = [
+      { id: 1, img: 'https://cdn.corenexis.com/f/0fnMRrS2Oso.png', harga: 10 }, 
+      { id: 2, img: 'https://cdn.corenexis.com/f/5cb16Pj8SgD.png', harga: 5 },  
+      { id: 3, img: 'https://cdn.corenexis.com/f/ASQzm3LZTxm.png', harga: 3 },  
+      { id: 4, img: 'https://cdn.corenexis.com/f/qEM2x5ZbbiH.png', harga: 2 },  
+      { id: 5, img: 'https://cdn.corenexis.com/f/GeVrGNCgk7K.png', harga: 1 }   
+    ];
+
+    function updateUI() {
+      document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
+      document.getElementById("infoTaruhan").textContent = taruhanSaatIni.toLocaleString('id-ID');
+    }
+
+    window.tambahTaruhan = function() { if(!sedangSpinning) { taruhanSaatIni = Math.min(taruhanSaatIni * 2, saldoPemain); updateUI(); } }
+    window.kurangiTaruhan = function() { if(!sedangSpinning) { taruhanSaatIni = Math.max(taruhanSaatIni / 2, 100); updateUI(); } }
+
+    let suaraAktif = false, autoAktif = false;
+    window.toggleSuara = function() {
+      suaraAktif = !suaraAktif;
+      document.getElementById("btnSuara").textContent = suaraAktif ? "🔊" : "🔇";
+    }
+    window.toggleAuto = function() {
+      autoAktif = !autoAktif;
+      document.getElementById("btnAuto").style.borderColor = autoAktif ? "#22c55e" : "#fbbf24";
+      document.getElementById("btnAuto").style.color = autoAktif ? "#22c55e" : "#fbbf24";
+    }
+
+    function buatGrid() {
+      let grid = document.getElementById("slotGrid"); grid.innerHTML = "";
+      for(let i=0; i<25; i++) {
+        let ubin = document.createElement("div"); ubin.className = "ubin"; ubin.id = "ubin-" + i;
+        let acak = simbolMesir[Math.floor(Math.random() * simbolMesir.length)];
+        ubin.innerHTML = `<img src="${acak.img}" alt="">`; ubin.dataset.simbolId = acak.id; ubin.dataset.harga = acak.harga;
+        grid.appendChild(ubin);
+      }
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if(user) {
+        idUser = user.uid;
+        const snap = await get(ref(db, "users/" + user.uid));
+        if(snap.exists()) { saldoPemain = Number(snap.val().balance); updateUI(); }
+      } else { window.location.href = "../index.html"; }
+    });
+
+    window.putarSlot = async function() {
+      if(!idUser || sedangSpinning) return;
+      if(taruhanSaatIni > saldoPemain) return alert("Saldo tidak cukup!");
+
+      sedangSpinning = true;
+      multiplierIndex = 0;
+      document.querySelectorAll(".teks-pengali span").forEach(el => el.classList.remove("aktif"));
+      document.getElementById("mult-0").classList.add("aktif");
+      document.getElementById("btnSpin").classList.add("spinning");
+
+      saldoPemain -= taruhanSaatIni; updateUI();
+      await update(ref(db, "users/" + idUser), { balance: saldoPemain });
+
+      for(let i=0; i<25; i++) document.getElementById("ubin-" + i).classList.add("spinning");
+
+      let intervalPutar = setInterval(() => {
+        for(let i=0; i<25; i++) {
+          let ubin = document.getElementById("ubin-" + i);
+          if (ubin.classList.contains("spinning")) {
+            let acak = simbolMesir[Math.floor(Math.random() * simbolMesir.length)];
+            ubin.innerHTML = `<img src="${acak.img}" alt="">`;
+          }
+        }
+      }, 100);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      for(let col=0; col<5; col++) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        for(let row=0; row<5; row++) {
+          let idx = row * 5 + col; let ubin = document.getElementById("ubin-" + idx);
+          ubin.classList.remove("spinning");
+          let acak = simbolMesir[Math.floor(Math.random() * simbolMesir.length)];
+          ubin.innerHTML = `<img src="${acak.img}" alt="">`; ubin.dataset.simbolId = acak.id; ubin.dataset.harga = acak.harga;
+        }
+      }
+      clearInterval(intervalPutar);
+      document.getElementById("btnSpin").classList.remove("spinning");
+      sedangSpinning = false;
+    }
+
+    buatGrid();
+  </script>
+</body>
+</html>
