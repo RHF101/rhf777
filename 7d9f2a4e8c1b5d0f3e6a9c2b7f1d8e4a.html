@@ -28,6 +28,40 @@
     .btn-tambah { background: #00e701; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; margin-bottom: 15px; width: 100%; font-size: 16px;}
     .input-admin { width: 100%; padding: 12px; background: #0a0a0f; border: 1px solid #2a2a3a; color: #fff; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; }
     .label-admin { display: block; color: #fff; margin-bottom: 5px; font-size: 14px; }
+    .badge-pending { background: #ff3838; color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; margin-left: 6px; display: none; }
+
+    /* MODAL GAME */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: #14141f; border: 1px solid #2a2a3a; border-radius: 14px; padding: 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal-box h3 { color: #ffd700; font-size: 18px; margin-bottom: 20px; }
+    .modal-box .input-admin { margin-bottom: 12px; }
+    .modal-box .label-admin { color: #8b8b9e; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+
+    /* AREA UPLOAD */
+    .area-upload {
+      border: 2px dashed #2a2a3a; border-radius: 10px; padding: 16px;
+      text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 12px; position: relative;
+    }
+    .area-upload:hover { border-color: #ffd700; }
+    .area-upload.dragover { border-color: #ffd700; background: rgba(255,215,0,0.05); }
+    .area-upload input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+    .upload-preview { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; margin: 0 auto 10px; display: none; }
+    .upload-placeholder { color: #8b8b9e; font-size: 13px; }
+    .upload-placeholder span { color: #ffd700; font-weight: bold; }
+
+    /* PROGRESS BAR */
+    .progress-wrap { display: none; margin-bottom: 12px; }
+    .progress-bar { height: 6px; background: #2a2a3a; border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #ffd700; border-radius: 3px; width: 0%; transition: width 0.3s; }
+    .progress-label { font-size: 12px; color: #8b8b9e; margin-top: 4px; text-align: center; }
+
+    .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-footer button { flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; font-size: 14px; }
+    .btn-modal-batal { background: #2a2a3a; color: #fff; }
+    .btn-modal-simpan { background: #ffd700; color: #000; }
+    .btn-modal-simpan:disabled { background: #2a2a3a; color: #8b8b9e; cursor: not-allowed; }
+    .atau-divider { text-align: center; color: #8b8b9e; font-size: 12px; margin: 8px 0; }
   </style>
 </head>
 <body>
@@ -42,6 +76,7 @@
     <button class="tab-btn active" onclick="bukaTab('pengguna', this)">Data Pengguna</button>
     <button class="tab-btn" onclick="bukaTab('games', this)">Kelola Games</button>
     <button class="tab-btn" onclick="bukaTab('bandar', this)">Pengaturan Bandar</button>
+    <button class="tab-btn" onclick="bukaTab('penarikan', this)">Penarikan Dana <span class="badge-pending" id="badge-pending">!</span></button>
     <button class="tab-btn" onclick="bukaTab('riwayat', this)">Semua Riwayat</button>
   </div>
 
@@ -69,7 +104,7 @@
         <thead>
           <tr><th>Gambar</th><th>Nama Game</th><th>Perusahaan</th><th>File</th><th>RTP (%)</th><th style="text-align: right;">Aksi</th></tr>
         </thead>
-        <tbody id="tabel-games"><tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr></tbody>
+        <tbody id="tabel-games"><tr><td colspan="6" style="text-align: center;">Memuat data...</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -81,8 +116,7 @@
       <p style="color: #8b8b9e; font-size: 14px; margin-bottom: 20px; text-align: center;">
         Atur target kekalahan pemain. Jika target tercapai, bandar berhenti membayar (peluang menang pemain mengecil secara halus).
       </p>
-      
-      
+
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
         <div style="padding: 15px; background: #0a0a0f; border-radius: 8px; border: 1px solid #2a2a3a; text-align: center;">
           <label style="display:block; color:#8b8b9e; margin-bottom:5px; font-size:12px;">TARGET MUTLAK (TERKUNCI)</label>
@@ -94,7 +128,6 @@
         </div>
       </div>
 
-
       <label class="label-admin">Target Keuntungan Bandar (Kas Terkunci) (Rp)</label>
       <input type="number" id="targetKekalahan" class="input-admin" placeholder="Contoh: 1000000">
 
@@ -105,8 +138,25 @@
       <button onclick="simpanBandar()" class="btn-tambah">Simpan Pengaturan</button>
       <p id="statusBandar" style="color:#00e701; margin-top:15px; text-align:center; font-weight: bold;"></p>
     </div>
-  
-  <!-- ================= TAB RIWAYAT ADMIN ================= -->
+  </div>
+
+  <!-- ================= TAB PENARIKAN DANA ================= -->
+  <div id="tab-penarikan" class="konten-tab" style="display:none;">
+    <div class="ringkasan">
+      <div class="kartu-ringkasan"><h4>Pending Penarikan</h4><div class="angka" id="total-pending">0</div></div>
+      <div class="kartu-ringkasan"><h4>Total Nominal Pending</h4><div class="angka" id="total-nominal-pending">Rp 0</div></div>
+    </div>
+    <div class="kotak-tabel">
+      <table>
+        <thead>
+          <tr><th>Waktu</th><th>Pemain</th><th>Nomor Tujuan</th><th>Nominal</th><th style="text-align: right;">Aksi</th></tr>
+        </thead>
+        <tbody id="tabel-widrow"><tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================= TAB RIWAYAT ================= -->
   <div id="tab-riwayat" class="konten-tab" style="display:none;">
     <div class="kotak-tabel">
       <table>
@@ -119,12 +169,62 @@
   </div>
 
 </div>
+
+<!-- MODAL TAMBAH / EDIT GAME -->
+<div class="modal-overlay" id="modalGame">
+  <div class="modal-box">
+    <h3 id="judulModalGame">Tambah Game Baru</h3>
+
+    <label class="label-admin">Nama Game</label>
+    <input type="text" id="mg-nama" class="input-admin" placeholder="Contoh: Gates of Olympus">
+
+    <label class="label-admin">Perusahaan</label>
+    <input type="text" id="mg-provider" class="input-admin" placeholder="Pragmatic Play, PG Soft, dll">
+
+    <label class="label-admin">File Game</label>
+    <input type="text" id="mg-file" class="input-admin" placeholder="Contoh: games/olympus.html">
+
+    <label class="label-admin">RTP (%)</label>
+    <input type="number" id="mg-rtp" class="input-admin" value="95" min="1" max="99">
+
+    <label class="label-admin">Icon Game</label>
+    <div class="area-upload" id="areaUpload">
+      <input type="file" id="inputFile" accept="image/*" onchange="pratinjauGambar(this)">
+      <img id="previewGambar" class="upload-preview" src="" alt="preview">
+      <div class="upload-placeholder" id="uploadPlaceholder">
+        Klik atau seret gambar ke sini<br>
+        <span>Pilih File</span> · JPG, PNG, WebP · maks 2MB
+      </div>
+    </div>
+
+    <div class="atau-divider">— atau —</div>
+    <label class="label-admin">URL Icon (opsional, kalau nggak upload)</label>
+    <input type="text" id="mg-iconurl" class="input-admin" placeholder="https://...">
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">Mengupload...</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-modal-batal" onclick="tutupModalGame()">Batal</button>
+      <button class="btn-modal-simpan" id="btnSimpanGame" onclick="simpanGame()">Simpan</button>
+    </div>
+  </div>
 </div>
 
 <script type="module" src="assets/firebase.js"></script>
 <script>
   window.onload = () => {
-    setTimeout(() => { if(window.fbDb) { muatPengguna(); muatGames(); muatBandar(); muatRiwayatAdmin(); } }, 1000);
+    setTimeout(() => {
+      if(window.fbDb) {
+        muatPengguna();
+        muatGames();
+        muatBandar();
+        muatRiwayatAdmin();
+        muatWidrow();
+      }
+    }, 1000);
   };
 
   function bukaTab(nama, tombol) {
@@ -132,9 +232,10 @@
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById('tab-' + nama).style.display = 'block';
     tombol.classList.add('active');
+    if(nama === 'penarikan') muatWidrow();
   }
 
-  // ============ 1. DATA PENGGUNA (BAN/UNBAN) ============
+  // ============ 1. DATA PENGGUNA ============
   async function muatPengguna() {
     const tabel = document.getElementById('tabel-user');
     try {
@@ -147,10 +248,12 @@
           const id = child.key;
           jumlahUser++;
           totalSaldo += Number(user.balance || 0);
-          
+
           const isBanned = user.banned === true;
           const statusText = isBanned ? "<span style='color:#ff3838'>BANNED</span>" : "<span style='color:#00e701'>Aktif</span>";
-          const banBtn = isBanned ? `<button class="btn-aksi btn-tambah" style="width:auto; margin:0;" onclick="toggleBan('${id}', false)">Unban</button>` : `<button class="btn-aksi btn-ban" onclick="toggleBan('${id}', true)">Ban</button>`;
+          const banBtn = isBanned
+            ? `<button class="btn-aksi btn-tambah" style="width:auto; margin:0;" onclick="toggleBan('${id}', false)">Unban</button>`
+            : `<button class="btn-aksi btn-ban" onclick="toggleBan('${id}', true)">Ban</button>`;
 
           html += `
             <tr>
@@ -159,7 +262,7 @@
               <td style="color:#00e701; font-weight:bold;">Rp ${Number(user.balance || 0).toLocaleString('id-ID')}</td>
               <td>${statusText}</td>
               <td style="text-align: right;">
-                <button class="btn-aksi btn-edit" onclick="editUser('${id}', '${user.username}', ${user.balance})">Edit</button>
+                <button class="btn-aksi btn-edit" onclick="editUser('${id}', '${user.username}', ${user.balance || 0})">Edit</button>
                 ${banBtn}
               </td>
             </tr>`;
@@ -184,7 +287,7 @@
     muatPengguna();
   }
 
-  // ============ 2. KELOLA GAMES & RTP ============
+  // ============ 2. KELOLA GAMES ============
   async function muatGames() {
     const tabel = document.getElementById("tabel-games");
     try {
@@ -213,44 +316,168 @@
     } catch (e) { tabel.innerHTML = `<tr><td colspan="6" style="color:red;">Gagal: ${e.message}</td></tr>`; }
   }
 
-  async function tambahGame() {
-    const nama = prompt("Nama Game Baru:"); if (!nama) return;
-    const provider = prompt("Perusahaan (PG Soft, Pragmatic, dll):"); if (!provider) return;
-    const fileUrl = prompt("Nama File Game (contoh: dice.html):"); if (!fileUrl) return;
-    const rtp = prompt("Atur Persentase RTP Kemenangan (contoh: 95):", "95"); if (!rtp) return;
-    const iconUrl = prompt("Masukkan Link Gambar Icon (biarkan kosong jika tidak ada):", "");
+  // ---- STATE MODAL GAME ----
+  let modalGameMode = "tambah"; // "tambah" | "edit"
+  let modalGameId = null;
+  let fileDipilih = null;
 
-    try {
-      await window.fbSet(window.fbRef(window.fbDb, "games/" + Date.now()), { 
-        name: nama, 
-        provider: provider, 
-        fileUrl: fileUrl, 
-        rtp: Number(rtp),
-        iconUrl: iconUrl || "" 
-      });
-      alert("Game berhasil ditambahkan!");
-      muatGames();
-    } catch(e) { alert("Gagal: " + e.message); }
+  function tambahGame() {
+    modalGameMode = "tambah";
+    modalGameId = null;
+    fileDipilih = null;
+    document.getElementById("judulModalGame").textContent = "Tambah Game Baru";
+    document.getElementById("mg-nama").value = "";
+    document.getElementById("mg-provider").value = "";
+    document.getElementById("mg-file").value = "";
+    document.getElementById("mg-rtp").value = "95";
+    document.getElementById("mg-iconurl").value = "";
+    resetPreview();
+    document.getElementById("modalGame").classList.add("open");
   }
 
-  async function editGame(id, namaLama, providerLama, fileLama, rtpLama, iconLama) {
-    const namaBaru = prompt("Ubah Nama Game:", namaLama); if (!namaBaru) return;
-    const providerBaru = prompt("Ubah Perusahaan:", providerLama); if (!providerBaru) return;
-    const fileBaru = prompt("Ubah Nama File:", fileLama); if (!fileBaru) return;
-    const rtpBaru = prompt("Ubah RTP (%):", rtpLama); if (!rtpBaru) return;
-    const iconBaru = prompt("Ubah Link Gambar Icon:", iconLama || ""); if (iconBaru === null) return;
+  function editGame(id, nama, provider, fileUrl, rtp, iconUrl) {
+    modalGameMode = "edit";
+    modalGameId = id;
+    fileDipilih = null;
+    document.getElementById("judulModalGame").textContent = "Edit Game";
+    document.getElementById("mg-nama").value = nama || "";
+    document.getElementById("mg-provider").value = provider || "";
+    document.getElementById("mg-file").value = fileUrl || "";
+    document.getElementById("mg-rtp").value = rtp || 95;
+    document.getElementById("mg-iconurl").value = iconUrl || "";
+    // tampilkan preview icon lama kalau ada
+    if(iconUrl) {
+      const img = document.getElementById("previewGambar");
+      img.src = iconUrl;
+      img.style.display = "block";
+      document.getElementById("uploadPlaceholder").style.display = "none";
+    } else {
+      resetPreview();
+    }
+    document.getElementById("modalGame").classList.add("open");
+  }
+
+  function tutupModalGame() {
+    document.getElementById("modalGame").classList.remove("open");
+    resetPreview();
+    document.getElementById("progressWrap").style.display = "none";
+    document.getElementById("btnSimpanGame").disabled = false;
+    fileDipilih = null;
+  }
+
+  function resetPreview() {
+    document.getElementById("previewGambar").style.display = "none";
+    document.getElementById("previewGambar").src = "";
+    document.getElementById("uploadPlaceholder").style.display = "block";
+    document.getElementById("inputFile").value = "";
+  }
+
+  function pratinjauGambar(input) {
+    const file = input.files[0];
+    if(!file) return;
+    if(file.size > 2 * 1024 * 1024) {
+      alert("Ukuran file maks 2MB.");
+      input.value = "";
+      return;
+    }
+    fileDipilih = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById("previewGambar");
+      img.src = e.target.result;
+      img.style.display = "block";
+      document.getElementById("uploadPlaceholder").style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Upload ke Firebase Storage via REST API (tanpa SDK Storage)
+  // Bucket: rhf777-44bc1.firebasestorage.app
+  async function uploadKeStorage(file) {
+    const BUCKET = "rhf777-44bc1.firebasestorage.app";
+    const ext = file.name.split('.').pop().toLowerCase();
+    const namaFile = "icons/" + Date.now() + "_" + Math.random().toString(36).slice(2,8) + "." + ext;
+    const encodedPath = encodeURIComponent(namaFile);
+
+    // ambil idToken dari user yang login
+    if(!window.fbAuth || !window.fbAuth.currentUser) throw new Error("Belum login.");
+    const idToken = await window.fbAuth.currentUser.getIdToken();
+
+    const url = `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o?uploadType=media&name=${encodedPath}`;
+
+    // tampilkan progress (simulasi via XHR biar bisa track upload)
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Authorization", "Bearer " + idToken);
+      xhr.setRequestHeader("Content-Type", file.type || "image/jpeg");
+
+      // progress
+      xhr.upload.onprogress = e => {
+        if(e.lengthComputable) {
+          const pct = Math.round((e.loaded / e.total) * 100);
+          document.getElementById("progressFill").style.width = pct + "%";
+          document.getElementById("progressLabel").textContent = `Mengupload... ${pct}%`;
+        }
+      };
+
+      xhr.onload = () => {
+        if(xhr.status >= 200 && xhr.status < 300) {
+          const resp = JSON.parse(xhr.responseText);
+          const token = resp.downloadTokens;
+          const downloadUrl = `https://firebasestorage.googleapis.com/v0/b/${BUCKET}/o/${encodedPath}?alt=media&token=${token}`;
+          resolve(downloadUrl);
+        } else {
+          reject(new Error("Upload gagal: " + xhr.status + " " + xhr.responseText));
+        }
+      };
+      xhr.onerror = () => reject(new Error("Network error saat upload."));
+      xhr.send(file);
+    });
+  }
+
+  async function simpanGame() {
+    const nama = document.getElementById("mg-nama").value.trim();
+    const provider = document.getElementById("mg-provider").value.trim();
+    const fileUrl = document.getElementById("mg-file").value.trim();
+    const rtp = Number(document.getElementById("mg-rtp").value) || 95;
+    let iconUrl = document.getElementById("mg-iconurl").value.trim();
+
+    if(!nama || !provider || !fileUrl) {
+      alert("Nama, perusahaan, dan nama file wajib diisi.");
+      return;
+    }
+
+    const btnSimpan = document.getElementById("btnSimpanGame");
+    btnSimpan.disabled = true;
+    btnSimpan.textContent = "Menyimpan...";
 
     try {
-      await window.fbUpdate(window.fbRef(window.fbDb, "games/" + id), { 
-        name: namaBaru, 
-        provider: providerBaru, 
-        fileUrl: fileBaru, 
-        rtp: Number(rtpBaru),
-        iconUrl: iconBaru
-      });
-      alert("Game berhasil diperbarui!");
+      // upload file kalau ada yang dipilih
+      if(fileDipilih) {
+        document.getElementById("progressWrap").style.display = "block";
+        document.getElementById("progressFill").style.width = "0%";
+        document.getElementById("progressLabel").textContent = "Mengupload...";
+        iconUrl = await uploadKeStorage(fileDipilih);
+        document.getElementById("progressLabel").textContent = "Upload selesai ✓";
+      }
+
+      const data = { name: nama, provider: provider, fileUrl: fileUrl, rtp: rtp, iconUrl: iconUrl };
+
+      if(modalGameMode === "tambah") {
+        await window.fbSet(window.fbRef(window.fbDb, "games/" + Date.now()), data);
+      } else {
+        await window.fbUpdate(window.fbRef(window.fbDb, "games/" + modalGameId), data);
+      }
+
+      tutupModalGame();
       muatGames();
-    } catch(e) { alert("Gagal: " + e.message); }
+    } catch(e) {
+      alert("Gagal: " + e.message);
+    } finally {
+      btnSimpan.disabled = false;
+      btnSimpan.textContent = "Simpan";
+    }
   }
 
   async function hapusGame(id) {
@@ -259,60 +486,6 @@
     muatGames();
   }
 
-  
-  async function muatRiwayatAdmin() {
-    const tabel = document.getElementById("tabel-riwayat-admin");
-    try {
-      const snapshot = await window.fbGet(window.fbRef(window.fbDb, "riwayat"));
-      let html = "";
-      if (snapshot.exists()) {
-        let dataArray = [];
-        snapshot.forEach(child => { dataArray.push(child.val()); });
-        dataArray.reverse().slice(0, 50).forEach(data => { // Ambil 50 terakhir
-          const warna = data.menang ? "#00e701" : "#ff3838";
-          const teks = data.menang ? "MENANG" : "KALAH";
-          const tgl = new Date(data.waktu).toLocaleString("id-ID");
-          html += `
-            <tr>
-              <td style="font-size:12px; color:#8b8b9e;">${tgl}</td>
-              <td>${data.username}</td>
-              <td>${data.game}</td>
-              <td style="color:${warna}; font-weight:bold;">${teks}</td>
-              <td style="color:${warna}; font-weight:bold;">Rp ${Number(data.nominal).toLocaleString("id-ID")}</td>
-            </tr>`;
-        });
-      }
-      tabel.innerHTML = html || `<tr><td colspan="5" style="text-align: center;">Belum ada riwayat.</td></tr>`;
-    } catch(e) { console.log(e); }
-  }
-
-  async function muatWidrow() {
-    const tabel = document.getElementById("tabel-widrow");
-    try {
-      const snapshot = await window.fbGet(window.fbRef(window.fbDb, "widrow_pending"));
-      let html = "";
-      if (snapshot.exists()) {
-        let dataArray = [];
-        snapshot.forEach(child => { dataArray.push({ key: child.key, val: child.val() }); });
-        dataArray.reverse().forEach(item => {
-          const data = item.val;
-          if(data.status === "pending") {
-            const tgl = new Date(data.waktu).toLocaleString("id-ID");
-            html += `<tr><td style="font-size:12px; color:#8b8b9e;">${tgl}</td><td>${data.username}</td><td style="color:#ffd700;">${data.nomorTujuan}</td><td style="color:#ff3838; font-weight:bold;">Rp ${Number(data.nominal).toLocaleString("id-ID")}</td><td style="text-align: right;"><button class="btn-aksi btn-tambah" style="width:auto; margin:0;" onclick="selesaikanTarik('${item.key}', '${data.userId}', ${data.nominal}, '${data.username}')">Selesai</button></td></tr>`;
-          }
-        });
-      }
-      tabel.innerHTML = html || `<tr><td colspan="5" style="text-align: center;">Tidak ada penarikan pending.</td></tr>`;
-    } catch(e) { console.log(e); }
-  }
-  async function selesaikanTarik(key, userId, nominal, username) {
-    if(!confirm(`Selesaikan penarikan Rp ${nominal} untuk ${username}?`)) return;
-    try {
-      await window.selesaikanWidrow(key, userId, nominal, username);
-      alert("Penarikan berhasil diselesaikan!");
-      muatWidrow();
-    } catch(e) { alert("Gagal: " + e.message); }
-  }
   // ============ 3. PENGATURAN BANDAR ============
   async function muatBandar() {
     try {
@@ -330,7 +503,6 @@
   async function simpanBandar() {
     const target = Number(document.getElementById("targetKekalahan").value);
     const rtp = Number(document.getElementById("rtpDasar").value);
-    
     await window.fbSet(window.fbRef(window.fbDb, "pengaturan/bandar"), {
       target: target,
       rtpDasar: rtp,
@@ -339,10 +511,104 @@
       resetTime: Date.now(),
       updatedAt: new Date().toISOString()
     });
-    
     document.getElementById("statusBandar").textContent = "Target disimpan. Kedua dompet di-reset.";
     setTimeout(() => document.getElementById("statusBandar").textContent = "", 3000);
     muatBandar();
+  }
+
+  // ============ 4. PENARIKAN DANA ============
+  async function muatWidrow() {
+    const tabel = document.getElementById("tabel-widrow");
+    try {
+      const snapshot = await window.fbGet(window.fbRef(window.fbDb, "widrow_pending"));
+      let html = "", totalPending = 0, totalNominal = 0;
+      if (snapshot.exists()) {
+        let dataArray = [];
+        snapshot.forEach(child => { dataArray.push({ key: child.key, val: child.val() }); });
+        dataArray.reverse().forEach(item => {
+          const data = item.val;
+          if(data.status === "pending") {
+            totalPending++;
+            totalNominal += Number(data.nominal || 0);
+            const tgl = new Date(data.waktu).toLocaleString("id-ID");
+            html += `
+              <tr>
+                <td style="font-size:12px; color:#8b8b9e;">${tgl}</td>
+                <td><div style="font-weight:bold;">${data.username}</div><div style="font-size:11px;color:#8b8b9e;">${data.userId || ''}</div></td>
+                <td style="color:#ffd700;">${data.nomorTujuan}</td>
+                <td style="color:#ff3838; font-weight:bold;">Rp ${Number(data.nominal).toLocaleString("id-ID")}</td>
+                <td style="text-align: right;">
+                  <button class="btn-aksi btn-tambah" style="width:auto; margin:0;" onclick="selesaikanTarik('${item.key}', '${data.userId}', ${data.nominal}, '${data.username}')">Selesai</button>
+                  <button class="btn-aksi btn-hapus" style="margin:0;" onclick="tolakTarik('${item.key}', '${data.userId}', ${data.nominal}, '${data.username}')">Tolak</button>
+                </td>
+              </tr>`;
+          }
+        });
+      }
+      tabel.innerHTML = html || `<tr><td colspan="5" style="text-align: center;">Tidak ada penarikan pending.</td></tr>`;
+      document.getElementById("total-pending").textContent = totalPending;
+      document.getElementById("total-nominal-pending").textContent = "Rp " + totalNominal.toLocaleString("id-ID");
+      // badge notif di tab
+      const badge = document.getElementById("badge-pending");
+      badge.style.display = totalPending > 0 ? "inline" : "none";
+      badge.textContent = totalPending;
+    } catch(e) { console.log(e); }
+  }
+
+  async function selesaikanTarik(key, userId, nominal, username) {
+    if(!confirm(`Selesaikan penarikan Rp ${Number(nominal).toLocaleString("id-ID")} untuk ${username}?`)) return;
+    try {
+      if(window.selesaikanWidrow) {
+        await window.selesaikanWidrow(key, userId, nominal, username);
+      } else {
+        // fallback manual kalau firebase.js belum expose fungsi itu
+        await window.fbUpdate(window.fbRef(window.fbDb, "widrow_pending/" + key), { status: "selesai", selesaiAt: new Date().toISOString() });
+      }
+      alert("Penarikan berhasil diselesaikan!");
+      muatWidrow();
+    } catch(e) { alert("Gagal: " + e.message); }
+  }
+
+  async function tolakTarik(key, userId, nominal, username) {
+    if(!confirm(`Tolak & kembalikan Rp ${Number(nominal).toLocaleString("id-ID")} ke saldo ${username}?`)) return;
+    try {
+      // kembalikan saldo ke user
+      const snap = await window.fbGet(window.fbRef(window.fbDb, "users/" + userId));
+      if(snap.exists()) {
+        const saldoLama = Number(snap.val().balance || 0);
+        await window.fbUpdate(window.fbRef(window.fbDb, "users/" + userId), { balance: saldoLama + Number(nominal) });
+      }
+      await window.fbUpdate(window.fbRef(window.fbDb, "widrow_pending/" + key), { status: "ditolak", tolakAt: new Date().toISOString() });
+      alert("Penarikan ditolak, saldo dikembalikan.");
+      muatWidrow();
+    } catch(e) { alert("Gagal: " + e.message); }
+  }
+
+  // ============ 5. RIWAYAT SEMUA ============
+  async function muatRiwayatAdmin() {
+    const tabel = document.getElementById("tabel-riwayat-admin");
+    try {
+      const snapshot = await window.fbGet(window.fbRef(window.fbDb, "riwayat"));
+      let html = "";
+      if (snapshot.exists()) {
+        let dataArray = [];
+        snapshot.forEach(child => { dataArray.push(child.val()); });
+        dataArray.reverse().slice(0, 50).forEach(data => {
+          const warna = data.menang ? "#00e701" : "#ff3838";
+          const teks = data.menang ? "MENANG" : "KALAH";
+          const tgl = new Date(data.waktu).toLocaleString("id-ID");
+          html += `
+            <tr>
+              <td style="font-size:12px; color:#8b8b9e;">${tgl}</td>
+              <td>${data.username}</td>
+              <td>${data.game}</td>
+              <td style="color:${warna}; font-weight:bold;">${teks}</td>
+              <td style="color:${warna}; font-weight:bold;">Rp ${Number(data.nominal).toLocaleString("id-ID")}</td>
+            </tr>`;
+        });
+      }
+      tabel.innerHTML = html || `<tr><td colspan="5" style="text-align: center;">Belum ada riwayat.</td></tr>`;
+    } catch(e) { console.log(e); }
   }
 </script>
 </body>

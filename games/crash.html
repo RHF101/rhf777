@@ -25,6 +25,13 @@
       width: 36px; height: 36px; border-radius: 8px; background: #0f1115; border: 1px solid #2d333b; transition: 0.2s;
     }
     .tombol-kembali:hover { background: #2d333b; color: #fff; }
+
+    .header-kanan { display: flex; align-items: center; gap: 8px; }
+    .btn-suara {
+      width: 36px; height: 36px; border-radius: 8px; background: #0f1115; border: 1px solid #2d333b;
+      color: #94a3b8; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
+    }
+    .btn-suara.aktif { color: #10b981; border-color: #10b981; }
     
     .saldo-box { 
       display: flex; align-items: center; gap: 8px; 
@@ -42,6 +49,7 @@
     .angka-pengali { font-size: 80px; font-weight: 700; color: #10b981; transition: color 0.2s; letter-spacing: -2px; }
     .angka-pengali.crashed { color: #ef4444; }
     .hitung-mundur { font-size: 20px; font-weight: 600; color: #94a3b8; }
+    .fair-tag { font-size: 10px; color: #4b5563; margin-top: 6px; letter-spacing: 0.5px; }
     canvas { width: 100% !important; height: 100% !important; position: absolute; top: 0; left: 0; }
 
     /* RIWAYAT ATAS */
@@ -80,14 +88,27 @@
     /* PANEL KONTROL BAWAH */
     .panel-kontrol { 
       background: #1a1d24; border-top: 1px solid #2d333b; padding: 12px 20px; 
-      z-index: 30; display: flex; flex-direction: column; gap: 10px; width: 100%; flex-shrink: 0;
+      z-index: 30; display: flex; flex-direction: column; gap: 14px; width: 100%; flex-shrink: 0;
+      max-height: 56vh; overflow-y: auto;
     }
+
+    /* TAB DUAL BET */
+    .tab-bet { display: flex; gap: 6px; }
+    .tab-bet-btn {
+      flex: 1; padding: 8px; text-align: center; background: #0f1115; border: 1px solid #2d333b; border-radius: 8px;
+      color: #94a3b8; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;
+    }
+    .tab-bet-btn.aktif { border-color: #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+    .tab-bet-btn .dot-aktif { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981; margin-right: 5px; vertical-align: middle; }
+
+    .slot-bet { display: none; flex-direction: column; gap: 10px; }
+    .slot-bet.tampil { display: flex; }
 
     /* KOLOM KEMENANGAN REAL-TIME */
     .panel-kemenangan {
-      display: none; /* Disembunyikan awalnya */
+      display: none;
       background: #0f1115; border: 1px solid #f59e0b; border-radius: 8px;
-      padding: 12px; text-align: center; margin-bottom: 5px;
+      padding: 12px; text-align: center;
       box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
     }
     .teks-kemenangan-label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
@@ -101,6 +122,10 @@
     .btn-auto span { color: #fff; font-size: 13px; }
     .btn-auto.aktif { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
     .btn-auto.aktif span { color: #3b82f6; }
+    .btn-auto input {
+      width: 54px; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 13px; text-align: right; outline: none;
+    }
+    .btn-auto.aktif input { color: #3b82f6; }
 
     .baris-taruhan { display: flex; align-items: center; gap: 8px; }
     .btn-chip { background: #0f1115; border: 1px solid #2d333b; border-radius: 6px; color: #e2e8f0; font-weight: 600; padding: 10px 14px; cursor: pointer; font-size: 13px; flex-shrink: 0; transition: 0.2s; }
@@ -130,11 +155,16 @@
     <a href="../slot.html" class="tombol-kembali">
       <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
     </a>
-    <div class="saldo-box">
-      <svg class="saldo-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>
-      <div class="saldo-text">
-        <span class="saldo-label">SALDO ANDA</span>
-        <div class="saldo-game">Rp <span id="saldoSekarang">0</span></div>
+    <div class="header-kanan">
+      <div class="btn-suara aktif" id="btnSuara" onclick="toggleSuara()">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" id="iconSuara"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+      </div>
+      <div class="saldo-box">
+        <svg class="saldo-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg>
+        <div class="saldo-text">
+          <span class="saldo-label">SALDO ANDA</span>
+          <div class="saldo-game">Rp <span id="saldoSekarang">0</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -149,6 +179,7 @@
     <div class="status-tengah" id="statusTengah">
       <div class="hitung-mundur" id="teksHitung">Menunggu...</div>
       <div class="angka-pengali" id="teksPengali" style="display:none;">1.00x</div>
+      <div class="fair-tag" id="fairTag"></div>
     </div>
     <canvas id="kanvasGrafik"></canvas>
 
@@ -161,67 +192,176 @@
   </div>
   
   <div class="panel-kontrol">
-    <!-- KOLOM KEMENANGAN REAL-TIME -->
-    <div class="panel-kemenangan" id="panelKemenangan">
-      <div class="teks-kemenangan-label">Potensi Kemenangan (Taruhan x Pengali)</div>
-      <div class="teks-kemenangan-nominal">Rp <span id="angkaKemenangan">0</span></div>
-    </div>
 
-    <div class="baris-auto">
-      <button class="btn-auto" id="btnAuto" onclick="toggleAuto()">Auto Cashout <span>2.00x</span></button>
-      <button class="btn-auto" id="btnAuto50" onclick="toggleAuto50()">50% Auto <span>1.50x</span></button>
-    </div>
-
-    <div class="baris-taruhan">
-      <button class="btn-chip" onclick="setTaruhan(1000)">1K</button>
-      <button class="btn-chip" onclick="setTaruhan(5000)">5K</button>
-      <div class="input-container">
-        <input type="number" id="inputTaruhan" class="input-taruhan" value="1000">
+    <div class="tab-bet">
+      <div class="tab-bet-btn aktif" id="tabBet1" onclick="pindahTab(1)">
+        <span class="dot-aktif" id="dotBet1" style="display:none;"></span>TARUHAN 1
       </div>
-      <button class="btn-chip" onclick="setTaruhan(10000)">10K</button>
-      <button class="btn-chip" onclick="setTaruhan(50000)">50K</button>
+      <div class="tab-bet-btn" id="tabBet2" onclick="pindahTab(2)">
+        <span class="dot-aktif" id="dotBet2" style="display:none;"></span>TARUHAN 2
+      </div>
     </div>
 
-    <button class="tombol-utama btn-konfirmasi" id="btnMulai" onclick="pasangTaruhan()">KONFIRMASI TARUHAN</button>
-    
-    <div id="grupTarik" style="display: none; flex-direction: column;">
-      <button class="tombol-utama btn-tarik" id="btnTarik" onclick="tarikDana()" style="display: block;">TARIK SEMUA</button>
-      <button class="tombol-utama btn-setengah" id="btnSetengah" onclick="tarikSetengah()">TARIK 50%</button>
+    <!-- SLOT BET 1 -->
+    <div class="slot-bet tampil" id="slotBet1">
+      <div class="panel-kemenangan" id="panelKemenangan1">
+        <div class="teks-kemenangan-label">Potensi Kemenangan</div>
+        <div class="teks-kemenangan-nominal">Rp <span id="angkaKemenangan1">0</span></div>
+      </div>
+
+      <div class="baris-auto">
+        <div class="btn-auto" id="btnAuto1" onclick="toggleAuto(1)">
+          <span>Auto Cashout</span>
+          <input type="number" id="inputAuto1" value="2.00" step="0.01" min="1.01" onclick="event.stopPropagation()">
+        </div>
+        <div class="btn-auto" id="btnAuto501" onclick="toggleAuto50(1)">
+          <span>50% Auto</span>
+          <input type="number" id="inputAuto501" value="1.50" step="0.01" min="1.01" onclick="event.stopPropagation()">
+        </div>
+      </div>
+
+      <div class="baris-taruhan">
+        <button class="btn-chip" onclick="setTaruhan(1,1000)">1K</button>
+        <button class="btn-chip" onclick="setTaruhan(1,5000)">5K</button>
+        <div class="input-container">
+          <input type="number" id="inputTaruhan1" class="input-taruhan" value="1000">
+        </div>
+        <button class="btn-chip" onclick="setTaruhan(1,10000)">10K</button>
+        <button class="btn-chip" onclick="setTaruhan(1,50000)">50K</button>
+      </div>
+
+      <button class="tombol-utama btn-konfirmasi" id="btnMulai1" onclick="pasangTaruhan(1)">KONFIRMASI TARUHAN</button>
+      <div id="grupTarik1" style="display: none; flex-direction: column; gap: 8px;">
+        <button class="tombol-utama btn-tarik" id="btnTarik1" onclick="tarikDana(1)" style="display: block;">TARIK SEMUA</button>
+        <button class="tombol-utama btn-setengah" id="btnSetengah1" onclick="tarikSetengah(1)">TARIK 50%</button>
+      </div>
     </div>
+
+    <!-- SLOT BET 2 -->
+    <div class="slot-bet" id="slotBet2">
+      <div class="panel-kemenangan" id="panelKemenangan2">
+        <div class="teks-kemenangan-label">Potensi Kemenangan</div>
+        <div class="teks-kemenangan-nominal">Rp <span id="angkaKemenangan2">0</span></div>
+      </div>
+
+      <div class="baris-auto">
+        <div class="btn-auto" id="btnAuto2" onclick="toggleAuto(2)">
+          <span>Auto Cashout</span>
+          <input type="number" id="inputAuto2" value="2.00" step="0.01" min="1.01" onclick="event.stopPropagation()">
+        </div>
+        <div class="btn-auto" id="btnAuto502" onclick="toggleAuto50(2)">
+          <span>50% Auto</span>
+          <input type="number" id="inputAuto502" value="1.50" step="0.01" min="1.01" onclick="event.stopPropagation()">
+        </div>
+      </div>
+
+      <div class="baris-taruhan">
+        <button class="btn-chip" onclick="setTaruhan(2,1000)">1K</button>
+        <button class="btn-chip" onclick="setTaruhan(2,5000)">5K</button>
+        <div class="input-container">
+          <input type="number" id="inputTaruhan2" class="input-taruhan" value="1000">
+        </div>
+        <button class="btn-chip" onclick="setTaruhan(2,10000)">10K</button>
+        <button class="btn-chip" onclick="setTaruhan(2,50000)">50K</button>
+      </div>
+
+      <button class="tombol-utama btn-konfirmasi" id="btnMulai2" onclick="pasangTaruhan(2)">KONFIRMASI TARUHAN</button>
+      <div id="grupTarik2" style="display: none; flex-direction: column; gap: 8px;">
+        <button class="tombol-utama btn-tarik" id="btnTarik2" onclick="tarikDana(2)" style="display: block;">TARIK SEMUA</button>
+        <button class="tombol-utama btn-setengah" id="btnSetengah2" onclick="tarikSetengah(2)">TARIK 50%</button>
+      </div>
+    </div>
+
   </div>
 
   <script type="module" src="../assets/firebase.js"></script>
   <script>
+    // ================= STATE DASAR =================
     let saldoPemain = 0;
     let idUser = null;
     let usernamePemain = "Pemain";
     let multiplierSekarang = 1.00;
     let statusGame = "menunggu";
-    let sudahPasangTaruhan = false;
-    let sudahTarikSemua = false;
-    let sudahTarikSetengah = false;
-    let taruhanAktif = 0;
     let intervalNaik = null;
-    
+    let tabAktif = 1;
+    let suaraAktif = true;
+
     let skenario = [];
     let indexSkenario = 0;
     let canvas, ctx;
     let dataGrafik = [];
     let animasiFrame;
+    let seedRonde = "";
+    let crashPointFinal = 2.00;
 
-    let autoCashoutAktif = false;
-    let autoCashout50Aktif = false;
+    // dua slot taruhan independen
+    function slotKosong() {
+      return { pasang: false, tarikSemua: false, tarikSetengah: false, nominal: 0, autoAktif: false, auto50Aktif: false };
+    }
+    let bet = { 1: slotKosong(), 2: slotKosong() };
 
     let daftarBot = [];
     const namaBot = ["Budi", "Siti", "Andi", "Rina", "Joko", "Agus", "Dewi", "Rizky", "Putri", "Fajar", "Lina", "Hendra", "Maya", "Doni", "Ayu", "Eko", "Nia", "Taufik", "Indah", "Bayu", "Fitri", "Rudi", "Sari", "Wawan", "Yuni", "Adi", "Tika", "Bambang", "Dian", "Iwan", "Lestari", "Reza", "Nina", "Hasan", "Sinta", "Asep", "Mega", "Yanto", "Kiki", "Rosa"];
 
-    function setTaruhan(angka) { document.getElementById("inputTaruhan").value = angka; }
-    function toggleAuto() { autoCashoutAktif = !autoCashoutAktif; document.getElementById("btnAuto").classList.toggle("aktif", autoCashoutAktif); }
-    function toggleAuto50() { autoCashout50Aktif = !autoCashout50Aktif; document.getElementById("btnAuto50").classList.toggle("aktif", autoCashout50Aktif); }
+    // ================= AUDIO (WebAudio, tanpa file eksternal) =================
+    let audioCtx = null;
+    function ambilAudioCtx() {
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+    function bunyi(freq, durasi, tipe, volAwal) {
+      if(!suaraAktif) return;
+      try {
+        const ctxA = ambilAudioCtx();
+        const osc = ctxA.createOscillator();
+        const gain = ctxA.createGain();
+        osc.type = tipe || "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(volAwal || 0.15, ctxA.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + durasi);
+        osc.connect(gain); gain.connect(ctxA.destination);
+        osc.start(); osc.stop(ctxA.currentTime + durasi);
+      } catch(e) {}
+    }
+    function suaraTick() { bunyi(440 + Math.min(multiplierSekarang * 25, 600), 0.05, "sine", 0.04); }
+    function suaraCashout() { bunyi(660, 0.12, "triangle", 0.18); setTimeout(() => bunyi(880, 0.15, "triangle", 0.16), 90); }
+    function suaraCrash() { bunyi(140, 0.4, "sawtooth", 0.2); }
+    function suaraKlik() { bunyi(300, 0.04, "square", 0.05); }
+
+    function toggleSuara() {
+      suaraAktif = !suaraAktif;
+      document.getElementById("btnSuara").classList.toggle("aktif", suaraAktif);
+      document.getElementById("iconSuara").innerHTML = suaraAktif
+        ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>'
+        : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
+    }
+
+    // ================= TAB DUAL BET =================
+    function pindahTab(n) {
+      tabAktif = n;
+      document.getElementById("tabBet1").classList.toggle("aktif", n===1);
+      document.getElementById("tabBet2").classList.toggle("aktif", n===2);
+      document.getElementById("slotBet1").classList.toggle("tampil", n===1);
+      document.getElementById("slotBet2").classList.toggle("tampil", n===2);
+      suaraKlik();
+    }
+    function refreshDotTab() {
+      document.getElementById("dotBet1").style.display = bet[1].pasang ? "inline-block" : "none";
+      document.getElementById("dotBet2").style.display = bet[2].pasang ? "inline-block" : "none";
+    }
+
+    function setTaruhan(slot, angka) { document.getElementById("inputTaruhan"+slot).value = angka; suaraKlik(); }
+    function toggleAuto(slot) {
+      bet[slot].autoAktif = !bet[slot].autoAktif;
+      document.getElementById("btnAuto"+slot).classList.toggle("aktif", bet[slot].autoAktif);
+    }
+    function toggleAuto50(slot) {
+      bet[slot].auto50Aktif = !bet[slot].auto50Aktif;
+      document.getElementById("btnAuto50"+slot).classList.toggle("aktif", bet[slot].auto50Aktif);
+    }
 
     function togglePanelBot() {
-      const panel = document.getElementById("panelBot");
-      panel.classList.toggle("terbuka");
+      document.getElementById("panelBot").classList.toggle("terbuka");
     }
 
     function tambahRiwayatAtas(nilai, isMerah) {
@@ -265,28 +405,29 @@
       const wadah = document.getElementById("papanSkor");
       let html = "";
 
-      let statusKamu = "Menunggu";
-      let classKamu = "";
-      if(sudahPasangTaruhan) {
-        if(sudahTarikSemua) { statusKamu = "Win"; classKamu = "skor-win"; }
+      [1,2].forEach(slot => {
+        if(!bet[slot].pasang) return;
+        let statusKamu = "Menunggu";
+        let classKamu = "";
+        if(bet[slot].tarikSemua) { statusKamu = "Win"; classKamu = "skor-win"; }
         else if(statusGame === "meledak") { statusKamu = "Lose"; classKamu = "skor-lose"; }
         else if(statusGame === "terbang") { statusKamu = "Terbang"; }
-      }
-      html += `
-        <div class="skor-item kamu">
-          <span>${usernamePemain}</span>
-          <span class="${classKamu}">${statusKamu}</span>
-        </div>
-      `;
+        html += `
+          <div class="skor-item kamu">
+            <span>${usernamePemain} (B${slot})</span>
+            <span class="${classKamu}">${statusKamu}</span>
+          </div>
+        `;
+      });
 
-      daftarBot.forEach(bot => {
+      daftarBot.forEach(botX => {
         let classStatus = "";
-        if(bot.status === "win") classStatus = "skor-win";
-        if(bot.status === "lose") classStatus = "skor-lose";
-        let teks = bot.status === "menunggu" ? "..." : (bot.status === "win" ? bot.cashoutX.toFixed(2) + "x" : (bot.status === "lose" ? "Lose" : "Terbang"));
+        if(botX.status === "win") classStatus = "skor-win";
+        if(botX.status === "lose") classStatus = "skor-lose";
+        let teks = botX.status === "menunggu" ? "..." : (botX.status === "win" ? botX.cashoutX.toFixed(2) + "x" : (botX.status === "lose" ? "Lose" : "Terbang"));
         html += `
           <div class="skor-item bot">
-            <span>${bot.nama}</span>
+            <span>${botX.nama}</span>
             <span class="${classStatus}">${teks}</span>
           </div>
         `;
@@ -366,14 +507,57 @@
       }
     }, 1000);
 
-    function buatSkenarioDrama() {
+    // ================= BIAS DOMPET BANDAR =================
+    // Baca target & saldo bandar dari Firebase (path sama dengan sistem window.mainkanGame di firebase.js),
+    // lalu geser rentang crash point: makin jauh dari target -> makin ditekan (crash cepat).
+    async function ambilBiasBandar() {
+      let bias = 0; // -1 (tekan abis) .. 0 (netral) .. +1 (longgar abis)
+      try {
+        if(!window.fbGet || !window.fbRef || !window.fbDb) return bias;
+        // path sesuai yang admin simpan: pengaturan/bandar
+        const snap = await window.fbGet(window.fbRef(window.fbDb, "pengaturan/bandar"));
+        if(!snap.exists()) return bias;
+        const data = snap.val();
+        const saldo = Number(data.dompetBandar || 0);
+        const target = Number(data.target || 1);
+        if(target <= 0) return bias;
+        const rasio = saldo / target;
+        if(rasio < 1) {
+          bias = -Math.min(1, (1 - rasio));
+        } else {
+          bias = Math.min(1, (rasio - 1));
+        }
+      } catch(e) {}
+      return bias;
+    }
+
+    // seed display doang (provably-fair look), bukan sumber acak kriptografis
+    function buatSeedRonde() {
+      const rand = Math.random().toString(16).slice(2, 10);
+      const waktu = Date.now().toString(16).slice(-6);
+      seedRonde = (rand + waktu).toUpperCase();
+      document.getElementById("fairTag").textContent = "Round Seed: " + seedRonde;
+    }
+
+    async function buatSkenarioDrama() {
       skenario = [];
       let nilaiSekarang = 1.00;
-      let batasMeledak = (Math.random() * 15) + 1.5;
+
+      const bias = await ambilBiasBandar();
+      // rentang dasar crash 1.5x - 16.5x, digeser oleh bias bandar
+      let dasarMin = 1.5, dasarMax = 16.5;
+      if(bias < 0) { dasarMax = dasarMax + (bias * 13); if(dasarMax < 1.3) dasarMax = 1.3; }
+      if(bias > 0) { dasarMin = dasarMin + (bias * 3); dasarMax = dasarMax + (bias * 10); }
+      if(dasarMax <= dasarMin) dasarMax = dasarMin + 0.3;
+
+      let batasMeledak = dasarMin + Math.random() * (dasarMax - dasarMin);
+      crashPointFinal = batasMeledak;
+
       let jumlahDrama = Math.floor(Math.random() * 5) + 3;
       
       for(let d=0; d<jumlahDrama; d++) {
         let naikKecil = nilaiSekarang + (Math.random() * 1.5) + 0.5;
+        if(naikKecil > batasMeledak * 0.9) naikKecil = Math.max(nilaiSekarang + 0.1, batasMeledak * 0.9);
         skenario.push({ tipe: 'naik', target: naikKecil, durasi: 20 });
         nilaiSekarang = naikKecil;
         let turunEkstrem = nilaiSekarang - (Math.random() * (nilaiSekarang * 0.6));
@@ -381,32 +565,38 @@
         skenario.push({ tipe: 'turun_ekstrem', target: turunEkstrem, durasi: 15 });
         nilaiSekarang = turunEkstrem;
         let melesatNaik = nilaiSekarang + (Math.random() * 2) + 1;
+        if(melesatNaik > batasMeledak * 0.95) melesatNaik = Math.max(nilaiSekarang + 0.1, batasMeledak * 0.95);
         skenario.push({ tipe: 'naik_ekstrem', target: melesatNaik, durasi: 15 });
         nilaiSekarang = melesatNaik;
       }
       skenario.push({ tipe: 'meledak', target: batasMeledak, durasi: 30 });
     }
 
-    function mulaiRondeBaru() {
+    function resetSlot(slot) {
+      bet[slot] = slotKosong();
+      document.getElementById("btnMulai"+slot).style.display = "block";
+      document.getElementById("btnMulai"+slot).disabled = false;
+      document.getElementById("btnMulai"+slot).style.background = "#10b981";
+      document.getElementById("btnMulai"+slot).style.color = "#000";
+      document.getElementById("btnMulai"+slot).textContent = "KONFIRMASI TARUHAN";
+      document.getElementById("grupTarik"+slot).style.display = "none";
+      document.getElementById("panelKemenangan"+slot).style.display = "none";
+      document.getElementById("btnSetengah"+slot).style.display = "none";
+      document.getElementById("btnAuto"+slot).classList.remove("aktif");
+      document.getElementById("btnAuto50"+slot).classList.remove("aktif");
+    }
+
+    async function mulaiRondeBaru() {
       statusGame = "menunggu";
-      sudahPasangTaruhan = false;
-      sudahTarikSemua = false;
-      taruhanAktif = 0;
-      multiplierSekarang = 1.00;
-      sudahTarikSetengah = false;
-      
-      document.getElementById("btnMulai").style.display = "block";
-      document.getElementById("btnMulai").disabled = false;
-      document.getElementById("btnMulai").style.background = "#10b981";
-      document.getElementById("btnMulai").style.color = "#000";
-      document.getElementById("grupTarik").style.display = "none";
-      document.getElementById("btnMulai").textContent = "KONFIRMASI TARUHAN";
+      resetSlot(1);
+      resetSlot(2);
+
       document.getElementById("teksPengali").style.display = "none";
       document.getElementById("teksHitung").style.display = "block";
-      document.getElementById("panelKemenangan").style.display = "none"; // Sembunyikan panel kemenangan
 
       inisialisasiKanvas();
-      buatSkenarioDrama();
+      buatSeedRonde();
+      await buatSkenarioDrama();
       inisialisasiBot(); 
       indexSkenario = 0;
       
@@ -425,10 +615,12 @@
       }, 1000);
     }
 
-    function pasangTaruhan() {
+    function pasangTaruhan(slot) {
       if(!idUser) return alert("Sedang menghubungkan ke akun, tunggu 1 detik lagi...");
       if(statusGame === "terbang") return;
-      const taruhan = Number(document.getElementById("inputTaruhan").value);
+      if(bet[slot].pasang) return;
+
+      const taruhan = Number(document.getElementById("inputTaruhan"+slot).value);
       if(taruhan < 100) return alert("Minimal taruhan Rp 100");
       if(taruhan > saldoPemain) return alert("Saldo tidak cukup!");
 
@@ -436,13 +628,18 @@
       document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
       window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
       
-      taruhanAktif = taruhan;
-      sudahPasangTaruhan = true;
-      document.getElementById("btnMulai").textContent = "TARUHAN TERPASANG";
-      document.getElementById("btnMulai").style.background = "#2d333b";
-      document.getElementById("btnMulai").style.color = "#94a3b8";
-      document.getElementById("btnMulai").disabled = true;
+      bet[slot].nominal = taruhan;
+      bet[slot].pasang = true;
+      bet[slot].autoAktif = document.getElementById("btnAuto"+slot).classList.contains("aktif");
+      bet[slot].auto50Aktif = document.getElementById("btnAuto50"+slot).classList.contains("aktif");
+
+      document.getElementById("btnMulai"+slot).textContent = "TARUHAN TERPASANG";
+      document.getElementById("btnMulai"+slot).style.background = "#2d333b";
+      document.getElementById("btnMulai"+slot).style.color = "#94a3b8";
+      document.getElementById("btnMulai"+slot).disabled = true;
       
+      suaraKlik();
+      refreshDotTab();
       renderPapanSkor();
     }
 
@@ -454,19 +651,22 @@
       document.getElementById("teksPengali").className = "angka-pengali";
       document.getElementById("teksPengali").textContent = "1.00x";
       
-      if(sudahPasangTaruhan) {
-        document.getElementById("btnMulai").style.display = "none";
-        document.getElementById("grupTarik").style.display = "flex";
-        document.getElementById("panelKemenangan").style.display = "block"; // Tampilkan panel
-        document.getElementById("angkaKemenangan").textContent = taruhanAktif.toLocaleString('id-ID');
-      }
+      [1,2].forEach(slot => {
+        if(bet[slot].pasang) {
+          document.getElementById("btnMulai"+slot).style.display = "none";
+          document.getElementById("grupTarik"+slot).style.display = "flex";
+          document.getElementById("btnSetengah"+slot).style.display = "block";
+          document.getElementById("panelKemenangan"+slot).style.display = "block";
+          document.getElementById("angkaKemenangan"+slot).textContent = bet[slot].nominal.toLocaleString('id-ID');
+        }
+      });
 
       dataGrafik.push({ open: 1, high: 1.01, low: 0.99, close: 1.00 });
       gambarUlangGrafik();
 
-      daftarBot.forEach(bot => {
-        bot.status = "terbang";
-        bot.cashoutX = (Math.random() * 8) + 1.1;
+      daftarBot.forEach(botX => {
+        botX.status = "terbang";
+        botX.cashoutX = (Math.random() * 8) + 1.1;
       });
       renderPapanSkor();
 
@@ -503,26 +703,33 @@
         if(lowCandle < 0.5) lowCandle = 0.5;
 
         document.getElementById("teksPengali").textContent = multiplierSekarang.toFixed(2) + "x";
+        if(tick % 3 === 0) suaraTick();
 
-        // PERHITUNGAN REAL-TIME DI PANEL BAWAH
-        if(sudahPasangTaruhan && !sudahTarikSemua) {
-          let kemenanganSementara = Math.floor(taruhanAktif * multiplierSekarang);
-          document.getElementById("angkaKemenangan").textContent = kemenanganSementara.toLocaleString("id-ID");
-        }
+        [1,2].forEach(slot => {
+          if(bet[slot].pasang && !bet[slot].tarikSemua) {
+            let kemenanganSementara = Math.floor(bet[slot].nominal * multiplierSekarang);
+            document.getElementById("angkaKemenangan"+slot).textContent = kemenanganSementara.toLocaleString("id-ID");
+          }
+        });
 
         dataGrafik.push({ open: openCandle, high: highCandle, low: lowCandle, close: closeCandle });
 
         let adaBotWin = false;
-        daftarBot.forEach(bot => {
-          if(bot.status === "terbang" && multiplierSekarang >= bot.cashoutX) {
-            bot.status = "win";
+        daftarBot.forEach(botX => {
+          if(botX.status === "terbang" && multiplierSekarang >= botX.cashoutX) {
+            botX.status = "win";
             adaBotWin = true;
           }
         });
         if(adaBotWin) renderPapanSkor();
 
-        if(sudahPasangTaruhan && !sudahTarikSemua && autoCashoutAktif && multiplierSekarang >= 2.00) { tarikDana(); }
-        if(sudahPasangTaruhan && !sudahTarikSetengah && autoCashout50Aktif && multiplierSekarang >= 1.50) { tarikSetengah(); }
+        [1,2].forEach(slot => {
+          if(!bet[slot].pasang || bet[slot].tarikSemua) return;
+          let ambangAuto = Number(document.getElementById("inputAuto"+slot).value) || 2.00;
+          let ambangAuto50 = Number(document.getElementById("inputAuto50"+slot).value) || 1.50;
+          if(bet[slot].autoAktif && multiplierSekarang >= ambangAuto) tarikDana(slot);
+          if(!bet[slot].tarikSetengah && bet[slot].auto50Aktif && multiplierSekarang >= ambangAuto50) tarikSetengah(slot);
+        });
 
         if(tick >= tahap.durasi || multiplierSekarang === target) {
           clearInterval(intervalNaik);
@@ -532,33 +739,35 @@
       }, 100); 
     }
 
-    async function tarikSetengah() {
-      if(statusGame !== "terbang" || !sudahPasangTaruhan || sudahTarikSetengah) return;
-      sudahTarikSetengah = true;
-      document.getElementById("btnSetengah").style.display = "none";
+    async function tarikSetengah(slot) {
+      if(statusGame !== "terbang" || !bet[slot].pasang || bet[slot].tarikSetengah || bet[slot].tarikSemua) return;
+      bet[slot].tarikSetengah = true;
+      document.getElementById("btnSetengah"+slot).style.display = "none";
       
-      const nilaiSekarang = taruhanAktif * multiplierSekarang;
+      const nilaiSekarang = bet[slot].nominal * multiplierSekarang;
       const dapatSetengah = Math.floor(nilaiSekarang / 2);
       
       saldoPemain += dapatSetengah;
+      suaraCashout();
       if(idUser) {
         await window.fbUpdate(window.fbRef(window.fbDb, "users/" + idUser), { balance: saldoPemain });
         document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
       }
       
-      taruhanAktif = taruhanAktif / 2;
+      bet[slot].nominal = bet[slot].nominal / 2;
       renderPapanSkor();
     }
 
-    async function tarikDana() {
-      if(statusGame !== "terbang" || !sudahPasangTaruhan || sudahTarikSemua) return;
-      sudahTarikSemua = true;
+    async function tarikDana(slot) {
+      if(statusGame !== "terbang" || !bet[slot].pasang || bet[slot].tarikSemua) return;
+      bet[slot].tarikSemua = true;
       
-      const nilaiSekarang = taruhanAktif * multiplierSekarang;
+      const nilaiSekarang = bet[slot].nominal * multiplierSekarang;
       const kemenangan = Math.floor(nilaiSekarang);
       
-      document.getElementById("grupTarik").style.display = "none";
-      document.getElementById("panelKemenangan").style.display = "none"; // Sembunyikan panel
+      document.getElementById("grupTarik"+slot).style.display = "none";
+      document.getElementById("panelKemenangan"+slot).style.display = "none";
+      suaraCashout();
       
       saldoPemain += kemenangan;
       if(idUser) {
@@ -566,13 +775,14 @@
         document.getElementById("saldoSekarang").textContent = saldoPemain.toLocaleString('id-ID');
         
         if(window.fbSet) {
-          await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
+          await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser + "_b" + slot), {
             userId: idUser,
             username: usernamePemain,
             game: "Crash",
             menang: true,
             nominal: kemenangan,
             multiplier: parseFloat(multiplierSekarang.toFixed(2)),
+            seed: seedRonde,
             waktu: new Date().toISOString()
           });
         }
@@ -588,29 +798,36 @@
       
       document.getElementById("teksPengali").className = "angka-pengali crashed";
       document.getElementById("teksPengali").textContent = "CRASH!";
-      document.getElementById("grupTarik").style.display = "none";
-      document.getElementById("panelKemenangan").style.display = "none"; // Sembunyikan panel
+      suaraCrash();
+
+      [1,2].forEach(slot => {
+        document.getElementById("grupTarik"+slot).style.display = "none";
+        document.getElementById("panelKemenangan"+slot).style.display = "none";
+      });
 
       dataGrafik.push({ open: multiplierSekarang, high: multiplierSekarang, low: 0, close: 0 });
       gambarUlangGrafik();
 
-      daftarBot.forEach(bot => {
-        if(bot.status === "terbang") bot.status = "lose";
+      daftarBot.forEach(botX => {
+        if(botX.status === "terbang") botX.status = "lose";
       });
       renderPapanSkor();
 
       tambahRiwayatAtas(0, true);
 
-      if(!sudahTarikSemua && sudahPasangTaruhan && idUser && window.fbSet) {
-        await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser), {
-          userId: idUser,
-          username: usernamePemain,
-          game: "Crash",
-          menang: false,
-          nominal: taruhanAktif,
-          multiplier: 0,
-          waktu: new Date().toISOString()
-        });
+      for(const slot of [1,2]) {
+        if(!bet[slot].tarikSemua && bet[slot].pasang && idUser && window.fbSet) {
+          await window.fbSet(window.fbRef(window.fbDb, "riwayat/" + Date.now() + "_" + idUser + "_b" + slot), {
+            userId: idUser,
+            username: usernamePemain,
+            game: "Crash",
+            menang: false,
+            nominal: bet[slot].nominal,
+            multiplier: 0,
+            seed: seedRonde,
+            waktu: new Date().toISOString()
+          });
+        }
       }
       
       setTimeout(mulaiRondeBaru, 4000); 
